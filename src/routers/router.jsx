@@ -6,6 +6,8 @@ import Login from "../pages/Authentication/Login";
 import ThesisProposalForm from "../pages/Thesis/ThesisProposalForm";
 import AssignSupervisor from "../pages/Admin/AssignSupervisor";
 import AdminRoute from "../Private/AdminRoute";
+import Announcement from "../pages/Announcement/Announcement";
+
 
 const router = createBrowserRouter([
   {
@@ -36,7 +38,11 @@ const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
-    ],
+      {
+        path: "/announcements",
+        Component: Announcement
+      },
+    ]
   },
 ]);
 
