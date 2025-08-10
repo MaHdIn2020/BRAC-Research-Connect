@@ -13,6 +13,7 @@ const Navbar = () => {
 
         <ul className="hidden md:flex space-x-8 text-slate-700 dark:text-gray-300 font-medium">
           <li className="hover:text-[#7b1e3c] transition">Home</li>
+          <NavLink to='announcements'><li className="hover:text-[#7b1e3c] transition">Announcement</li></NavLink>
           <NavLink to='thesis-proposal'><li className="hover:text-[#7b1e3c] transition">Proposal Submission</li></NavLink>
           <li className="hover:text-[#7b1e3c] transition">Guidelines</li>
           <li className="hover:text-[#7b1e3c] transition">Contact</li>

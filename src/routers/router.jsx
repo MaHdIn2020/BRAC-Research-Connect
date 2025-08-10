@@ -6,6 +6,7 @@ import RootLayout from "../layouts/RootLayout";
 import Register from "../pages/Authentication/Register";
 import Login from "../pages/Authentication/Login";
 import ThesisProposalForm from "../pages/Thesis/ThesisProposalForm";
+import Announcement from "../pages/Announcement/Announcement";
 
 
 const router = createBrowserRouter([
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: "/thesis-proposal",
         Component: ThesisProposalForm,
+      },
+      {
+        path: "/announcements",
+        Component: Announcement,
       }
     ]
   },
