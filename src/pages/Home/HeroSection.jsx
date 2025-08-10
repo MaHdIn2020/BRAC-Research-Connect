@@ -12,7 +12,7 @@ const HeroSection = () => {
             <span className="text-[#7b1e3c]">With Ease</span>
           </h1>
           <p className="mt-4 text-lg text-slate-600 dark:text-gray-400 max-w-lg">
-            Study Sync helps BRAC University students and supervisors streamline
+            BRACU Research Connect helps BRAC University students and supervisors streamline
             thesis proposals, track progress, share resources, and collaborate effectively —
             all in one portal.
           </p>

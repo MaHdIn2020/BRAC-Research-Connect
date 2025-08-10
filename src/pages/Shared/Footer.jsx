@@ -11,7 +11,7 @@ const Footer = () => {
 
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Study <span className="text-[#7b1e3c]">Sync</span>
+              BRACU Research <span className="text-[#7b1e3c]">Connect</span>
             </h1>
             <p className="mt-2 max-w-xs text-sm text-slate-600 dark:text-gray-400">
               A thesis management portal for BRAC University students to collaborate, manage, and succeed.
