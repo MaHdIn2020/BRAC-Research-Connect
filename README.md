@@ -1,4 +1,4 @@
-# ScholarSync 🎓
+# BRAC Research Connect🎓
 
 A modern **Thesis Management System** built with React, Tailwind CSS, DaisyUI, and React Router.  
 
