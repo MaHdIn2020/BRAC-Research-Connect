@@ -36,25 +36,49 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Registration data:", formData);
+
+    // Create user in Firebase Authentication
     createUser(formData.email, formData.password)
       .then((userCredential) => {
         console.log("User registered:", userCredential.user);
         alert("Registration successful! (Demo)");
-        navigate("/login"); 
-      }
-    ).catch((error) => {
+
+        // Conditional API POST request based on role
+        const endpoint = role === "student" ? "http://localhost:5000/students" : "http://localhost:5000/supervisors";
+        
+        const postData = role === "student" ? {
+          ...formData
+        } : {
+          name: formData.name,
+          email: formData.email,
+          photoUrl: formData.photoUrl,
+          password: formData.password,
+        };
+
+        fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postData),
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Data posted successfully:", data);
+          navigate("/login");
+        })
+        .catch((error) => {
+          console.error("Error posting data:", error);
+          alert("There was an issue with the registration data submission.");
+        });
+      })
+      .catch((error) => {
         console.error("Error registering user:", error);
         alert("Registration failed! Please try again.");
-
-    })
-    
-
-
-
-
+      });
   };
 
   return (
