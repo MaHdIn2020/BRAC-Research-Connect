@@ -1,12 +1,11 @@
-import {
-  createBrowserRouter,
-} from "react-router";
+import { createBrowserRouter } from "react-router";
 import Home from "../pages/Home/Home";
 import RootLayout from "../layouts/RootLayout";
 import Register from "../pages/Authentication/Register";
 import Login from "../pages/Authentication/Login";
 import ThesisProposalForm from "../pages/Thesis/ThesisProposalForm";
-
+import AssignSupervisor from "../pages/Admin/AssignSupervisor";
+import AdminRoute from "../Private/AdminRoute";
 
 const router = createBrowserRouter([
   {
@@ -19,17 +18,25 @@ const router = createBrowserRouter([
       },
       {
         path: "/register",
-        Component: Register
+        Component: Register,
       },
       {
         path: "/login",
-        Component: Login
+        Component: Login,
       },
       {
         path: "/thesis-proposal",
         Component: ThesisProposalForm,
-      }
-    ]
+      },
+      {
+        path: "/assign-supervisor",
+        element: (
+          <AdminRoute>
+            <AssignSupervisor></AssignSupervisor>
+          </AdminRoute>
+        ),
+      },
+    ],
   },
 ]);
 
