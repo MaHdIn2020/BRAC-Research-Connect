@@ -5,6 +5,7 @@ import Home from "../pages/Home/Home";
 import RootLayout from "../layouts/RootLayout";
 import Register from "../pages/Authentication/Register";
 import Login from "../pages/Authentication/Login";
+import ThesisProposalForm from "../pages/Thesis/ThesisProposalForm";
 
 
 const router = createBrowserRouter([
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         Component: Login
+      },
+      {
+        path: "/thesis-proposal",
+        Component: ThesisProposalForm,
       }
     ]
   },
