@@ -1,11 +1,9 @@
 import React, { use, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
-
-import { auth } from "../../firebase/firebase.init";
 import { useNavigate } from "react-router";
 
 const Register = () => {
-  const [role, setRole] = useState("student"); 
+  const [role, setRole] = useState("student");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,9 +12,8 @@ const Register = () => {
     photoUrl: "",
     password: "",
   });
-  const {createUser} = use(AuthContext)
+  const { createUser } = use(AuthContext);
   const navigate = useNavigate();
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +33,7 @@ const Register = () => {
     });
   };
 
-const handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Registration data:", formData);
 
@@ -47,16 +44,19 @@ const handleSubmit = (e) => {
         alert("Registration successful! (Demo)");
 
         // Conditional API POST request based on role
-        const endpoint = role === "student" ? "http://localhost:5000/students" : "http://localhost:5000/supervisors";
-        
-        const postData = role === "student" ? {
-          ...formData
-        } : {
-          name: formData.name,
-          email: formData.email,
-          photoUrl: formData.photoUrl,
-          password: formData.password,
-        };
+        const endpoint = "http://localhost:5000/users";
+
+        // Prepare data to post
+        const postData =
+          role === "student"
+            ? { ...formData, role: "student" }
+            : {
+                name: formData.name,
+                email: formData.email,
+                photoUrl: formData.photoUrl,
+                password: formData.password,
+                role: "supervisor",
+              };
 
         fetch(endpoint, {
           method: "POST",
@@ -65,15 +65,15 @@ const handleSubmit = (e) => {
           },
           body: JSON.stringify(postData),
         })
-        .then(response => response.json())
-        .then(data => {
-          console.log("Data posted successfully:", data);
-          navigate("/login");
-        })
-        .catch((error) => {
-          console.error("Error posting data:", error);
-          alert("There was an issue with the registration data submission.");
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Data posted successfully:", data);
+            navigate("/login");
+          })
+          .catch((error) => {
+            console.error("Error posting data:", error);
+            alert("There was an issue with the registration data submission.");
+          });
       })
       .catch((error) => {
         console.error("Error registering user:", error);
@@ -114,7 +114,6 @@ const handleSubmit = (e) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
           <div>
             <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
               Full Name
@@ -140,7 +139,11 @@ const handleSubmit = (e) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder={role === "student" ? "example@gsuite.bracu.ac.bd" : "example@bracu.ac.bd"}
+              placeholder={
+                role === "student"
+                  ? "example@gsuite.bracu.ac.bd"
+                  : "example@bracu.ac.bd"
+              }
               className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
             />
           </div>
