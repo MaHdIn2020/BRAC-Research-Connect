@@ -11,6 +11,7 @@ import AdminDashboard from "../pages/Dashboard/AdminDashboard";
 import StudentDashboard from "../pages/Dashboard/StudentDashboard";
 import SupervisorDashboard from "../pages/Dashboard/SupervisorDashboard";
 import ViewAnnouncement from "../pages/Announcement/ViewAnnouncements";
+import ManageUsers from "../pages/Admin/ManageUsers";
 
 
 const router = createBrowserRouter([
@@ -39,6 +40,14 @@ const router = createBrowserRouter([
       {
         path: "view-announcement",
         Component: ViewAnnouncement
+      },
+      {
+        path: '/manage-users',
+        element: (
+          <AdminRoute>
+            <ManageUsers></ManageUsers>
+          </AdminRoute>
+        ),
       },
       {
         path: "/assign-supervisor",
