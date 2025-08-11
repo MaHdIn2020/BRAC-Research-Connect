@@ -1,11 +1,4 @@
-import React, { useState } from "react";
-
-const supervisors = [
-  "Dr. Md. Golam Rabiul Alam",
-  "Dr. Muhammad Iqbal Hossain",
-  "Dr. Farig Yousuf Sadeque",
-  "Dr. Sadia Hamid Kazi",
-];
+import React, { useState, useEffect } from "react";
 
 const domains = [
   "Machine Learning & AI",
@@ -17,7 +10,7 @@ const domains = [
   "Autonomous Systems",
   "AI Ethics & Governance",
   "Deep Learning",
-  "AI in Business Applications"
+  "AI in Business Applications",
 ];
 
 const ThesisProposalForm = () => {
@@ -30,6 +23,26 @@ const ThesisProposalForm = () => {
   });
 
   const [pdfName, setPdfName] = useState("");
+  const [supervisors, setSupervisors] = useState([]);
+  const [loadingSup, setLoadingSup] = useState(true);
+  const [errorSup, setErrorSup] = useState(null);
+
+  useEffect(() => {
+    const fetchSupervisors = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/supervisors");
+        if (!res.ok) throw new Error("Failed to fetch supervisors");
+        const data = await res.json();
+        setSupervisors(data);
+      } catch (err) {
+        console.error(err);
+        setErrorSup("Could not load supervisors");
+      } finally {
+        setLoadingSup(false);
+      }
+    };
+    fetchSupervisors();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,9 +76,7 @@ const ThesisProposalForm = () => {
       return;
     }
 
-
     alert("Thesis Proposal Submitted! (Demo)");
-
 
     setFormData({
       title: "",
@@ -85,8 +96,7 @@ const ThesisProposalForm = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-
-
+          {/* Title */}
           <div>
             <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
               Title
@@ -102,7 +112,7 @@ const ThesisProposalForm = () => {
             />
           </div>
 
-
+          {/* Abstract */}
           <div>
             <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
               Abstract
@@ -118,6 +128,7 @@ const ThesisProposalForm = () => {
             />
           </div>
 
+          {/* Domain */}
           <div>
             <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
               Domain
@@ -140,30 +151,36 @@ const ThesisProposalForm = () => {
             </select>
           </div>
 
-
+          {/* Supervisor */}
           <div>
             <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
               Supervisor
             </label>
-            <select
-              name="supervisor"
-              value={formData.supervisor}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
-              required
-            >
-              <option value="" disabled>
-                Select your supervisor
-              </option>
-              {supervisors.map((sup) => (
-                <option key={sup} value={sup}>
-                  {sup}
+            {loadingSup ? (
+              <p className="text-sm text-gray-500">Loading supervisors...</p>
+            ) : errorSup ? (
+              <p className="text-sm text-red-500">{errorSup}</p>
+            ) : (
+              <select
+                name="supervisor"
+                value={formData.supervisor}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
+                required
+              >
+                <option value="" disabled>
+                  Select your supervisor
                 </option>
-              ))}
-            </select>
+                {supervisors.map((sup) => (
+                  <option key={sup._id} value={sup._id}>
+                    {sup.name || sup.displayName || sup.email}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
- 
+          {/* PDF Upload */}
           <div>
             <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
               Upload Proposal PDF
@@ -177,11 +194,13 @@ const ThesisProposalForm = () => {
             />
             {pdfName && (
               <p className="mt-2 text-sm text-slate-600 dark:text-gray-400">
-                Selected file: <span className="font-semibold">{pdfName}</span>
+                Selected file:{" "}
+                <span className="font-semibold">{pdfName}</span>
               </p>
             )}
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-[#7b1e3c] hover:bg-[#651730] text-white font-semibold py-3 rounded-lg transition"

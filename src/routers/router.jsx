@@ -7,12 +7,16 @@ import ThesisProposalForm from "../pages/Thesis/ThesisProposalForm";
 import AssignSupervisor from "../pages/Admin/AssignSupervisor";
 import AdminRoute from "../Private/AdminRoute";
 import Announcement from "../pages/Announcement/Announcement";
+import AdminDashboard from "../pages/Dashboard/AdminDashboard";
+import StudentDashboard from "../pages/Dashboard/StudentDashboard";
+import SupervisorDashboard from "../pages/Dashboard/SupervisorDashboard";
 
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: RootLayout,
+    loader: () => fetch("http://localhost:5000/users/"),
     children: [
       {
         path: "/",
@@ -40,8 +44,31 @@ const router = createBrowserRouter([
       },
       {
         path: "/announcements",
-        Component: Announcement
+        Component: Announcement,
+        loader: () => fetch("http://localhost:5000/users/"),
       },
+      {
+        path: "/admin-dashboard",
+        element: (
+          <AdminRoute>
+            <AdminDashboard></AdminDashboard>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/supervisor-dashboard",
+        element: (  
+            <SupervisorDashboard></SupervisorDashboard>
+          
+        ),
+      },
+      {
+        path: "/student-dashboard",
+        element: (
+            <StudentDashboard></StudentDashboard>
+  
+        ),  
+      }
     ]
   },
 ]);
