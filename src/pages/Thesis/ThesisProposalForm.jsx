@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, use } from "react";
+import { AuthContext } from "../../contexts/Auth/AuthContext"; // import your Auth context
+import { useLoaderData } from "react-router";
 
 const domains = [
   "Machine Learning & AI",
@@ -14,15 +16,17 @@ const domains = [
 ];
 
 const ThesisProposalForm = () => {
+  const { user } = useContext(AuthContext); // get logged in user
+  const data  = useLoaderData();
+  const User = data.find((User) => User.email === user?.email);
   const [formData, setFormData] = useState({
     title: "",
     abstract: "",
     domain: "",
     supervisor: "",
-    pdfFile: null,
+    driveLink: "",
   });
 
-  const [pdfName, setPdfName] = useState("");
   const [supervisors, setSupervisors] = useState([]);
   const [loadingSup, setLoadingSup] = useState(true);
   const [errorSup, setErrorSup] = useState(null);
@@ -49,20 +53,7 @@ const ThesisProposalForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePdfChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.type !== "application/pdf") {
-        alert("Only PDF files are allowed.");
-        e.target.value = null;
-        return;
-      }
-      setFormData((prev) => ({ ...prev, pdfFile: file }));
-      setPdfName(file.name);
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
@@ -70,22 +61,39 @@ const ThesisProposalForm = () => {
       !formData.abstract ||
       !formData.domain ||
       !formData.supervisor ||
-      !formData.pdfFile
+      !formData.driveLink
     ) {
-      alert("Please fill out all fields and upload your PDF.");
+      alert("Please fill out all fields.");
       return;
     }
 
-    alert("Thesis Proposal Submitted! (Demo)");
+    try {
+      const res = await fetch("http://localhost:5000/proposals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          studentId: User?._id, // send logged-in student's ID
+        }),
+      });
 
-    setFormData({
-      title: "",
-      abstract: "",
-      domain: "",
-      supervisor: "",
-      pdfFile: null,
-    });
-    setPdfName("");
+      if (!res.ok) throw new Error("Failed to submit proposal");
+
+      const result = await res.json();
+      alert("Thesis Proposal Submitted Successfully!");
+      console.log(result);
+
+      setFormData({
+        title: "",
+        abstract: "",
+        domain: "",
+        supervisor: "",
+        driveLink: "",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting proposal");
+    }
   };
 
   return (
@@ -180,24 +188,20 @@ const ThesisProposalForm = () => {
             )}
           </div>
 
-          {/* PDF Upload */}
+          {/* Drive Link */}
           <div>
             <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
-              Upload Proposal PDF
+              Google Drive Link
             </label>
             <input
-              type="file"
-              accept="application/pdf"
-              onChange={handlePdfChange}
-              className="block w-full text-gray-700 dark:text-gray-300 bg-white rounded-md px-4 py-2 max-w-xs"
+              type="url"
+              name="driveLink"
+              value={formData.driveLink}
+              onChange={handleChange}
+              placeholder="Enter your proposal's Google Drive link"
+              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
               required
             />
-            {pdfName && (
-              <p className="mt-2 text-sm text-slate-600 dark:text-gray-400">
-                Selected file:{" "}
-                <span className="font-semibold">{pdfName}</span>
-              </p>
-            )}
           </div>
 
           {/* Submit */}

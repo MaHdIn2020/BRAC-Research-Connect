@@ -10,6 +10,7 @@ import Announcement from "../pages/Announcement/Announcement";
 import AdminDashboard from "../pages/Dashboard/AdminDashboard";
 import StudentDashboard from "../pages/Dashboard/StudentDashboard";
 import SupervisorDashboard from "../pages/Dashboard/SupervisorDashboard";
+import ViewAnnouncement from "../pages/Announcement/ViewAnnouncements";
 
 
 const router = createBrowserRouter([
@@ -33,6 +34,11 @@ const router = createBrowserRouter([
       {
         path: "/thesis-proposal",
         Component: ThesisProposalForm,
+        loader: () => fetch("http://localhost:5000/users/"),
+      },
+      {
+        path: "view-announcement",
+        Component: ViewAnnouncement
       },
       {
         path: "/assign-supervisor",

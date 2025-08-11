@@ -39,6 +39,14 @@ const Navbar = () => {
               </NavLink>
             )
           }
+          { User?.role === "supervisor" ||  User?.role === "student" && (
+            <NavLink to='/view-announcement'>
+              <li className="hover:text-[#7b1e3c] transition">
+                View Announcement
+              </li>
+            </NavLink>
+          )
+          }
           <li className="hover:text-[#7b1e3c] transition">Guidelines</li>
           <li className="hover:text-[#7b1e3c] transition">Contact</li>
           {User?.role === "admin" && (
@@ -58,13 +66,14 @@ const Navbar = () => {
         <div className="flex items-center space-x-4">
           <ThemeToggle />
           {user ? (
-            <button
+            <NavLink to='/login'><button
               onClick={logOut}
               disabled={loading}
               className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition disabled:opacity-60"
             >
               Logout
             </button>
+            </NavLink>
           ) : (
             <NavLink to="/login">
               <button className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition">
