@@ -81,12 +81,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/student-dashboard",
-        element: (
-            <StudentDashboard></StudentDashboard>
-        ),  
+        Component: StudentDashboard,
+        loader: () => fetch("http://localhost:5000/users/") 
       },
       {
-        path: "/find-group",
+        path: "/find-group/:id",
         Component: FindGroup
       },
       {

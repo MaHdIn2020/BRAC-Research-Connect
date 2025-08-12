@@ -1,26 +1,31 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router"; // expects a route like /create-group/:id
+import { useParams } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
 const API_BASE = "http://localhost:5000";
 
 const CreateGroup = () => {
-  const { user } = useContext(AuthContext); // Firebase user (for login gate only)
-  const { id: routeUserId } = useParams();  // Mongo user _id from URL
+  const { user } = useContext(AuthContext); // Firebase user (login gate only)
+  const { id: routeUserId } = useParams();  // Mongo user _id from URL: /create-group/:id
 
-  const [dbUser, setDbUser] = useState(null); // Mongo user doc
+  const [dbUser, setDbUser] = useState(null);         // Mongo user doc
   const [loadingUser, setLoadingUser] = useState(true);
 
+  // Admin-created group (if any)
+  const [myAdminGroup, setMyAdminGroup] = useState(null);
+  const [checkingAdminGroup, setCheckingAdminGroup] = useState(true);
+
+  // Any membership gate: if student is in ANY group (as admin or member)
+  const [memberGroup, setMemberGroup] = useState(null);
+  const [checkingMembership, setCheckingMembership] = useState(true);
+
+  // Form state
   const [name, setName] = useState("");
   const [interestInput, setInterestInput] = useState("");
   const [interests, setInterests] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // "already created" gating
-  const [myGroup, setMyGroup] = useState(null);
-  const [checkingGroup, setCheckingGroup] = useState(true);
-
-  // 1) Resolve current Mongo user by :id
+  // 1) Load Mongo user by :id
   useEffect(() => {
     let ignore = false;
     const load = async () => {
@@ -38,7 +43,7 @@ const CreateGroup = () => {
         const data = await res.json();
         if (!ignore) setDbUser(data);
       } catch (e) {
-        console.error(e);
+        console.error("Load user error:", e);
         if (!ignore) setDbUser(null);
       } finally {
         if (!ignore) setLoadingUser(false);
@@ -48,46 +53,85 @@ const CreateGroup = () => {
     return () => { ignore = true; };
   }, [routeUserId]);
 
-  // 2) After dbUser loads, check if they already created a group
+  // 2) Check if this user already created a group (admin)
   useEffect(() => {
     let ignore = false;
-    const check = async () => {
+    const checkAdminGroup = async () => {
       if (!dbUser?._id) {
-        setMyGroup(null);
-        setCheckingGroup(false);
+        setMyAdminGroup(null);
+        setCheckingAdminGroup(false);
         return;
       }
-      setCheckingGroup(true);
+      setCheckingAdminGroup(true);
       try {
         const res = await fetch(`${API_BASE}/groups/by-admin/${dbUser._id}`);
         if (res.status === 404) {
-          if (!ignore) setMyGroup(null);
+          if (!ignore) setMyAdminGroup(null);
         } else if (res.ok) {
           const g = await res.json();
-          if (!ignore) setMyGroup(g);
+          if (!ignore) setMyAdminGroup(g);
         } else {
-          if (!ignore) setMyGroup(null);
+          if (!ignore) setMyAdminGroup(null);
         }
       } catch (e) {
-        console.error(e);
-        if (!ignore) setMyGroup(null);
+        console.error("Check admin group error:", e);
+        if (!ignore) setMyAdminGroup(null);
       } finally {
-        if (!ignore) setCheckingGroup(false);
+        if (!ignore) setCheckingAdminGroup(false);
       }
     };
-    check();
+    checkAdminGroup();
     return () => { ignore = true; };
   }, [dbUser?._id]);
+
+  // 3) Check if user is already a MEMBER of ANY group (includes admin as well, but we also check separately)
+  useEffect(() => {
+    let ignore = false;
+    const checkMembership = async () => {
+      if (!dbUser?._id) {
+        setMemberGroup(null);
+        setCheckingMembership(false);
+        return;
+      }
+      setCheckingMembership(true);
+      try {
+        const res = await fetch(`${API_BASE}/groups`);
+        const all = res.ok ? await res.json() : [];
+        const myIdStr = String(dbUser._id);
+        // find any group where this user is in members or is admin
+        const found = (Array.isArray(all) ? all : []).find(
+          (g) =>
+            String(g.admin) === myIdStr ||
+            (Array.isArray(g.members) && g.members.some((m) => String(m) === myIdStr))
+        );
+        if (!ignore) setMemberGroup(found || null);
+      } catch (e) {
+        console.error("Check membership error:", e);
+        if (!ignore) setMemberGroup(null);
+      } finally {
+        if (!ignore) setCheckingMembership(false);
+      }
+    };
+    checkMembership();
+    return () => { ignore = true; };
+  }, [dbUser?._id]);
+
+  const alreadyBlocked = useMemo(() => {
+    // Block if: user already admin of a group OR member of any group
+    return Boolean(myAdminGroup || memberGroup);
+  }, [myAdminGroup, memberGroup]);
 
   const canSubmit = useMemo(() => {
     return Boolean(
       name.trim() &&
-      interests.length > 0 &&
-      dbUser?._id &&
-      dbUser?.role === "student"
+        interests.length > 0 &&
+        dbUser?._id &&
+        dbUser?.role === "student" &&
+        !alreadyBlocked
     );
-  }, [name, interests, dbUser]);
+  }, [name, interests, dbUser, alreadyBlocked]);
 
+  // Form helpers
   const addInterest = () => {
     const raw = interestInput.trim();
     if (!raw) return;
@@ -118,7 +162,7 @@ const CreateGroup = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          adminId: String(dbUser._id),      // use Mongo user _id
+          adminId: String(dbUser._id),
           researchInterests: interests,
         }),
       });
@@ -129,8 +173,9 @@ const CreateGroup = () => {
       setName("");
       setInterests([]);
       alert("Group created successfully!");
-      // navigate(`/groups/${data.group._id}`)
-      setMyGroup(data.group); // reflect newly created group so the gate shows next time
+      // Once created, set gates so the form won't re-appear
+      setMyAdminGroup(data.group);
+      setMemberGroup(data.group);
     } catch (err) {
       console.error(err);
       alert(err.message || "Failed to create group");
@@ -139,6 +184,7 @@ const CreateGroup = () => {
     }
   };
 
+  // Render
   return (
     <section className="px-6 py-10 max-w-3xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 dark:text-white">
@@ -164,30 +210,59 @@ const CreateGroup = () => {
           </div>
         ) : dbUser.role !== "student" ? (
           <div className="text-amber-700 dark:text-amber-300">Only students can create groups.</div>
-        ) : checkingGroup ? (
-          <div className="text-slate-600 dark:text-gray-300">Checking your group…</div>
-        ) : myGroup ? (
+        ) : checkingAdminGroup || checkingMembership ? (
+          <div className="text-slate-600 dark:text-gray-300">Checking your group status…</div>
+        ) : alreadyBlocked ? (
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-slate-800">
-            <p className="text-[#7b1e3c] font-semibold">You have already created a group</p>
-            <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
-              <div><span className="font-medium">Name:</span> {myGroup.name}</div>
-              <div>
-                <span className="font-medium">Members:</span>{" "}
-                {(myGroup.members && myGroup.members.length) || 1} / {myGroup.maxMembers || 5}
-              </div>
-              {Array.isArray(myGroup.researchInterests) && myGroup.researchInterests.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {myGroup.researchInterests.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+            <p className="text-[#7b1e3c] font-semibold">
+              You already belong to a group. You can’t create another group.
+            </p>
+
+            {myAdminGroup ? (
+              <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
+                <div>
+                  <span className="font-medium">(You are the Admin) Name:</span> {myAdminGroup.name}
                 </div>
-              )}
-            </div>
+                <div>
+                  <span className="font-medium">Members:</span>{" "}
+                  {(myAdminGroup.members && myAdminGroup.members.length) || 1} / {myAdminGroup.maxMembers || 5}
+                </div>
+                {Array.isArray(myAdminGroup.researchInterests) && myAdminGroup.researchInterests.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {myAdminGroup.researchInterests.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : memberGroup ? (
+              <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
+                <div>
+                  <span className="font-medium">Group Name:</span> {memberGroup.name}
+                </div>
+                <div>
+                  <span className="font-medium">Members:</span>{" "}
+                  {(memberGroup.members && memberGroup.members.length) || 0} / {memberGroup.maxMembers || 5}
+                </div>
+                {Array.isArray(memberGroup.researchInterests) && memberGroup.researchInterests.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {memberGroup.researchInterests.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
         ) : (
           <form onSubmit={submit} className="space-y-5">

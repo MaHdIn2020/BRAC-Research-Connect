@@ -10,14 +10,18 @@ import {
   Download,
   Users,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link,useLoaderData, useNavigate } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
 const API_BASE = "http://localhost:5000";
 
 const StudentDashboard = () => {
   const { user } = useContext(AuthContext); // expects user._id, user.role, user.name, etc.
+  const data = useLoaderData();
   const navigate = useNavigate();
+
+  const User = data.find((User) => User.email === user?.email)
+  console.log(User?._id)
 
   // Local state
   const [loading, setLoading] = useState(true);
@@ -249,7 +253,7 @@ const StudentDashboard = () => {
                 <button onClick={gotoScheduleMeeting} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Schedule Meeting</button>
                 <button onClick={gotoSearchPapers} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Search Papers</button>
                 <button onClick={gotoSavedPapers} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Saved Papers</button>
-                <Link to="/find-group" className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Find Groupmates</Link>
+                <Link to={`/find-group/${User._id}`} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Find Groupmates</Link>
                 <Link to="/faqs" className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">FAQs</Link>
               </div>
             </div>
