@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import {createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import {createUserWithEmailAndPassword, deleteUser, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 import { auth } from '../../firebase/firebase.init';
 import { AuthContext } from './AuthContext';
 
@@ -39,7 +39,10 @@ const logOut = async () => {
     return signOut(auth)
 
 }
-
+const deleteCurrentUser = async () => {
+  setLoading(true);
+  return deleteUser(auth.currentUser);
+};
 const authInfo = {
     user,
     loading,
@@ -47,6 +50,7 @@ const authInfo = {
     signIn,
     logOut,
     signInWithGoogle,
+    deleteCurrentUser
 }
 
     return (

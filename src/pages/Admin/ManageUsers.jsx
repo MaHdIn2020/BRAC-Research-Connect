@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../contexts/Auth/AuthContext";
 
 const API_BASE = "http://localhost:5000";
 
@@ -17,6 +18,7 @@ const ManageUsers = () => {
   const [editData, setEditData] = useState({ name: "", photoUrl: "" });
   const [loading, setLoading] = useState(false);
   const [currentUserEmail, setCurrentUserEmail] = useState("");
+  const {deleteCurrentUser} = useContext(AuthContext);
 
   const fetchUsers = async () => {
     try {

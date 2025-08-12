@@ -1,24 +1,12 @@
-import React, { useState, useEffect, useContext, use } from "react";
-import { AuthContext } from "../../contexts/Auth/AuthContext"; // import your Auth context
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { useLoaderData } from "react-router";
 
-const domains = [
-  "Machine Learning & AI",
-  "Computer Vision",
-  "Natural Language Processing",
-  "Robotics & AI",
-  "Data Science & AI",
-  "AI for Healthcare",
-  "Autonomous Systems",
-  "AI Ethics & Governance",
-  "Deep Learning",
-  "AI in Business Applications",
-];
-
 const ThesisProposalForm = () => {
-  const { user } = useContext(AuthContext); // get logged in user
-  const data  = useLoaderData();
-  const User = data.find((User) => User.email === user?.email);
+  const { user } = useContext(AuthContext);
+  const data = useLoaderData();
+  const User = data.find((u) => u.email === user?.email);
+
   const [formData, setFormData] = useState({
     title: "",
     abstract: "",
@@ -28,9 +16,36 @@ const ThesisProposalForm = () => {
   });
 
   const [supervisors, setSupervisors] = useState([]);
-  const [loadingSup, setLoadingSup] = useState(true);
-  const [errorSup, setErrorSup] = useState(null);
+  const [group, setGroup] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
+  // Fetch group of which user is admin
+  useEffect(() => {
+    const fetchGroup = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/groups/by-admin/${User?._id}`
+        );
+        if (res.status === 404) {
+          setErrorMsg("Only group creators can submit proposals.");
+          return;
+        }
+        if (!res.ok) throw new Error("Failed to fetch group");
+        const data = await res.json();
+        setGroup(data);
+      } catch (err) {
+        console.error(err);
+        setErrorMsg("Could not load group data");
+      }
+    };
+
+    if (User?._id) {
+      fetchGroup();
+    }
+  }, [User]);
+
+  // Fetch supervisors
   useEffect(() => {
     const fetchSupervisors = async () => {
       try {
@@ -40,9 +55,8 @@ const ThesisProposalForm = () => {
         setSupervisors(data);
       } catch (err) {
         console.error(err);
-        setErrorSup("Could not load supervisors");
       } finally {
-        setLoadingSup(false);
+        setLoading(false);
       }
     };
     fetchSupervisors();
@@ -55,17 +69,20 @@ const ThesisProposalForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !formData.title ||
-      !formData.abstract ||
-      !formData.domain ||
-      !formData.supervisor ||
-      !formData.driveLink
-    ) {
-      alert("Please fill out all fields.");
+    if (!group?._id) {
+      alert("You must be a group creator to submit a proposal.");
       return;
     }
+
+if (
+  !formData.title ||
+  !formData.abstract ||
+  !formData.supervisor ||
+  !formData.driveLink
+) {
+  alert("Please fill out all fields.");
+  return;
+}
 
     try {
       const res = await fetch("http://localhost:5000/proposals", {
@@ -73,16 +90,18 @@ const ThesisProposalForm = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          studentId: User?._id, // send logged-in student's ID
+          domain: group?.researchInterests || [], // send array
+          studentId: User?._id,
+          groupId: group._id,
+          adminapproved: false,
+          supervisorapproved: false,
         }),
       });
 
+
       if (!res.ok) throw new Error("Failed to submit proposal");
 
-      const result = await res.json();
       alert("Thesis Proposal Submitted Successfully!");
-      console.log(result);
-
       setFormData({
         title: "",
         abstract: "",
@@ -103,115 +122,96 @@ const ThesisProposalForm = () => {
           Submit Thesis Proposal
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
-          <div>
-            <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
-              Title
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter thesis title"
-              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
-              required
-            />
-          </div>
-
-          {/* Abstract */}
-          <div>
-            <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
-              Abstract
-            </label>
-            <textarea
-              name="abstract"
-              value={formData.abstract}
-              onChange={handleChange}
-              placeholder="Write a brief abstract"
-              rows={5}
-              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
-              required
-            />
-          </div>
-
-          {/* Domain */}
-          <div>
-            <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
-              Domain
-            </label>
-            <select
-              name="domain"
-              value={formData.domain}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
-              required
-            >
-              <option value="" disabled>
-                Select your domain
-              </option>
-              {domains.map((domain) => (
-                <option key={domain} value={domain}>
-                  {domain}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Supervisor */}
-          <div>
-            <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
-              Supervisor
-            </label>
-            {loadingSup ? (
-              <p className="text-sm text-gray-500">Loading supervisors...</p>
-            ) : errorSup ? (
-              <p className="text-sm text-red-500">{errorSup}</p>
-            ) : (
-              <select
-                name="supervisor"
-                value={formData.supervisor}
+        {errorMsg ? (
+          <p className="text-center text-red-500">{errorMsg}</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title */}
+            <div>
+              <label className="block mb-1 font-medium">Title</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
                 onChange={handleChange}
-                className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
+                className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600"
                 required
-              >
-                <option value="" disabled>
-                  Select your supervisor
-                </option>
-                {supervisors.map((sup) => (
-                  <option key={sup._id} value={sup._id}>
-                    {sup.name || sup.displayName || sup.email}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+              />
+            </div>
 
-          {/* Drive Link */}
-          <div>
-            <label className="block mb-1 font-medium text-slate-700 dark:text-gray-300">
-              Google Drive Link
-            </label>
-            <input
-              type="url"
-              name="driveLink"
-              value={formData.driveLink}
-              onChange={handleChange}
-              placeholder="Enter your proposal's Google Drive link"
-              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
-              required
-            />
-          </div>
+            {/* Abstract */}
+            <div>
+              <label className="block mb-1 font-medium">Abstract</label>
+              <textarea
+                name="abstract"
+                value={formData.abstract}
+                onChange={handleChange}
+                rows={5}
+                className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600"
+                required
+              />
+            </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-[#7b1e3c] hover:bg-[#651730] text-white font-semibold py-3 rounded-lg transition"
-          >
-            Submit Proposal
-          </button>
-        </form>
+            {/* Domain */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Domain
+              </label>
+              <input
+                type="text"
+                name="domain"
+                value={group?.researchInterests?.join(", ") || ""}
+                readOnly
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
+                          focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
+                          bg-gray-100 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
+              />
+            </div>
+
+            {/* Supervisor */}
+            <div>
+              <label className="block mb-1 font-medium">Supervisor</label>
+              {loading ? (
+                <p>Loading supervisors...</p>
+              ) : (
+                <select
+                  name="supervisor"
+                  value={formData.supervisor}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600"
+                  required
+                >
+                  <option value="">Select supervisor</option>
+                  {supervisors.map((sup) => (
+                    <option key={sup._id} value={sup._id}>
+                      {sup.name || sup.email}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* Drive Link */}
+            <div>
+              <label className="block mb-1 font-medium">Google Drive Link</label>
+              <input
+                type="url"
+                name="driveLink"
+                value={formData.driveLink}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#7b1e3c] hover:bg-[#651730] text-white font-semibold py-3 rounded-lg transition"
+            >
+              Submit Proposal
+            </button>
+          </form>
+        )}
       </div>
     </section>
   );
