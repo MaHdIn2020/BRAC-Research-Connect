@@ -12,6 +12,8 @@ import StudentDashboard from "../pages/Dashboard/StudentDashboard";
 import SupervisorDashboard from "../pages/Dashboard/SupervisorDashboard";
 import ViewAnnouncement from "../pages/Announcement/ViewAnnouncements";
 import ManageUsers from "../pages/Admin/ManageUsers";
+import CreateGroup from "../pages/StudentGroup/CreateGroup";
+import FindGroup from "../pages/StudentGroup/FindGroup";
 
 
 const router = createBrowserRouter([
@@ -81,8 +83,15 @@ const router = createBrowserRouter([
         path: "/student-dashboard",
         element: (
             <StudentDashboard></StudentDashboard>
-  
         ),  
+      },
+      {
+        path: "/find-group",
+        Component: FindGroup
+      },
+      {
+        path: "/create-group/:id",
+        Component: CreateGroup
       }
     ]
   },

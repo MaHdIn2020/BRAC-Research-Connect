@@ -1,0 +1,217 @@
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router"; // <-- grab :id from the route
+import { AuthContext } from "../../contexts/Auth/AuthContext";
+
+const API_BASE = "http://localhost:5000";
+
+const CreateGroup = () => {
+  const { user } = useContext(AuthContext); // Firebase user (for login gate only)
+  const { id: routeUserId } = useParams();  // <-- expects a route like /create-group/:id
+
+  const [dbUser, setDbUser] = useState(null); // Mongo user doc
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  const [name, setName] = useState("");
+  const [interestInput, setInterestInput] = useState("");
+  const [interests, setInterests] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Resolve current Mongo user by :id
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      setLoadingUser(true);
+      try {
+        if (!routeUserId) {
+          setDbUser(null);
+          return;
+        }
+        const res = await fetch(`${API_BASE}/users/${routeUserId}`);
+        if (!res.ok) {
+          setDbUser(null);
+          return;
+        }
+        const data = await res.json();
+        if (!ignore) setDbUser(data);
+      } catch (e) {
+        console.error(e);
+        if (!ignore) setDbUser(null);
+      } finally {
+        if (!ignore) setLoadingUser(false);
+      }
+    };
+    load();
+    return () => { ignore = true; };
+  }, [routeUserId]);
+
+  const canSubmit = useMemo(() => {
+    return Boolean(
+      name.trim() &&
+      interests.length > 0 &&
+      dbUser?._id &&
+      dbUser?.role === "student"
+    );
+  }, [name, interests, dbUser]);
+
+  const addInterest = () => {
+    const raw = interestInput.trim();
+    if (!raw) return;
+    const parts = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    const merged = Array.from(new Set([...interests, ...parts]));
+    setInterests(merged);
+    setInterestInput("");
+  };
+
+  const removeInterest = (tag) => {
+    setInterests((prev) => prev.filter((i) => i !== tag));
+  };
+
+  const onKeyDownInterest = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addInterest();
+    }
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE}/groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          adminId: String(dbUser._id),      // <-- use Mongo user _id
+          researchInterests: interests,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to create group");
+      }
+      setName("");
+      setInterests([]);
+      alert("Group created successfully!");
+      // navigate(`/groups/${data.group._id}`)
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Failed to create group");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <section className="px-6 py-10 max-w-3xl mx-auto">
+      <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 dark:text-white">
+        Create Group
+      </h1>
+      <p className="text-slate-600 dark:text-gray-300 mt-1">
+        Start a research group. You’ll be the{" "}
+        <span className="font-medium text-[#7b1e3c]">group admin</span>. Max members: 5.
+      </p>
+
+      <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm p-5">
+        {loadingUser ? (
+          <div className="text-slate-600 dark:text-gray-300">Checking your account…</div>
+        ) : !routeUserId ? (
+          <div className="text-amber-700 dark:text-amber-300">
+            No user id found in the URL. Make sure your route is like <code>/create-group/:id</code>.
+          </div>
+        ) : !user ? (
+          <div className="text-amber-700 dark:text-amber-300">Please log in to create a group.</div>
+        ) : !dbUser ? (
+          <div className="text-amber-700 dark:text-amber-300">
+            Couldn’t find your BRACU account in the database. Contact admin.
+          </div>
+        ) : dbUser.role !== "student" ? (
+          <div className="text-amber-700 dark:text-amber-300">Only students can create groups.</div>
+        ) : (
+          <form onSubmit={submit} className="space-y-5">
+            {/* Group Name */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-gray-200 mb-1">
+                Group Name <span className="text-red-600">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-[#7b1e3c] focus:border-[#7b1e3c] text-slate-900 dark:text-gray-100"
+                placeholder="e.g., Vision & NLP Group"
+              />
+            </div>
+
+            {/* Research Interests */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-gray-200 mb-1">
+                Research Interests (one or many) <span className="text-red-600">*</span>
+              </label>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={interestInput}
+                  onChange={(e) => setInterestInput(e.target.value)}
+                  onKeyDown={onKeyDownInterest}
+                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-[#7b1e3c] focus:border-[#7b1e3c] text-slate-900 dark:text-gray-100"
+                  placeholder="Add and press Enter (or comma). e.g., NLP, Computer Vision"
+                />
+                <button
+                  type="button"
+                  onClick={addInterest}
+                  className="px-4 py-2 rounded-lg bg-[#7b1e3c] text-white hover:bg-[#651730] transition"
+                >
+                  Add
+                </button>
+              </div>
+
+              {/* Chips */}
+              {interests.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {interests.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm bg-[#7b1e3c]/10 text-[#7b1e3c]"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeInterest(tag)}
+                        className="rounded-full w-5 h-5 inline-flex items-center justify-center bg-[#7b1e3c]/20 hover:bg-[#7b1e3c]/30"
+                        aria-label={`Remove ${tag}`}
+                        title="Remove"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Submit */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={!canSubmit || submitting}
+                className="w-full md:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-[#7b1e3c] text-white hover:bg-[#651730] transition disabled:opacity-50"
+              >
+                {submitting ? "Creating…" : "Create Group"}
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-gray-400">
+              On create: assigned supervisor is <em>None</em>, proposals submitted to is <em>empty</em>.
+            </p>
+          </form>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default CreateGroup;

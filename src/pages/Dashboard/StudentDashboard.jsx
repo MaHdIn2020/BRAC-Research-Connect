@@ -249,7 +249,7 @@ const StudentDashboard = () => {
                 <button onClick={gotoScheduleMeeting} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Schedule Meeting</button>
                 <button onClick={gotoSearchPapers} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Search Papers</button>
                 <button onClick={gotoSavedPapers} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Saved Papers</button>
-                <Link to="/find-groupmates" className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Find Groupmates</Link>
+                <Link to="/find-group" className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Find Groupmates</Link>
                 <Link to="/faqs" className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">FAQs</Link>
               </div>
             </div>

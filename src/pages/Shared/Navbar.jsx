@@ -1,4 +1,4 @@
-import React, { use, useContext } from "react";
+import React, { useContext } from "react";
 import ThemeToggle from "../../components/ThemeToggle";
 import { NavLink, useLoaderData } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
