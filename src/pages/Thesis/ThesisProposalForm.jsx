@@ -95,6 +95,7 @@ if (
           groupId: group._id,
           adminapproved: false,
           supervisorapproved: false,
+          groupName: group.name,
         }),
       });
 
@@ -121,6 +122,23 @@ if (
         <h2 className="text-3xl font-bold mb-6 text-slate-900 dark:text-white text-center">
           Submit Thesis Proposal
         </h2>
+
+        
+            {/* Group Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Group Name
+              </label>
+              <input
+                type="text"
+                name="domain"
+                value={group?.name}
+                readOnly
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
+                          focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
+                          bg-gray-100 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
+              />
+            </div>
 
         {errorMsg ? (
           <p className="text-center text-red-500">{errorMsg}</p>

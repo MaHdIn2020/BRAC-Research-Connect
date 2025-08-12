@@ -78,6 +78,7 @@ const router = createBrowserRouter([
             <SupervisorDashboard></SupervisorDashboard>
           
         ),
+        loader: () => fetch("http://localhost:5000/users/"),
       },
       {
         path: "/student-dashboard",
