@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router"; // <-- grab :id from the route
+import { useParams } from "react-router"; // expects a route like /create-group/:id
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
 const API_BASE = "http://localhost:5000";
 
 const CreateGroup = () => {
   const { user } = useContext(AuthContext); // Firebase user (for login gate only)
-  const { id: routeUserId } = useParams();  // <-- expects a route like /create-group/:id
+  const { id: routeUserId } = useParams();  // Mongo user _id from URL
 
   const [dbUser, setDbUser] = useState(null); // Mongo user doc
   const [loadingUser, setLoadingUser] = useState(true);
@@ -16,7 +16,11 @@ const CreateGroup = () => {
   const [interests, setInterests] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // Resolve current Mongo user by :id
+  // "already created" gating
+  const [myGroup, setMyGroup] = useState(null);
+  const [checkingGroup, setCheckingGroup] = useState(true);
+
+  // 1) Resolve current Mongo user by :id
   useEffect(() => {
     let ignore = false;
     const load = async () => {
@@ -43,6 +47,37 @@ const CreateGroup = () => {
     load();
     return () => { ignore = true; };
   }, [routeUserId]);
+
+  // 2) After dbUser loads, check if they already created a group
+  useEffect(() => {
+    let ignore = false;
+    const check = async () => {
+      if (!dbUser?._id) {
+        setMyGroup(null);
+        setCheckingGroup(false);
+        return;
+      }
+      setCheckingGroup(true);
+      try {
+        const res = await fetch(`${API_BASE}/groups/by-admin/${dbUser._id}`);
+        if (res.status === 404) {
+          if (!ignore) setMyGroup(null);
+        } else if (res.ok) {
+          const g = await res.json();
+          if (!ignore) setMyGroup(g);
+        } else {
+          if (!ignore) setMyGroup(null);
+        }
+      } catch (e) {
+        console.error(e);
+        if (!ignore) setMyGroup(null);
+      } finally {
+        if (!ignore) setCheckingGroup(false);
+      }
+    };
+    check();
+    return () => { ignore = true; };
+  }, [dbUser?._id]);
 
   const canSubmit = useMemo(() => {
     return Boolean(
@@ -83,7 +118,7 @@ const CreateGroup = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          adminId: String(dbUser._id),      // <-- use Mongo user _id
+          adminId: String(dbUser._id),      // use Mongo user _id
           researchInterests: interests,
         }),
       });
@@ -95,6 +130,7 @@ const CreateGroup = () => {
       setInterests([]);
       alert("Group created successfully!");
       // navigate(`/groups/${data.group._id}`)
+      setMyGroup(data.group); // reflect newly created group so the gate shows next time
     } catch (err) {
       console.error(err);
       alert(err.message || "Failed to create group");
@@ -128,6 +164,31 @@ const CreateGroup = () => {
           </div>
         ) : dbUser.role !== "student" ? (
           <div className="text-amber-700 dark:text-amber-300">Only students can create groups.</div>
+        ) : checkingGroup ? (
+          <div className="text-slate-600 dark:text-gray-300">Checking your group…</div>
+        ) : myGroup ? (
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-slate-800">
+            <p className="text-[#7b1e3c] font-semibold">You have already created a group</p>
+            <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
+              <div><span className="font-medium">Name:</span> {myGroup.name}</div>
+              <div>
+                <span className="font-medium">Members:</span>{" "}
+                {(myGroup.members && myGroup.members.length) || 1} / {myGroup.maxMembers || 5}
+              </div>
+              {Array.isArray(myGroup.researchInterests) && myGroup.researchInterests.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {myGroup.researchInterests.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         ) : (
           <form onSubmit={submit} className="space-y-5">
             {/* Group Name */}
