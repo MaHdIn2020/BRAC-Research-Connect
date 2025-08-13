@@ -25,7 +25,7 @@ const ThesisProposalForm = () => {
     const fetchGroup = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/groups/by-admin/${User?._id}`
+          `http://localhost:3000/groups/by-admin/${User?._id}`
         );
         if (res.status === 404) {
           setErrorMsg("Only group creators can submit proposals.");
@@ -49,7 +49,7 @@ const ThesisProposalForm = () => {
   useEffect(() => {
     const fetchSupervisors = async () => {
       try {
-        const res = await fetch("http://localhost:5000/supervisors");
+        const res = await fetch("http://localhost:3000/supervisors");
         if (!res.ok) throw new Error("Failed to fetch supervisors");
         const data = await res.json();
         setSupervisors(data);
@@ -85,7 +85,7 @@ if (
 }
 
     try {
-      const res = await fetch("http://localhost:5000/proposals", {
+      const res = await fetch("http://localhost:3000/proposals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -10,6 +10,7 @@ import {
   ClipboardList,
   Clock,
   Settings,
+  MessageCircleQuestion,
 } from "lucide-react";
 
 const adminModules = [
@@ -60,6 +61,12 @@ const adminModules = [
     description: "Assign final grades after thesis review.",
     icon: <Clock className="w-8 h-8 text-[#7b1e3c]" />,
     link: "/final-grades",
+  },
+  {
+    title: "Create or Answer FAQs and Post",
+    description: "Manage frequently asked questions and publish responses.",
+    icon: <MessageCircleQuestion className="w-8 h-8 text-[#7b1e3c]" />,
+    link: "/manage-faqs",
   },
   {
     title: "System Settings",

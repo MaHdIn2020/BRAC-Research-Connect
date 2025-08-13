@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useLoaderData } from "react-router";
 import { FileText, Users, BookOpen } from "lucide-react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://localhost:3000";
 const SupervisorDashboard = () => {
   const { user } = useContext(AuthContext);
   const [proposals, setProposals] = useState([]);

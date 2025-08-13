@@ -44,7 +44,7 @@ const Register = () => {
         alert("Registration successful! (Demo)");
 
         // Conditional API POST request based on role
-        const endpoint = "http://localhost:5000/users";
+        const endpoint = "http://localhost:3000/users";
 
         // Prepare data to post
         const postData =

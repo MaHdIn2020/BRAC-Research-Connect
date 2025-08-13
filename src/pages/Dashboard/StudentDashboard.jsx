@@ -13,7 +13,7 @@ import {
 import { Link,useLoaderData, useNavigate } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://localhost:3000";
 
 const StudentDashboard = () => {
   const { user } = useContext(AuthContext); // expects user._id, user.role, user.name, etc.

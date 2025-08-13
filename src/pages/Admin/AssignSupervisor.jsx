@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://localhost:3000";
 
 const AssignSupervisor = () => {
   const [students, setStudents] = useState([]);

@@ -14,13 +14,15 @@ import ViewAnnouncement from "../pages/Announcement/ViewAnnouncements";
 import ManageUsers from "../pages/Admin/ManageUsers";
 import CreateGroup from "../pages/StudentGroup/CreateGroup";
 import FindGroup from "../pages/StudentGroup/FindGroup";
+import CreateFaqs from "../pages/Admin/CreateFaqs";
+import AllFaqs from "../pages/FAQs/AllFaqs";
 
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: RootLayout,
-    loader: () => fetch("http://localhost:5000/users/"),
+    loader: () => fetch("http://localhost:3000/users/"),
     children: [
       {
         path: "/",
@@ -37,7 +39,7 @@ const router = createBrowserRouter([
       {
         path: "/thesis-proposal",
         Component: ThesisProposalForm,
-        loader: () => fetch("http://localhost:5000/users/"),
+        loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: "view-announcement",
@@ -62,7 +64,7 @@ const router = createBrowserRouter([
       {
         path: "/announcements",
         Component: Announcement,
-        loader: () => fetch("http://localhost:5000/users/"),
+        loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: "/admin-dashboard",
@@ -78,12 +80,12 @@ const router = createBrowserRouter([
             <SupervisorDashboard></SupervisorDashboard>
           
         ),
-        loader: () => fetch("http://localhost:5000/users/"),
+        loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: "/student-dashboard",
         Component: StudentDashboard,
-        loader: () => fetch("http://localhost:5000/users/") 
+        loader: () => fetch("http://localhost:3000/users/") 
       },
       {
         path: "/find-group/:id",
@@ -92,6 +94,18 @@ const router = createBrowserRouter([
       {
         path: "/create-group/:id",
         Component: CreateGroup
+      },
+      {
+        path: "/manage-faqs",  // ✅ New FAQ management route
+        element: (
+          <AdminRoute>
+            <CreateFaqs></CreateFaqs>
+          </AdminRoute>
+        ),
+      },
+      {
+        path:'/all-faqs',
+        element:<AllFaqs></AllFaqs>
       }
     ]
   },

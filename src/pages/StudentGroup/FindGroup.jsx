@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://localhost:3000";
 
 const FindGroup = () => {
   const { user } = useContext(AuthContext);          // Firebase user (login gate only)

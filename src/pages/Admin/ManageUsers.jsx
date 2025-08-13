@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://localhost:3000";
 
 const normalizeId = (rawId) => {
   // handle different shapes of _id that may come from your API

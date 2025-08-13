@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://localhost:3000";
 
 const ViewAnnouncements = () => {
   const [announcements, setAnnouncements] = useState([]);
