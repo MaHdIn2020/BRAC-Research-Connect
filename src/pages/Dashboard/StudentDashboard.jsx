@@ -21,7 +21,7 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
 
   const User = data.find((User) => User.email === user?.email)
-  console.log(User?._id)
+  
 
   // Local state
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,14 @@ const StudentDashboard = () => {
       setLoading(true);
       try {
         // 1) Fetch proposals for this student
-        const pRes = await fetch(`${API_BASE}/proposals?studentId=${studentId}`);
+        const gRes = await fetch(`${API_BASE}/groups`);
+        const groupsData = await gRes.json(); // parse JSON
+        const group = groupsData.filter((g) => g.members.includes(User?._id));
+        const pRes = await fetch(`${API_BASE}/proposals?supervisorId=${group[0]?.assignedSupervisor}`);
+        
+
+
+
         const pJson = pRes.ok ? await pRes.json() : [];
 
         // 2) Fetch user to get assigned supervisor (if stored in users collection)
