@@ -3,6 +3,7 @@ import { Link, useLoaderData } from "react-router";
 import { FileText, Users, BookOpen } from "lucide-react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 const API_BASE = "http://localhost:3000";
+
 const SupervisorDashboard = () => {
   const { user } = useContext(AuthContext);
   const [proposals, setProposals] = useState([]);
@@ -90,6 +91,7 @@ const SupervisorDashboard = () => {
           </div>
         </div>
 
+        {/* Action buttons row */}
         <div className="flex flex-wrap gap-3 mb-6">
           <button className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg">
             Create Announcement
@@ -100,6 +102,13 @@ const SupervisorDashboard = () => {
           <button className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
             View All Theses
           </button>
+
+          {/* New: View Accepted Groups */}
+          <Link to="/supervisor-groups">
+            <button className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+              View Accepted Groups
+            </button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -176,7 +185,7 @@ const SupervisorDashboard = () => {
                       </li>
                     ))}
                   </ul>
-                  {/* New View All Proposals button */}
+                  {/* Existing View All Proposals button */}
                   <div className="mt-4 text-center">
                     <Link
                       to="/view-proposals"
