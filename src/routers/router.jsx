@@ -18,6 +18,7 @@ import CreateFaqs from "../pages/Admin/CreateFaqs";
 import AllFaqs from "../pages/FAQs/AllFaqs";
 import ViewProposals from "../pages/Thesis/ViewProposals";
 import SupervisorGroups from "../pages/SupGroups/SupervisorGroups";
+import ViewRecievedProposals from "../pages/Thesis/ViewRecievedProposals";
 
 
 const router = createBrowserRouter([
@@ -118,7 +119,12 @@ const router = createBrowserRouter([
         path: "/supervisor-groups",
         Component: SupervisorGroups,
         loader: () => fetch("http://localhost:3000/users/")
-      }
+      },    
+      {
+        path: "/view-recieved-proposals",
+        Component: ViewRecievedProposals,
+        loader: () => fetch("http://localhost:3000/users/")
+      },
     ]
   },
 ]);

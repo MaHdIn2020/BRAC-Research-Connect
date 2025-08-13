@@ -32,11 +32,11 @@ const StudentDashboard = () => {
   const [deadlines, setDeadlines] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [savedPapersCount, setSavedPapersCount] = useState(0);
-  const [stats, setStats] = useState({
-    proposalsCount: 0,
-    approvedCount: 0,
-    pendingCount: 0,
-  });
+  // const [stats, setStats] = useState({
+  //   proposalsCount: 0,
+  //   approvedCount: 0,
+  //   pendingCount: 0,
+  // });
 
   useEffect(() => {
     if (!currentUser?._id) {
@@ -93,14 +93,14 @@ const StudentDashboard = () => {
         setFeedbacks(Array.isArray(fJson) ? fJson : []);
         setSavedPapersCount(Number(sJson?.count || 0));
 
-        const approvedCount = myProposals.filter((p) => p.status === "Approved").length;
-        const pendingCount = myProposals.filter((p) => p.status === "Pending").length;
+        // const approvedCount = myProposals.filter((p) => p.status === "Approved").length;
+        // const pendingCount = myProposals.filter((p) => p.status === "Pending").length;
 
-        setStats({
-          proposalsCount: myProposals.length,
-          approvedCount,
-          pendingCount,
-        });
+        // setStats({
+        //   proposalsCount: myProposals.length,
+        //   approvedCount,
+        //   pendingCount,
+        // });
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
       } finally {
@@ -246,7 +246,7 @@ const StudentDashboard = () => {
                             {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ""}
                           </div>
                           <Link
-                            to={`/proposals/${p._id}`}
+                            to="/view-proposals"
                             className="text-xs text-[#7b1e3c] hover:underline mt-2 inline-block"
                           >
                             View details

@@ -20,7 +20,7 @@ const Navbar = () => {
     if (!User?.isSeen) {
       await fetch(`${API_BASE}/users/${User._id}/notifications/seen`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
       // Optional: refresh page or re-fetch user data so UI updates
     }
@@ -58,7 +58,6 @@ const Navbar = () => {
             </NavLink>
           )}
 
-
           {User?.role === "admin" && (
             <NavLink to="admin-dashboard">
               <li className="hover:text-[#7b1e3c] transition">Dashboard</li>
@@ -82,10 +81,7 @@ const Navbar = () => {
           {(User?.role === "student" || User?.role === "supervisor") && (
             <div className="relative">
               <button onClick={toggleNotifications} className="relative">
-                <Bell
-                  className="text-slate-900 dark:text-white"
-                  size={22}
-                />
+                <Bell className="text-slate-900 dark:text-white" size={22} />
                 {!User?.isSeen && (
                   <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                 )}
@@ -94,20 +90,22 @@ const Navbar = () => {
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-72 max-h-80 overflow-y-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-50">
                   {User?.notifications?.length > 0 ? (
-                    User.notifications.map((n, i) => (
-                      <div
-                        key={i}
-                        className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
-                        onClick={() => {
-                          if (n.link) window.location.href = n.link;
-                        }}
-                      >
-                        <p className="font-medium">{n.message}</p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(n.date).toLocaleString()}
-                        </p>
-                      </div>
-                    ))
+                    [...User.notifications] // make a copy
+                      .reverse() // reverse order so newest is first
+                      .map((n, i) => (
+                        <div
+                          key={i}
+                          className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
+                          onClick={() => {
+                            if (n.link) window.location.href = n.link;
+                          }}
+                        >
+                          <p className="font-medium">{n.message}</p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(n.date).toLocaleString()}
+                          </p>
+                        </div>
+                      ))
                   ) : (
                     <p className="p-4 text-sm text-gray-500">
                       No notifications
