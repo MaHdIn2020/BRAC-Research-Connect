@@ -34,6 +34,13 @@ const ThesisProposalForm = () => {
         if (!res.ok) throw new Error("Failed to fetch group");
         const data = await res.json();
         setGroup(data);
+
+        // 🚫 If already has supervisor, block
+        if (data?.assignedSupervisor) {
+          setErrorMsg(
+            "Your group already has a supervisor assigned. You cannot submit more proposals."
+          );
+        }
       } catch (err) {
         console.error(err);
         setErrorMsg("Could not load group data");
@@ -73,16 +80,20 @@ const ThesisProposalForm = () => {
       alert("You must be a group creator to submit a proposal.");
       return;
     }
+    if (group?.assignedSupervisor) {
+      alert("Your group already has an assigned supervisor. No more proposals allowed.");
+      return;
+    }
 
-if (
-  !formData.title ||
-  !formData.abstract ||
-  !formData.supervisor ||
-  !formData.driveLink
-) {
-  alert("Please fill out all fields.");
-  return;
-}
+    if (
+      !formData.title ||
+      !formData.abstract ||
+      !formData.supervisor ||
+      !formData.driveLink
+    ) {
+      alert("Please fill out all fields.");
+      return;
+    }
 
     try {
       const res = await fetch("http://localhost:3000/proposals", {
@@ -90,7 +101,7 @@ if (
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          domain: group?.researchInterests || [], // send array
+          domain: group?.researchInterests || [],
           studentId: User?._id,
           groupId: group._id,
           adminapproved: false,
@@ -98,7 +109,6 @@ if (
           groupName: group.name,
         }),
       });
-
 
       if (!res.ok) throw new Error("Failed to submit proposal");
 
@@ -123,27 +133,29 @@ if (
           Submit Thesis Proposal
         </h2>
 
-        
-            {/* Group Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Group Name
-              </label>
-              <input
-                type="text"
-                name="domain"
-                value={group?.name}
-                readOnly
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                          focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-                          bg-gray-100 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
-              />
-            </div>
+        {/* Group Name */}
+        {group && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Group Name
+            </label>
+            <input
+              type="text"
+              name="domain"
+              value={group?.name}
+              readOnly
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
+                        focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
+                        bg-gray-100 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
+            />
+          </div>
+        )}
 
+        {/* Show error message instead of form */}
         {errorMsg ? (
-          <p className="text-center text-red-500">{errorMsg}</p>
+          <p className="text-center text-red-500 mt-6">{errorMsg}</p>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             {/* Title */}
             <div>
               <label className="block mb-1 font-medium">Title</label>
