@@ -35,12 +35,12 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Registration data:", formData);
+
 
     // Create user in Firebase Authentication
     createUser(formData.email, formData.password)
       .then((userCredential) => {
-        console.log("User registered:", userCredential.user);
+
         alert("Registration successful! (Demo)");
 
         // Conditional API POST request based on role
@@ -67,7 +67,7 @@ const Register = () => {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log("Data posted successfully:", data);
+           
             navigate("/login");
           })
           .catch((error) => {

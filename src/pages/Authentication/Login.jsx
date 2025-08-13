@@ -15,7 +15,6 @@ const Login = () => {
     e.preventDefault();
     signIn(formData.email, formData.password)
       .then((userCredential) => {
-        console.log("User signed in:", userCredential.user);
         alert("Login successful! (Demo)");
         navigate("/"); 
       })

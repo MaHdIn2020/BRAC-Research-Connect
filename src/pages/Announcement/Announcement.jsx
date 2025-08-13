@@ -9,7 +9,7 @@ const Announcement = () => {
   const { user } = useContext(AuthContext); // Assuming user.role exists
   const data = useLoaderData();
   const User = data.find((User) => User.email === user?.email);
-  console.log("User in Announcement:", User);
+
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);

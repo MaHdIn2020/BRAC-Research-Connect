@@ -55,9 +55,10 @@ const StudentDashboard = () => {
         const pRes = await fetch(`${API_BASE}/proposals?supervisorId=${group[0]?.assignedSupervisor}`);
         
 
-
-
         const pJson = pRes.ok ? await pRes.json() : [];
+        const proposed = pJson.filter((p) =>p.groupId === group[0]?._id);
+        
+        //console.log("Proposals fetched:", proposed);
 
         // 2) Fetch user to get assigned supervisor (if stored in users collection)
         const uRes = await fetch(`${API_BASE}/users/${studentId}`);
@@ -75,7 +76,7 @@ const StudentDashboard = () => {
         const sRes = await fetch(`${API_BASE}/saved-papers/count?studentId=${studentId}`);
         const sJson = sRes.ok ? await sRes.json() : { count: 0 };
 
-        setProposals(pJson || []);
+        setProposals(proposed || []);
         setAssignedSupervisor(uJson?.assignedSupervisor || null);
         setDeadlines(dJson || []);
         setFeedbacks(fJson || []);
@@ -113,6 +114,8 @@ const StudentDashboard = () => {
   const gotoScheduleMeeting = () => navigate("/schedule-meeting");
   const gotoDownloadFinal = () => navigate("/thesis-list");
 
+  console.log(proposals[0])
+
   return (
     <section className="min-h-screen bg-white dark:bg-slate-900 transition-colors p-6">
       <div className="container mx-auto">
@@ -132,7 +135,7 @@ const StudentDashboard = () => {
               <FileText className="w-6 h-6 text-[#7b1e3c]" />
               <div>
                 <div className="text-sm text-slate-600 dark:text-gray-400">Proposals</div>
-                <div className="font-semibold text-slate-900 dark:text-white">{stats.proposalsCount}</div>
+                <div className="font-semibold text-slate-900 dark:text-white">{proposals.length}</div>
               </div>
             </div>
 
@@ -140,7 +143,7 @@ const StudentDashboard = () => {
               <UserCheck className="w-6 h-6 text-[#7b1e3c]" />
               <div>
                 <div className="text-sm text-slate-600 dark:text-gray-400">Supervisor</div>
-                <div className="font-semibold text-slate-900 dark:text-white">{getSupervisorName()}</div>
+                <div className="font-semibold text-slate-900 dark:text-white">{proposals.length > 0 ? proposals[0].status : "No proposals"}</div>
               </div>
             </div>
 
