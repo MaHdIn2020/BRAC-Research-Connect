@@ -17,6 +17,7 @@ import FindGroup from "../pages/StudentGroup/FindGroup";
 import CreateFaqs from "../pages/Admin/CreateFaqs";
 import AllFaqs from "../pages/FAQs/AllFaqs";
 import ViewProposals from "../pages/Thesis/ViewProposals";
+import SupervisorGroups from "../pages/SupGroups/SupervisorGroups";
 
 
 const router = createBrowserRouter([
@@ -111,6 +112,11 @@ const router = createBrowserRouter([
       {
         path: "/view-proposals",
         Component: ViewProposals,
+        loader: () => fetch("http://localhost:3000/users/")
+      },
+      {
+        path: "/supervisor-groups",
+        Component: SupervisorGroups,
         loader: () => fetch("http://localhost:3000/users/")
       }
     ]
