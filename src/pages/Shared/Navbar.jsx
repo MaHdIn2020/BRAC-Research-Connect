@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import ThemeToggle from "../../components/ThemeToggle";
 import { NavLink, useLoaderData } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { Bell } from "lucide-react";
@@ -75,7 +74,7 @@ const Navbar = () => {
           )}
         </ul>
 
-        {/* Right - Theme, Notifications, Auth */}
+        {/* Right - Notifications, Auth */}
         <div className="flex items-center space-x-4 relative">
           {/* Notifications Bell */}
           {(User?.role === "student" || User?.role === "supervisor") && (
@@ -115,8 +114,6 @@ const Navbar = () => {
               )}
             </div>
           )}
-
-          <ThemeToggle />
 
           {/* Auth Buttons */}
           {user ? (
