@@ -20,6 +20,8 @@ import ViewProposals from "../pages/Thesis/ViewProposals";
 import SupervisorGroups from "../pages/SupGroups/SupervisorGroups";
 import ViewRecievedProposals from "../pages/Thesis/ViewRecievedProposals";
 import Profile from "../pages/Student/Profile";
+import SupervisorProfile from "../pages/Supervisor/SupervisorProfile";
+import SupervisorsList from "../pages/Supervisor/SupervisorsList";
 
 
 const router = createBrowserRouter([
@@ -53,6 +55,16 @@ const router = createBrowserRouter([
         path: "/profile",
         Component: Profile,
         loader: () => fetch("http://localhost:3000/users/"),
+      },
+      {
+        path: "/supervisor-profile",
+        Component: SupervisorProfile,
+        loader: () => fetch("http://localhost:3000/users/"),
+      },
+      {
+        path: "/supervisors",
+        Component: SupervisorsList
+
       },
       {
         path: '/manage-users',
