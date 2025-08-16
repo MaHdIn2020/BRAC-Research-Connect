@@ -19,6 +19,7 @@ import AllFaqs from "../pages/FAQs/AllFaqs";
 import ViewProposals from "../pages/Thesis/ViewProposals";
 import SupervisorGroups from "../pages/SupGroups/SupervisorGroups";
 import ViewRecievedProposals from "../pages/Thesis/ViewRecievedProposals";
+import Profile from "../pages/Student/Profile";
 
 
 const router = createBrowserRouter([
@@ -47,6 +48,11 @@ const router = createBrowserRouter([
       {
         path: "view-announcement",
         Component: ViewAnnouncement
+      },
+      {
+        path: "/profile",
+        Component: Profile,
+        loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: '/manage-users',

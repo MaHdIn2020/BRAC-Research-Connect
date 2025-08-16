@@ -309,7 +309,6 @@ const StudentDashboard = () => {
             <div className="bg-white dark:bg-slate-800 rounded-lg p-5 shadow border border-gray-200 dark:border-slate-700">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">Quick Links</h3>
               <div className="flex flex-col gap-2">
-                <button onClick={gotoSubmitProposal} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Submit Proposal</button>
                 <button onClick={gotoScheduleMeeting} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Schedule Meeting</button>
                 <button onClick={gotoSearchPapers} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Search Papers</button>
                 <button onClick={gotoSavedPapers} className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">Saved Papers</button>
@@ -323,6 +322,12 @@ const StudentDashboard = () => {
                   }}
                 >
                   Find Groupmates
+                </Link>
+                <Link 
+                  to="/profile" 
+                  className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700"
+                >
+                   Manage Profile
                 </Link>
                 <Link to="/faqs" className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">FAQs</Link>
               </div>
