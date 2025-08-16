@@ -5,16 +5,25 @@ import { AuthContext } from "../../contexts/Auth/AuthContext";
 const API_BASE = "http://localhost:3000";
 
 const FindGroup = () => {
-  const { user } = useContext(AuthContext);          // Firebase user (login gate only)
-  const { id: routeUserId } = useParams();           // Mongo user _id in URL, e.g. /find-group/:id
+  const { user } = useContext(AuthContext); // Firebase user (login gate only)
+  const { id: routeUserId } = useParams(); // Mongo user _id in URL, e.g. /find-group/:id
 
-  const [dbUser, setDbUser] = useState(null);        // Full user from Mongo
+  // Mongo user doc for the currently logged-in person
+  const [dbUser, setDbUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  const [groups, setGroups] = useState([]);          // All groups
+  // All groups
+  const [groups, setGroups] = useState([]);
   const [loadingGroups, setLoadingGroups] = useState(true);
 
-  const [joining, setJoining] = useState({});        // { [groupId]: boolean } for per-card spinner/disable
+  // Join button per-card state
+  const [joining, setJoining] = useState({}); // { [groupId]: boolean }
+
+  // --- Invite flow state ---
+  const [searchId, setSearchId] = useState("");
+  const [searchedUser, setSearchedUser] = useState(null);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
   // Load Mongo user by :id
   useEffect(() => {
@@ -41,7 +50,9 @@ const FindGroup = () => {
       }
     };
     loadUser();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [routeUserId]);
 
   // Load all groups
@@ -61,20 +72,27 @@ const FindGroup = () => {
       }
     };
     loadGroups();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, []);
 
-  // Convenience ids / flags
-  const myId = useMemo(
-    () => (dbUser?._id ? String(dbUser._id) : null),
-    [dbUser?._id]
+  // Derived ids / flags
+  const myId = useMemo(() => (dbUser?._id ? String(dbUser._id) : null), [dbUser?._id]);
+
+  // Find the group (if any) where I am the admin (creator)
+  const myAdminGroup = useMemo(
+    () => (myId ? groups.find((g) => String(g.admin) === myId) : null),
+    [groups, myId]
   );
 
-  // Is the current user already in ANY group?
+  // Is the current user already in ANY group (as admin or member)?
   const iAmInAnyGroup = useMemo(() => {
     if (!myId) return false;
     return groups.some(
-      (g) => Array.isArray(g.members) && g.members.some((m) => String(m) === myId)
+      (g) =>
+        String(g.admin) === myId ||
+        (Array.isArray(g.members) && g.members.some((m) => String(m) === myId))
     );
   }, [groups, myId]);
 
@@ -91,7 +109,7 @@ const FindGroup = () => {
     return { isAdmin, isMember, full };
   };
 
-  // Join handler
+  // Join handler (self-join)
   const joinGroup = async (groupId) => {
     if (!myId) return;
     setJoining((p) => ({ ...p, [groupId]: true }));
@@ -115,6 +133,87 @@ const FindGroup = () => {
       alert(e.message || "Failed to join group");
     } finally {
       setJoining((p) => ({ ...p, [groupId]: false }));
+    }
+  };
+
+  // --- Invite helpers ---
+  const checkMembershipLocal = (studentMongoId) => {
+    const sid = String(studentMongoId);
+    return groups.some(
+      (g) =>
+        String(g.admin) === sid ||
+        (Array.isArray(g.members) && g.members.some((m) => String(m) === sid))
+    );
+  };
+
+  const checkMembershipAPI = async (studentMongoId) => {
+    // Prefer backend, but fallback to local if endpoint doesn’t exist
+    try {
+      const res = await fetch(`${API_BASE}/groups/check-membership/${studentMongoId}`);
+      if (res.ok) {
+        const j = await res.json();
+        return Boolean(j?.inGroup);
+      }
+    } catch {
+      // ignore
+    }
+    return checkMembershipLocal(studentMongoId);
+  };
+
+  // Search student by studentId and ensure they’re not already in a group
+  const searchStudent = async () => {
+    setSearchError("");
+    setSearchedUser(null);
+    if (!searchId.trim()) {
+      setSearchError("Please enter a student ID.");
+      return;
+    }
+
+    setSearching(true);
+    try {
+      const res = await fetch(`${API_BASE}/users/by-studentId/${encodeURIComponent(searchId.trim())}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || "Student not found.");
+      }
+      if (data?.role !== "student") {
+        throw new Error("The ID you entered is not a student account.");
+      }
+
+      // Check if this student already belongs to any group
+      const inGroup = await checkMembershipAPI(data._id);
+      if (inGroup) {
+        setSearchError("This student already belongs to a group.");
+        return;
+      }
+
+      setSearchedUser(data);
+    } catch (e) {
+      setSearchError(e.message || "Failed to search student.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  // Send invite to the searched user (only for the admin’s own group)
+  const sendJoinRequest = async () => {
+    if (!searchedUser?._id || !myAdminGroup?._id) return;
+    try {
+      const res = await fetch(`${API_BASE}/groups/${myAdminGroup._id}/invite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: String(searchedUser._id) }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to send join request");
+      }
+      alert("Join request sent successfully!");
+      // Optionally clear search result after sending
+      setSearchedUser(null);
+      setSearchId("");
+    } catch (e) {
+      alert(e.message || "Failed to send join request");
     }
   };
 
@@ -155,14 +254,70 @@ const FindGroup = () => {
         </div>
       </div>
 
-      {/* Global banner if already in a group */}
+      {/* Invite panel: Only show if I am a student AND I have a group where I’m the admin */}
+      {dbUser?.role === "student" && myAdminGroup && (
+        <div className="mt-6 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
+          <h2 className="font-semibold text-slate-900 dark:text-white mb-2">
+            Invite a Student to <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
+          </h2>
+
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <input
+              type="text"
+              value={searchId}
+              onChange={(e) => setSearchId(e.target.value)}
+              placeholder="Enter Student ID (e.g., 22101234)"
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-[#7b1e3c]"
+            />
+            <button
+              onClick={searchStudent}
+              disabled={searching || !searchId.trim()}
+              className="px-4 py-2 rounded-lg bg-[#7b1e3c] text-white hover:bg-[#651730] transition disabled:opacity-50"
+            >
+              {searching ? "Searching…" : "Search"}
+            </button>
+          </div>
+
+          {searchError && (
+            <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{searchError}</p>
+          )}
+
+          {searchedUser && (
+            <div className="mt-4 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium text-slate-900 dark:text-white">
+                    {searchedUser.name || "Unnamed"}
+                  </div>
+                  <div className="text-sm text-slate-600 dark:text-gray-300">
+                    Student ID: {searchedUser.studentId || "N/A"}
+                  </div>
+                  {searchedUser.email && (
+                    <div className="text-sm text-slate-600 dark:text-gray-300">
+                      {searchedUser.email}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={sendJoinRequest}
+                  className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                >
+                  Send Join Request
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Global banner if already in a group (info only; admins can still invite) */}
       {iAmInAnyGroup && (
         <div className="mt-4 p-3 rounded-lg bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
           You already belong to a group. You can’t join or create another group.
         </div>
       )}
 
-      {/* List */}
+      {/* List of groups */}
       <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
         {loadingUser || loadingGroups ? (
           <div className="p-6 text-slate-600 dark:text-gray-300">Loading groups…</div>
@@ -179,7 +334,11 @@ const FindGroup = () => {
             {groups.map((g) => {
               const gid = String(g._id);
               const { isAdmin, isMember, full } = joinableState(g);
-              const disabled = !myId || isAdmin || isMember || full || joining[gid] || iAmInAnyGroup;
+
+              // Disable “Join” if: user id not loaded, they’re admin/member, group full,
+              // already joining, or already in some group (can’t join another).
+              const disabled =
+                !myId || isAdmin || isMember || full || joining[gid] || iAmInAnyGroup;
 
               return (
                 <li
