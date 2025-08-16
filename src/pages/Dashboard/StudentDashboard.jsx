@@ -168,12 +168,11 @@ const StudentDashboard = () => {
     ? `/find-group/${currentUser._id}`
     : "#";
 
-  // NEW: Accept/Reject handlers
+  // Accept invite (no fallback)
   const acceptInvite = async (reqObj) => {
     if (!reqObj?._id || !studentId) return;
     setActingInviteId(String(reqObj._id));
     try {
-      // Preferred: dedicated accept endpoint that also clears other invites + notifies admin
       const res = await fetch(
         `${API_BASE}/groups/invite/${reqObj._id}/accept`,
         {
@@ -186,33 +185,13 @@ const StudentDashboard = () => {
         }
       );
 
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        // Fallback path: try a join then manually clear invites (only if your backend doesn't have accept endpoint)
-        const j = await res.json().catch(() => ({}));
-        console.warn("Accept endpoint failed, trying fallback:", j);
-
-        // Try join
-        const joinRes = await fetch(
-          `${API_BASE}/groups/${reqObj.groupId}/join`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ studentId }),
-          }
-        );
-        if (!joinRes.ok) {
-          const j2 = await joinRes.json().catch(() => ({}));
-          throw new Error(j2.message || "Failed to join group");
-        }
-
-        // Best-effort: clear invites client side
-        setJoinRequests([]);
-      } else {
-        // Dedicated endpoint succeeded; backend should also clear other invites & notify admin
-        setJoinRequests([]);
+        throw new Error(data?.message || "Failed to accept invite");
       }
 
-      // Refresh dashboard data (supervisor, proposals might change later)
+      // Backend should add the student to the group and clear invites
+      setJoinRequests([]);
       await fetchAll();
       alert("Joined group successfully.");
     } catch (e) {
@@ -257,19 +236,6 @@ const StudentDashboard = () => {
       setActingInviteId(null);
     }
   };
-
-  const clearAllInvitesForStudent = useCallback(async (sid) => {
-    try {
-      await fetch(`${API_BASE}/users/${sid}/join-requests/clear`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
-      // also reflect locally
-      setJoinRequests([]);
-    } catch (e) {
-      console.error("Failed to clear join requests:", e);
-    }
-  }, []);
 
   return (
     <section className="min-h-screen bg-white dark:bg-slate-900 transition-colors p-6">

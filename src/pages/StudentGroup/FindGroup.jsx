@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { NavLink, useParams } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
@@ -6,7 +6,7 @@ const API_BASE = "http://localhost:3000";
 
 const FindGroup = () => {
   const { user } = useContext(AuthContext); // Firebase user (login gate only)
-  const { id: routeUserId } = useParams(); // Mongo user _id in URL, e.g. /find-group/:id
+  const { id: routeUserId } = useParams();  // Mongo user _id in URL, e.g. /find-group/:id
 
   // Mongo user doc for the currently logged-in person
   const [dbUser, setDbUser] = useState(null);
@@ -16,14 +16,19 @@ const FindGroup = () => {
   const [groups, setGroups] = useState([]);
   const [loadingGroups, setLoadingGroups] = useState(true);
 
-  // Join button per-card state
-  const [joining, setJoining] = useState({}); // { [groupId]: boolean }
+  // Per-card request state (student -> group)
+  const [requesting, setRequesting] = useState({}); // { [groupId]: boolean }
 
-  // --- Invite flow state ---
+  // --- Invite flow state (admin -> student) ---
   const [searchId, setSearchId] = useState("");
   const [searchedUser, setSearchedUser] = useState(null);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
+
+  // --- Admin: incoming join requests for my group ---
+  const [adminRequests, setAdminRequests] = useState([]); // [{ studentId, name, email, studentIdStr, requestedAt }]
+  const [loadingRequests, setLoadingRequests] = useState(false);
+  const [acting, setActing] = useState({}); // { [studentId]: boolean } while accepting/rejecting
 
   // Load Mongo user by :id
   useEffect(() => {
@@ -50,9 +55,7 @@ const FindGroup = () => {
       }
     };
     loadUser();
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, [routeUserId]);
 
   // Load all groups
@@ -72,13 +75,14 @@ const FindGroup = () => {
       }
     };
     loadGroups();
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, []);
 
   // Derived ids / flags
-  const myId = useMemo(() => (dbUser?._id ? String(dbUser._id) : null), [dbUser?._id]);
+  const myId = useMemo(
+    () => (dbUser?._id ? String(dbUser._id) : null),
+    [dbUser?._id]
+  );
 
   // Find the group (if any) where I am the admin (creator)
   const myAdminGroup = useMemo(
@@ -109,34 +113,30 @@ const FindGroup = () => {
     return { isAdmin, isMember, full };
   };
 
-  // Join handler (self-join)
-  const joinGroup = async (groupId) => {
+  // -------- Student -> Group: Send join request (no instant join) --------
+  const sendJoinRequestToGroup = async (groupId) => {
     if (!myId) return;
-    setJoining((p) => ({ ...p, [groupId]: true }));
+    setRequesting((p) => ({ ...p, [groupId]: true }));
     try {
-      const res = await fetch(`${API_BASE}/groups/${groupId}/join`, {
-        method: "PATCH",
+      const res = await fetch(`${API_BASE}/groups/${groupId}/request-join`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId: myId }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data?.message || "Failed to join group");
+        throw new Error(data?.message || "Failed to send join request");
       }
-      // Update the specific group locally
-      setGroups((prev) =>
-        prev.map((g) => (String(g._id) === String(groupId) ? data.group : g))
-      );
-      alert("Joined group successfully!");
+      alert("Join request sent to the group admin!");
     } catch (e) {
       console.error(e);
-      alert(e.message || "Failed to join group");
+      alert(e.message || "Failed to send join request");
     } finally {
-      setJoining((p) => ({ ...p, [groupId]: false }));
+      setRequesting((p) => ({ ...p, [groupId]: false }));
     }
   };
 
-  // --- Invite helpers ---
+  // --- Helpers for invite flow (admin -> student) ---
   const checkMembershipLocal = (studentMongoId) => {
     const sid = String(studentMongoId);
     return groups.some(
@@ -149,7 +149,9 @@ const FindGroup = () => {
   const checkMembershipAPI = async (studentMongoId) => {
     // Prefer backend, but fallback to local if endpoint doesn’t exist
     try {
-      const res = await fetch(`${API_BASE}/groups/check-membership/${studentMongoId}`);
+      const res = await fetch(
+        `${API_BASE}/groups/check-membership/${studentMongoId}`
+      );
       if (res.ok) {
         const j = await res.json();
         return Boolean(j?.inGroup);
@@ -171,8 +173,12 @@ const FindGroup = () => {
 
     setSearching(true);
     try {
-      const res = await fetch(`${API_BASE}/users/by-studentId/${encodeURIComponent(searchId.trim())}`);
-      const data = await res.json();
+      const res = await fetch(
+        `${API_BASE}/users/by-studentId/${encodeURIComponent(
+          searchId.trim()
+        )}`
+      );
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(data?.message || "Student not found.");
       }
@@ -196,7 +202,7 @@ const FindGroup = () => {
   };
 
   // Send invite to the searched user (only for the admin’s own group)
-  const sendJoinRequest = async () => {
+  const sendJoinInvite = async () => {
     if (!searchedUser?._id || !myAdminGroup?._id) return;
     try {
       const res = await fetch(`${API_BASE}/groups/${myAdminGroup._id}/invite`, {
@@ -204,16 +210,83 @@ const FindGroup = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId: String(searchedUser._id) }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(data?.message || "Failed to send join request");
       }
-      alert("Join request sent successfully!");
-      // Optionally clear search result after sending
+      alert("Join request (invite) sent successfully!");
       setSearchedUser(null);
       setSearchId("");
     } catch (e) {
       alert(e.message || "Failed to send join request");
+    }
+  };
+
+  // -------- Admin: fetch incoming join requests for my group --------
+  useEffect(() => {
+    const loadRequests = async () => {
+      if (!myAdminGroup?._id) {
+        setAdminRequests([]);
+        return;
+      }
+      setLoadingRequests(true);
+      try {
+        const res = await fetch(
+          `${API_BASE}/groups/${myAdminGroup._id}/requests`
+        );
+        const data = res.ok ? await res.json() : [];
+        setAdminRequests(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error("Failed to load join requests:", e);
+        setAdminRequests([]);
+      } finally {
+        setLoadingRequests(false);
+      }
+    };
+    loadRequests();
+  }, [myAdminGroup?._id]);
+
+  // Accept / Reject pending request (FIX: send `decision` to backend)
+  const actOnRequest = async (studentId, decision) => {
+    if (!myAdminGroup?._id || !studentId) return;
+    if (!["accept", "reject"].includes(String(decision))) return;
+
+    setActing((p) => ({ ...p, [studentId]: true }));
+    try {
+      const res = await fetch(
+        `${API_BASE}/groups/${myAdminGroup._id}/requests/${studentId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ decision }),
+        }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to update request");
+      }
+
+      if (decision === "accept") {
+        alert("Request accepted. Student added to your group.");
+        // Update local groups list with returned group if backend responds with it
+        if (data.group) {
+          setGroups((prev) =>
+            prev.map((g) =>
+              String(g._id) === String(myAdminGroup._id) ? data.group : g
+            )
+          );
+        }
+      } else {
+        alert("Request rejected.");
+      }
+
+      // Refresh requests after the action
+      const r = await fetch(`${API_BASE}/groups/${myAdminGroup._id}/requests`);
+      setAdminRequests(r.ok ? await r.json() : []);
+    } catch (e) {
+      alert(e.message || "Failed to update request");
+    } finally {
+      setActing((p) => ({ ...p, [studentId]: false }));
     }
   };
 
@@ -254,11 +327,12 @@ const FindGroup = () => {
         </div>
       </div>
 
-      {/* Invite panel: Only show if I am a student AND I have a group where I’m the admin */}
+      {/* Admin-only: invite a student */}
       {dbUser?.role === "student" && myAdminGroup && (
         <div className="mt-6 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-white mb-2">
-            Invite a Student to <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
+            Invite a Student to{" "}
+            <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
           </h2>
 
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -279,7 +353,9 @@ const FindGroup = () => {
           </div>
 
           {searchError && (
-            <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{searchError}</p>
+            <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">
+              {searchError}
+            </p>
           )}
 
           {searchedUser && (
@@ -299,13 +375,81 @@ const FindGroup = () => {
                   )}
                 </div>
                 <button
-                  onClick={sendJoinRequest}
+                  onClick={sendJoinInvite}
                   className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition"
                 >
                   Send Join Request
                 </button>
               </div>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* Admin-only: incoming join requests (students -> your group) */}
+      {dbUser?.role === "student" && myAdminGroup && (
+        <div className="mt-6 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
+          <h2 className="font-semibold text-slate-900 dark:text-white mb-3">
+            Join Requests to <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
+          </h2>
+
+          {loadingRequests ? (
+            <div className="text-slate-600 dark:text-gray-300">Loading requests…</div>
+          ) : adminRequests.length === 0 ? (
+            <div className="text-slate-600 dark:text-gray-300">No pending requests right now.</div>
+          ) : (
+            <ul className="space-y-3">
+              {adminRequests.map((r) => {
+                const sid = String(r.studentId);
+                return (
+                  <li
+                    key={sid}
+                    className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-slate-800"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="font-medium text-slate-900 dark:text-white">
+                          {r.name || "Unnamed Student"}
+                        </div>
+                        <div className="text-sm text-slate-600 dark:text-gray-300">
+                          Student ID: {r.studentIdStr || "N/A"}
+                        </div>
+                        {r.email && (
+                          <div className="text-sm text-slate-600 dark:text-gray-300">
+                            {r.email}
+                          </div>
+                        )}
+                        <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                          Requested on{" "}
+                          {r.requestedAt
+                            ? new Date(r.requestedAt).toLocaleString()
+                            : ""}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 shrink-0">
+                        <button
+                          disabled={acting[sid]}
+                          onClick={() => actOnRequest(sid, "accept")}
+                          className="px-3 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60"
+                          title="Accept and add to group"
+                        >
+                          {acting[sid] ? "Working…" : "Accept"}
+                        </button>
+                        <button
+                          disabled={acting[sid]}
+                          onClick={() => actOnRequest(sid, "reject")}
+                          className="px-3 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-60"
+                          title="Reject this request"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </div>
       )}
@@ -323,7 +467,7 @@ const FindGroup = () => {
           <div className="p-6 text-slate-600 dark:text-gray-300">Loading groups…</div>
         ) : !user ? (
           <div className="p-6 text-amber-700 dark:text-amber-300">
-            Please log in to view and join groups.
+            Please log in to view and request to join groups.
           </div>
         ) : groups.length === 0 ? (
           <div className="p-6 text-slate-600 dark:text-gray-300">
@@ -335,10 +479,10 @@ const FindGroup = () => {
               const gid = String(g._id);
               const { isAdmin, isMember, full } = joinableState(g);
 
-              // Disable “Join” if: user id not loaded, they’re admin/member, group full,
-              // already joining, or already in some group (can’t join another).
+              // Disable “Send Join Request” if: user id not loaded, they’re admin/member, group full,
+              // already requesting, or already in some group (can’t join another).
               const disabled =
-                !myId || isAdmin || isMember || full || joining[gid] || iAmInAnyGroup;
+                !myId || isAdmin || isMember || full || requesting[gid] || iAmInAnyGroup;
 
               return (
                 <li
@@ -399,7 +543,7 @@ const FindGroup = () => {
                   {/* Actions */}
                   <div className="mt-4">
                     <button
-                      onClick={() => joinGroup(gid)}
+                      onClick={() => sendJoinRequestToGroup(gid)}
                       disabled={disabled}
                       className={`w-full inline-flex items-center justify-center px-4 py-2 rounded-lg transition 
                         ${
@@ -413,15 +557,15 @@ const FindGroup = () => {
                           : iAmInAnyGroup
                           ? "You already belong to a group"
                           : isAdmin
-                          ? "Group admin cannot join"
+                          ? "You are the admin of this group"
                           : isMember
                           ? "You already joined this group"
                           : full
                           ? "Group is full"
-                          : "Join this group"
+                          : "Send join request to this group"
                       }
                     >
-                      {joining[gid] ? "Joining…" : "Join Group"}
+                      {requesting[gid] ? "Sending…" : "Send Join Request"}
                     </button>
                   </div>
                 </li>
