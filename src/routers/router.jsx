@@ -22,6 +22,8 @@ import ViewRecievedProposals from "../pages/Thesis/ViewRecievedProposals";
 import Profile from "../pages/Student/Profile";
 import SupervisorProfile from "../pages/Supervisor/SupervisorProfile";
 import SupervisorsList from "../pages/Supervisor/SupervisorsList";
+import Searchpaper from "../pages/Student/Searchpaper";
+import Savedpapers from "../pages/Student/Savedpapers";
 
 
 const router = createBrowserRouter([
@@ -143,6 +145,19 @@ const router = createBrowserRouter([
         Component: ViewRecievedProposals,
         loader: () => fetch("http://localhost:3000/users/")
       },
+      {
+        path:'/search',
+        Component:Searchpaper,
+        loader: () => fetch("http://localhost:3000/users/"),
+
+      },
+      {
+        path:'/saved-papers',
+        Component:Savedpapers,
+        loader: () => fetch("http://localhost:3000/users/"),
+
+      }
+
     ]
   },
 ]);
