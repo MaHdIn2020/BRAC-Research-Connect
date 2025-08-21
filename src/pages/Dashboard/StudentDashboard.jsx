@@ -158,7 +158,7 @@ const StudentDashboard = () => {
     );
   };
 
-  const gotoSubmitProposal = () => navigate("/thesis-proposal");
+  const gotoRecommendedPapers = () => navigate("/recommended");
   const gotoSearchPapers = () => navigate("/search");
   const gotoSavedPapers = () => navigate("/saved-papers");
   const gotoScheduleMeeting = () => navigate("/schedule-meeting");
@@ -294,10 +294,10 @@ const StudentDashboard = () => {
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3 mb-6">
           <button
-            onClick={gotoSubmitProposal}
+            onClick={gotoRecommendedPapers}
             className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition"
           >
-            Submit Proposal
+            View Recommended Papers
           </button>
           <button
             onClick={gotoSearchPapers}

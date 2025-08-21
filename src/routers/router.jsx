@@ -24,7 +24,7 @@ import SupervisorProfile from "../pages/Supervisor/SupervisorProfile";
 import SupervisorsList from "../pages/Supervisor/SupervisorsList";
 import Searchpaper from "../pages/Student/Searchpaper";
 import Savedpapers from "../pages/Student/Savedpapers";
-
+import Recommended from "../pages/Student/Recommended";
 
 const router = createBrowserRouter([
   {
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       },
       {
         path: "view-announcement",
-        Component: ViewAnnouncement
+        Component: ViewAnnouncement,
       },
       {
         path: "/profile",
@@ -65,11 +65,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/supervisors",
-        Component: SupervisorsList
-
+        Component: SupervisorsList,
       },
       {
-        path: '/manage-users',
+        path: "/manage-users",
         element: (
           <AdminRoute>
             <ManageUsers></ManageUsers>
@@ -99,27 +98,24 @@ const router = createBrowserRouter([
       },
       {
         path: "/supervisor-dashboard",
-        element: (  
-            <SupervisorDashboard></SupervisorDashboard>
-          
-        ),
+        element: <SupervisorDashboard></SupervisorDashboard>,
         loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: "/student-dashboard",
         Component: StudentDashboard,
-        loader: () => fetch("http://localhost:3000/users/") 
+        loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: "/find-group/:id",
-        Component: FindGroup
+        Component: FindGroup,
       },
       {
         path: "/create-group/:id",
-        Component: CreateGroup
+        Component: CreateGroup,
       },
       {
-        path: "/manage-faqs",  // ✅ New FAQ management route
+        path: "/manage-faqs", // ✅ New FAQ management route
         element: (
           <AdminRoute>
             <CreateFaqs></CreateFaqs>
@@ -127,38 +123,40 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path:'/all-faqs',
-        element:<AllFaqs></AllFaqs>
+        path: "/all-faqs",
+        element: <AllFaqs></AllFaqs>,
       },
       {
         path: "/view-proposals",
         Component: ViewProposals,
-        loader: () => fetch("http://localhost:3000/users/")
+        loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: "/supervisor-groups",
         Component: SupervisorGroups,
-        loader: () => fetch("http://localhost:3000/users/")
-      },    
+        loader: () => fetch("http://localhost:3000/users/"),
+      },
       {
         path: "/view-recieved-proposals",
         Component: ViewRecievedProposals,
+        loader: () => fetch("http://localhost:3000/users/"),
+      },
+      {
+        path: "/search",
+        Component: Searchpaper,
+        loader: () => fetch("http://localhost:3000/users/"),
+      },
+      {
+        path: "/saved-papers",
+        Component: Savedpapers,
+        loader: () => fetch("http://localhost:3000/users/"),
+      },
+      {
+        path: "/recommended",
+        Component: Recommended,
         loader: () => fetch("http://localhost:3000/users/")
-      },
-      {
-        path:'/search',
-        Component:Searchpaper,
-        loader: () => fetch("http://localhost:3000/users/"),
-
-      },
-      {
-        path:'/saved-papers',
-        Component:Savedpapers,
-        loader: () => fetch("http://localhost:3000/users/"),
-
       }
-
-    ]
+    ],
   },
 ]);
 
