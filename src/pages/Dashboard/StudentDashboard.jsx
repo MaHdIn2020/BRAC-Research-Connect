@@ -13,6 +13,7 @@ import {
   Download,
   Calendar,
   Search,
+  Video,
 } from "lucide-react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { Link, useLoaderData, useNavigate } from "react-router";
@@ -29,7 +30,8 @@ const StudentDashboard = () => {
       Array.isArray(data) ? data.find((u) => u.email === user?.email) : null,
     [data, user?.email]
   );
-
+  const [showMeetingModal, setShowMeetingModal] = useState(false);
+  const [meetingModalLoading, setMeetingModalLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [proposals, setProposals] = useState([]);
   const [assignedSupervisor, setAssignedSupervisor] = useState(null);
@@ -145,6 +147,23 @@ const StudentDashboard = () => {
       setLoading(false);
     }
   }, [studentId]);
+
+  const fetchMeetingsForModal = useCallback(async () => {
+    if (!studentId) return;
+    setMeetingModalLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/meetings?studentId=${studentId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setMeetings(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch meetings for modal:", err);
+    } finally {
+      setMeetingModalLoading(false);
+    }
+  }, [studentId]);
+
 
   useEffect(() => {
     fetchAll();
@@ -585,6 +604,13 @@ const StudentDashboard = () => {
                     View Supervisors
                   </button>
                 </Link>
+  
+                <button 
+                  onClick={() => setShowMeetingModal(true)}
+                  className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 w-full">
+                  <Calendar className="w-4 h-4" />
+                  Meeting Schedules
+                </button>
                 <button
                   onClick={gotoSearchPapers}
                   className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700"
@@ -627,7 +653,103 @@ const StudentDashboard = () => {
           </aside>
         </div>
       </div>
+        {/* Meeting Modal */}
+        {showMeetingModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-4xl max-h-[80vh] overflow-hidden">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  Meeting Schedules
+                </h2>
+                <button
+                  onClick={() => setShowMeetingModal(false)}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="overflow-y-auto max-h-96">
+                {meetingModalLoading ? (
+                  <div className="text-center py-8 text-slate-500">Loading meetings...</div>
+                ) : meetings.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">No meetings scheduled</div>
+                ) : (
+                  <div className="space-y-3">
+                    {meetings.map((meeting) => {
+                      const meetingDateTime = new Date(`${meeting.date}T${meeting.time}`);
+                      const isUpcoming = meetingDateTime >= new Date();
+                      const isPast = meetingDateTime < new Date();
+
+                      return (
+                        <div
+                          key={meeting._id}
+                          className={`p-4 rounded-lg border ${
+                            isPast
+                              ? "border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700"
+                              : "border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-slate-700"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-slate-900 dark:text-white">
+                                {meeting.title}
+                              </h3>
+                              <div className="text-sm text-slate-600 dark:text-gray-400 mt-1">
+                                <div>Date: {meetingDateTime.toLocaleDateString()}</div>
+                                <div>Time: {meetingDateTime.toLocaleTimeString()}</div>
+                                <div>Supervisor: {meeting.supervisorName}</div>
+                                <div>Group: {meeting.groupName}</div>
+                              </div>
+
+
+                              <div className="mt-2">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs ${
+                                    meeting.status === "completed"
+                                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                                      : meeting.status === "cancelled"
+                                      ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                                      : isPast
+                                      ? "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                                      : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                                  }`}
+                                >
+                                  {meeting.status === "completed"
+                                    ? "Completed"
+                                    : meeting.status === "cancelled"
+                                    ? "Cancelled"
+                                    : isPast
+                                    ? "Past"
+                                    : "Upcoming"}
+                                </span>
+                              </div>
+                            </div>
+
+                            {meeting.meetingLink && isUpcoming && meeting.status === "scheduled" && (
+                              <a
+                                href={meeting.meetingLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-4 px-3 py-2 bg-[#7b1e3c] text-white rounded hover:bg-[#651730] text-sm flex items-center gap-1"
+                              >
+                                <Video className="w-4 h-4" />
+                                Join
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+        </div>
+      )}
     </section>
+
+  
   );
 };
 
