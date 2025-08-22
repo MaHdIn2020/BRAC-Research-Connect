@@ -36,6 +36,7 @@ const StudentDashboard = () => {
   const [deadlines, setDeadlines] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [savedPapersCount, setSavedPapersCount] = useState(0);
+  const [meetings, setMeetings] = useState([]);
 
   // NEW: join requests
   const [joinRequests, setJoinRequests] = useState([]);
@@ -128,11 +129,16 @@ const StudentDashboard = () => {
       );
       const sJson = sRes.ok ? await sRes.json() : { count: 0 };
 
+      // 7) Meetings for this student
+      const mRes = await fetch(`${API_BASE}/meetings?studentId=${studentId}`);
+      const mJson = mRes.ok ? await mRes.json() : [];
+
       setProposals(Array.isArray(myProposals) ? myProposals : []);
       setAssignedSupervisor(supervisorData);
       setDeadlines(Array.isArray(dJson) ? dJson : []);
       setFeedbacks(Array.isArray(fJson) ? fJson : []);
       setSavedPapersCount(Number(sJson?.count || 0));
+      setMeetings(Array.isArray(mJson) ? mJson : []);
     } catch (err) {
       console.error("Failed to fetch dashboard data:", err);
     } finally {
@@ -161,7 +167,6 @@ const StudentDashboard = () => {
   const gotoRecommendedPapers = () => navigate("/recommended");
   const gotoSearchPapers = () => navigate("/search");
   const gotoSavedPapers = () => navigate("/saved-papers");
-  const gotoScheduleMeeting = () => navigate("/schedule-meeting");
   const gotoDownloadFinal = () => navigate("/thesis-list");
 
   const findGroupHref = currentUser?._id
@@ -312,12 +317,6 @@ const StudentDashboard = () => {
             View Saved Papers
           </button>
           <button
-            onClick={gotoScheduleMeeting}
-            className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg border border-gray-200 dark:border-slate-700"
-          >
-            Schedule Meeting
-          </button>
-          <button
             onClick={gotoDownloadFinal}
             className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
           >
@@ -465,6 +464,54 @@ const StudentDashboard = () => {
               )}
             </div>
 
+            {/* Upcoming Meetings */}
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-5 shadow border border-gray-200 dark:border-slate-700">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Upcoming Meetings
+                </h3>
+                <Clock className="w-5 h-5 text-[#7b1e3c]" />
+              </div>
+
+              {loading ? (
+                <div className="text-slate-500">Loading meetings...</div>
+              ) : meetings.length === 0 ? (
+                <div className="text-slate-500">No upcoming meetings.</div>
+              ) : (
+                <div className="space-y-3">
+                  {meetings
+                    .filter(meeting => {
+                      const meetingDateTime = new Date(`${meeting.date}T${meeting.time}`);
+                      return meetingDateTime >= new Date() && meeting.status === 'scheduled';
+                    })
+                    .map((meeting) => (
+                      <div
+                        key={meeting._id}
+                        className="p-3 rounded border border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900"
+                      >
+                        <div className="font-semibold text-slate-900 dark:text-white">
+                          {meeting.title}
+                        </div>
+                        <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">
+                          {meeting.supervisorName} • {new Date(`${meeting.date}T${meeting.time}`).toLocaleString()}
+                        </div>
+                        {meeting.meetingLink && (
+                          <a
+                            href={meeting.meetingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#7b1e3c] hover:underline text-sm flex items-center gap-1 mt-2"
+                          >
+                            <Video className="w-4 h-4" />
+                            Join Meeting
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+
             {/* NEW: Group Invitations */}
             <div className="bg-white dark:bg-slate-800 rounded-lg p-5 shadow border border-gray-200 dark:border-slate-700">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
@@ -538,12 +585,6 @@ const StudentDashboard = () => {
                     View Supervisors
                   </button>
                 </Link>
-                <button
-                  onClick={gotoScheduleMeeting}
-                  className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700"
-                >
-                  Schedule Meeting
-                </button>
                 <button
                   onClick={gotoSearchPapers}
                   className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700"

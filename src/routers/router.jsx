@@ -25,6 +25,7 @@ import SupervisorsList from "../pages/Supervisor/SupervisorsList";
 import Searchpaper from "../pages/Student/Searchpaper";
 import Savedpapers from "../pages/Student/Savedpapers";
 import Recommended from "../pages/Student/Recommended";
+import ScheduleMeetings from "../pages/Meeting/ScheduleMeetings";
 
 const router = createBrowserRouter([
   {
@@ -155,7 +156,12 @@ const router = createBrowserRouter([
         path: "/recommended",
         Component: Recommended,
         loader: () => fetch("http://localhost:3000/users/")
-      }
+      },
+      {
+        path: "/schedule-meetings",
+        Component: ScheduleMeetings,
+        loader: () => fetch("http://localhost:3000/users/"),
+      },
     ],
   },
 ]);

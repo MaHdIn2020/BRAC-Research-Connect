@@ -296,9 +296,11 @@ const SupervisorDashboard = () => {
                 <button className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">
                   View Recommendations
                 </button>
-                <button className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">
-                  Schedule Meeting
-                </button>
+               <Link to="/schedule-meetings">
+                  <button className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">
+                    Schedule Meeting
+                  </button>
+                </Link>
                 <Link
                   to="/theses"
                   className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700"
