@@ -15,13 +15,11 @@ const Navbar = () => {
   const toggleNotifications = async () => {
     setShowNotifications(!showNotifications);
 
-    // Mark notifications as seen if they were unseen
     if (!User?.isSeen) {
       await fetch(`${API_BASE}/users/${User._id}/notifications/seen`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });
-      // Optional: refresh page or re-fetch user data so UI updates
     }
   };
 

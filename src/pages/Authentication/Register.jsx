@@ -41,7 +41,7 @@ const Register = () => {
     createUser(formData.email, formData.password)
       .then((userCredential) => {
 
-        alert("Registration successful! (Demo)");
+        alert("Registration successful!");
 
         // Conditional API POST request based on role
         const endpoint = "http://localhost:3000/users";

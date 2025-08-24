@@ -15,7 +15,7 @@ const Login = () => {
     e.preventDefault();
     signIn(formData.email, formData.password)
       .then((userCredential) => {
-        alert("Login successful! (Demo)");
+        alert("Login successful!");
         navigate("/"); 
       })
       .catch((error) => {
