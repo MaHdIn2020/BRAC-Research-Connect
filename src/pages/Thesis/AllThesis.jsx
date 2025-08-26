@@ -4,41 +4,110 @@ import { useState } from "react";
 const AllThesis = () => {
   const theses = useLoaderData();
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter theses based on a single search query
-  const filteredTheses = theses.filter((t) => {
-    const query = searchQuery.toLowerCase();
+  // Filter states
+  const [filterSupervisor, setFilterSupervisor] = useState("");
+  const [filterGroup, setFilterGroup] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterDate, setFilterDate] = useState("");
+  const [filterDomain, setFilterDomain] = useState("");
 
-    const inTitle = t.title?.toLowerCase().includes(query);
-    const inSupervisor = t.supervisor?.name?.toLowerCase().includes(query);
-    const inGroup = t.groupName?.toLowerCase().includes(query);
-    const inStatus = t.status?.toLowerCase().includes(query);
-    const inDate = new Date(t.createdAt).toISOString().split("T")[0].includes(query);
-    const inDomain =
-      t.domain?.some((d) => d.toLowerCase().includes(query));
+  // Filter theses
+  const filteredTheses = theses
+    .filter((t) => t.status.toLowerCase() !== "rejected") // exclude rejected
+    .filter((t) => {
+      const matchesSupervisor =
+        !filterSupervisor ||
+        t.supervisor?.name?.toLowerCase().includes(filterSupervisor.toLowerCase());
+      const matchesGroup =
+        !filterGroup || t.groupName?.toLowerCase().includes(filterGroup.toLowerCase());
+      const matchesStatus =
+        !filterStatus || t.status?.toLowerCase() === filterStatus.toLowerCase();
+      const matchesDate =
+        !filterDate ||
+        new Date(t.createdAt).toISOString().split("T")[0] === filterDate;
+      const matchesDomain =
+        !filterDomain ||
+        t.domain?.some((d) => d.toLowerCase().includes(filterDomain.toLowerCase()));
 
-    return inTitle || inSupervisor || inGroup || inStatus || inDate || inDomain;
-  });
+      return (
+        matchesSupervisor &&
+        matchesGroup &&
+        matchesStatus &&
+        matchesDate &&
+        matchesDomain
+      );
+    });
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">All Theses</h2>
 
-      {/* Single Search Bar */}
-      <div className="mb-4 flex gap-2">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by Supervisor, Group, Status, Date, Domain..."
-          className="flex-1 border px-4 py-2 rounded"
-        />
+      {/* Filters */}
+      <div className="mb-4 flex flex-wrap gap-4 items-end">
+        <div>
+          <label className="block mb-1 font-medium">Supervisor</label>
+          <input
+            type="text"
+            value={filterSupervisor}
+            onChange={(e) => setFilterSupervisor(e.target.value)}
+            className="border px-2 py-1 rounded"
+            placeholder="Supervisor name"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 font-medium">Group</label>
+          <input
+            type="text"
+            value={filterGroup}
+            onChange={(e) => setFilterGroup(e.target.value)}
+            className="border px-2 py-1 rounded"
+            placeholder="Group name"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 font-medium">Status</label>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="border px-2 py-1 rounded"
+          >
+            <option value="">All</option>
+            <option value="Submitted">Submitted</option>
+            <option value="Approved">Approved</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+        <div>
+          <label className="block mb-1 font-medium">Submitted Date</label>
+          <input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="border px-2 py-1 rounded"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 font-medium">Domain</label>
+          <input
+            type="text"
+            value={filterDomain}
+            onChange={(e) => setFilterDomain(e.target.value)}
+            className="border px-2 py-1 rounded"
+            placeholder="Domain"
+          />
+        </div>
         <button
-          onClick={() => setSearchQuery("")}
+          onClick={() => {
+            setFilterSupervisor("");
+            setFilterGroup("");
+            setFilterStatus("");
+            setFilterDate("");
+            setFilterDomain("");
+          }}
           className="bg-gray-500 text-white px-4 py-2 rounded"
         >
-          Reset
+          Reset Filters
         </button>
       </div>
 
@@ -73,17 +142,19 @@ const AllThesis = () => {
               </td>
               <td className="border px-4 py-2">{thesis.status}</td>
               <td className="border px-4 py-2 flex flex-wrap gap-2">
-                {thesis.domain?.length
-                  ? thesis.domain.map((d) => (
-                      <button
-                        key={d}
-                        onClick={() => setSearchQuery(d)}
-                        className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition disabled:opacity-60"
-                      >
-                        {d}
-                      </button>
-                    ))
-                  : "N/A"}
+                {thesis.domain?.length ? (
+                  thesis.domain.map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setFilterDomain(d)}
+                      className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition disabled:opacity-60"
+                    >
+                      {d}
+                    </button>
+                  ))
+                ) : (
+                  "N/A"
+                )}
               </td>
               <td className="border px-4 py-2">
                 {new Date(thesis.createdAt).toLocaleDateString()}
@@ -100,17 +171,20 @@ const AllThesis = () => {
             <h3 className="text-xl font-semibold mb-2">
               {selectedGroup.name} – Members
             </h3>
+            <p className="mb-2 text-gray-600">Domain:</p>
             <div className="mb-4 flex flex-wrap gap-2">
-              {selectedGroup.domain?.length
-                ? selectedGroup.domain.map((d) => (
-                    <button
-                      key={d}
-                      className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition disabled:opacity-60"
-                    >
-                      {d}
-                    </button>
-                  ))
-                : "N/A"}
+              {selectedGroup.domain?.length ? (
+                selectedGroup.domain.map((d) => (
+                  <button
+                    key={d}
+                    className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition disabled:opacity-60"
+                  >
+                    {d}
+                  </button>
+                ))
+              ) : (
+                "N/A"
+              )}
             </div>
             <ul className="space-y-2">
               {selectedGroup.students.map((s) => (
