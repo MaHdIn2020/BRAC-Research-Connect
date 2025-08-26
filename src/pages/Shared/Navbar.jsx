@@ -65,6 +65,10 @@ const Navbar = () => {
               <li className="hover:text-[#7b1e3c] transition">Dashboard</li>
             </NavLink>
           )}
+          <NavLink to="/all-thesis">
+  <li className="hover:text-[#7b1e3c] transition">All Thesis</li>
+</NavLink>
+
           {User?.role === "student" && (
             <NavLink to="student-dashboard">
               <li className="hover:text-[#7b1e3c] transition">Dashboard</li>

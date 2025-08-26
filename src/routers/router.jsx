@@ -26,6 +26,7 @@ import Searchpaper from "../pages/Student/Searchpaper";
 import Savedpapers from "../pages/Student/Savedpapers";
 import Recommended from "../pages/Student/Recommended";
 import ScheduleMeetings from "../pages/Meeting/ScheduleMeetings";
+import AllThesis from "../pages/Thesis/AllThesis";
 
 const router = createBrowserRouter([
   {
@@ -162,6 +163,12 @@ const router = createBrowserRouter([
         Component: ScheduleMeetings,
         loader: () => fetch("http://localhost:3000/users/"),
       },
+      {
+      path: "/all-thesis",
+      Component: AllThesis,
+      loader: () => fetch("http://localhost:3000/theses"),
+    },
+
     ],
   },
 ]);
