@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { useLoaderData } from "react-router";
-import { FileText, Check, X, Link as LinkIcon } from "lucide-react";
+import { FileText, Check, X, Link as LinkIcon, Send } from "lucide-react";
 
 const API_BASE = "http://localhost:3000";
 
 const ViewRecievedProposals = () => {
   const { user } = useContext(AuthContext);
-  const data = useLoaderData(); // same pattern you’re using elsewhere
+  const data = useLoaderData();
   const dbUser = useMemo(
     () => data?.find?.((u) => u.email === user?.email) || null,
     [data, user?.email]
@@ -16,8 +16,9 @@ const ViewRecievedProposals = () => {
 
   const [loading, setLoading] = useState(true);
   const [proposals, setProposals] = useState([]);
-  const [acting, setActing] = useState({}); // { [proposalId]: boolean }
+  const [acting, setActing] = useState({});
   const [error, setError] = useState("");
+  const [feedbackDraft, setFeedbackDraft] = useState({}); // text per proposal
 
   const fetchProposals = async () => {
     if (!supervisorId) {
@@ -40,10 +41,7 @@ const ViewRecievedProposals = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProposals();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supervisorId]);
+  useEffect(() => { fetchProposals(); }, [supervisorId]);
 
   const decide = async (proposalId, decision) => {
     if (!supervisorId) return;
@@ -52,16 +50,11 @@ const ViewRecievedProposals = () => {
       const res = await fetch(`${API_BASE}/proposals/${proposalId}/decision`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          supervisorId,
-          decision, // "approve" | "reject"
-        }),
+        body: JSON.stringify({ supervisorId, decision }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.message || "Failed to update proposal");
-      }
-      // update in place
+      if (!res.ok) throw new Error(data?.message || "Failed to update proposal");
+
       setProposals((prev) =>
         prev.map((p) => (String(p._id) === String(proposalId) ? data.proposal : p))
       );
@@ -73,6 +66,35 @@ const ViewRecievedProposals = () => {
     } catch (e) {
       console.error(e);
       alert(e.message || "Failed to update proposal");
+    } finally {
+      setActing((p) => ({ ...p, [proposalId]: false }));
+    }
+  };
+
+  const sendFeedback = async (proposalId) => {
+    if (!supervisorId) return;
+    const text = feedbackDraft[proposalId];
+    if (!text || !text.trim()) {
+      alert("Feedback cannot be empty");
+      return;
+    }
+    setActing((p) => ({ ...p, [proposalId]: true }));
+    try {
+      const res = await fetch(`${API_BASE}/proposals/${proposalId}/feedback`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ supervisorId, text }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Failed to send feedback");
+
+      setProposals((prev) =>
+        prev.map((p) => (String(p._id) === String(proposalId) ? data.proposal : p))
+      );
+      setFeedbackDraft((d) => ({ ...d, [proposalId]: "" }));
+    } catch (e) {
+      console.error(e);
+      alert(e.message || "Failed to send feedback");
     } finally {
       setActing((p) => ({ ...p, [proposalId]: false }));
     }
@@ -111,31 +133,46 @@ const ViewRecievedProposals = () => {
                   className="rounded-xl border border-gray-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-900"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                        {p.title}
-                      </h3>
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{p.title}</h3>
                       <div className="text-xs text-slate-500 dark:text-gray-400">
                         {p.groupName || "Unknown Group"} —{" "}
                         {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ""}
                       </div>
+                      <p className="mt-3 text-sm text-slate-700 dark:text-gray-300">{p.abstract}</p>
 
-                      {Array.isArray(p.domain) && p.domain.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {p.domain.map((d) => (
-                            <span
-                              key={`${pid}-${d}`}
-                              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
-                            >
-                              {d}
-                            </span>
+                      {/* Supervisor feedback section */}
+                      <div className="mt-3">
+                        <textarea
+                          value={feedbackDraft[pid] || ""}
+                          onChange={(e) =>
+                            setFeedbackDraft((f) => ({ ...f, [pid]: e.target.value }))
+                          }
+                          placeholder="Write feedback..."
+                          className="w-full mt-2 p-2 border rounded-md text-sm"
+                        />
+                        <button
+                          onClick={() => sendFeedback(pid)}
+                          disabled={acting[pid]}
+                          className="mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                        >
+                          <Send className="w-4 h-4" /> Send Feedback
+                        </button>
+                      </div>
+
+                      {/* Show feedback history */}
+                      {Array.isArray(p.feedback) && p.feedback.length > 0 && (
+                        <ul className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
+                          {p.feedback.map((f, idx) => (
+                            <li key={idx} className="border-l-2 pl-2 border-blue-500">
+                              {f.text}{" "}
+                              <span className="text-xs text-gray-400">
+                                ({new Date(f.date).toLocaleString()})
+                              </span>
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       )}
-
-                      <p className="mt-3 text-sm text-slate-700 dark:text-gray-300">
-                        {p.abstract}
-                      </p>
 
                       <div className="mt-3 flex items-center gap-2 text-xs">
                         <span
@@ -163,7 +200,6 @@ const ViewRecievedProposals = () => {
                       </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="shrink-0 flex flex-col gap-2">
                       <button
                         onClick={() => decide(pid, "approve")}
@@ -173,10 +209,8 @@ const ViewRecievedProposals = () => {
                             ? "bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-gray-400 cursor-not-allowed"
                             : "bg-emerald-600 text-white hover:bg-emerald-700"
                         }`}
-                        title={pending ? "Approve proposal" : "Action disabled"}
                       >
-                        <Check className="w-4 h-4" />
-                        Approve
+                        <Check className="w-4 h-4" /> Approve
                       </button>
                       <button
                         onClick={() => decide(pid, "reject")}
@@ -186,10 +220,8 @@ const ViewRecievedProposals = () => {
                             ? "bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-gray-400 cursor-not-allowed"
                             : "bg-rose-600 text-white hover:bg-rose-700"
                         }`}
-                        title={pending ? "Reject proposal" : "Action disabled"}
                       >
-                        <X className="w-4 h-4" />
-                        Reject
+                        <X className="w-4 h-4" /> Reject
                       </button>
                     </div>
                   </div>

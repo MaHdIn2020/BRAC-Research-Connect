@@ -1,7 +1,14 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useLoaderData, Link } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
-import { FileText, ExternalLink, User, Calendar, Tag } from "lucide-react";
+import {
+  FileText,
+  ExternalLink,
+  User,
+  Calendar,
+  Tag,
+  MessageSquare,
+} from "lucide-react";
 
 const API_BASE = "http://localhost:3000";
 
@@ -9,9 +16,10 @@ const ViewProposals = () => {
   const { user } = useContext(AuthContext);
   const data = useLoaderData();
 
-  // Match Mongo user by email from the loader data
+  // Find current user in loader data
   const currentUser = useMemo(
-    () => (Array.isArray(data) ? data.find((u) => u.email === user?.email) : null),
+    () =>
+      Array.isArray(data) ? data.find((u) => u.email === user?.email) : null,
     [data, user?.email]
   );
 
@@ -28,6 +36,7 @@ const ViewProposals = () => {
         setLoading(false);
         return;
       }
+      setLoading(true);
       try {
         const res = await fetch(`${API_BASE}/groups/by-member/${currentUser._id}`);
         if (res.status === 404) {
@@ -46,11 +55,10 @@ const ViewProposals = () => {
         setLoading(false);
       }
     };
-
     fetchGroup();
   }, [currentUser?._id]);
 
-  // Fetch supervisors to map id -> name/email
+  // Fetch supervisors mapping (id → name/email)
   useEffect(() => {
     const fetchSupervisors = async () => {
       try {
@@ -69,9 +77,9 @@ const ViewProposals = () => {
     fetchSupervisors();
   }, []);
 
-  // Fetch all proposals the group submitted (to every supervisor it contacted)
+  // Fetch all proposals for this group
   useEffect(() => {
-    const fetchAllProposalsForGroup = async () => {
+    const fetchProposalsForGroup = async () => {
       if (!group?._id) return;
       setLoading(true);
       setError("");
@@ -87,36 +95,33 @@ const ViewProposals = () => {
           return;
         }
 
-        // Fetch proposals for each supervisor, then filter for this group
         const requests = supIds.map((sid) =>
           fetch(`${API_BASE}/proposals?supervisorId=${sid}`)
         );
         const responses = await Promise.allSettled(requests);
 
-        let all = [];
+        let allProposals = [];
         for (const r of responses) {
           if (r.status === "fulfilled" && r.value.ok) {
             const arr = await r.value.json();
-            all = all.concat(arr);
+            allProposals = allProposals.concat(arr);
           }
         }
 
-        // Keep only proposals from this group
         const myGroupId = String(group._id);
-        const mine = all.filter((p) => String(p.groupId) === myGroupId);
+        const filtered = allProposals.filter((p) => String(p.groupId) === myGroupId);
 
-        // De-duplicate by _id (in case same proposal appears in multiple pulls)
+        // Remove duplicates
         const seen = new Set();
         const deduped = [];
-        for (const p of mine) {
-          const id = String(p._id || "");
+        filtered.forEach((p) => {
+          const id = String(p._id);
           if (!seen.has(id)) {
             seen.add(id);
             deduped.push(p);
           }
-        }
+        });
 
-        // Sort newest first by createdAt
         deduped.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         setProposals(deduped);
@@ -128,7 +133,7 @@ const ViewProposals = () => {
       }
     };
 
-    fetchAllProposalsForGroup();
+    fetchProposalsForGroup();
   }, [group?._id, group?.proposalsSubmittedTo]);
 
   return (
@@ -139,11 +144,11 @@ const ViewProposals = () => {
             Your Group’s Proposals
           </h1>
           <p className="text-slate-600 dark:text-gray-400 mt-1">
-            View every proposal your group has submitted, along with status and links.
+            View every proposal your group has submitted, along with status,
+            feedback, and links.
           </p>
         </div>
 
-        {/* Group header / empty states */}
         {loading ? (
           <div className="text-slate-600 dark:text-gray-400">Loading…</div>
         ) : !group ? (
@@ -152,11 +157,12 @@ const ViewProposals = () => {
           </div>
         ) : (
           <>
-            {/* Group summary */}
             <div className="mb-6 p-4 rounded-lg border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm text-slate-500 dark:text-gray-400">Group</div>
+                  <div className="text-sm text-slate-500 dark:text-gray-400">
+                    Group
+                  </div>
                   <div className="text-lg font-semibold text-slate-900 dark:text-white">
                     {group.name}
                   </div>
@@ -164,14 +170,12 @@ const ViewProposals = () => {
               </div>
             </div>
 
-            {/* Error message */}
             {error && (
               <div className="mb-4 p-3 rounded bg-red-50 text-red-700 border border-red-200">
                 {error}
               </div>
             )}
 
-            {/* Proposals list */}
             {proposals.length === 0 ? (
               <div className="p-5 rounded-lg border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-gray-300">
                 No proposals submitted yet.
@@ -199,7 +203,6 @@ const ViewProposals = () => {
                             {p.abstract}
                           </p>
 
-                          {/* Domain chips */}
                           {Array.isArray(p.domain) && p.domain.length > 0 && (
                             <div className="flex flex-wrap items-center gap-2 mb-3">
                               <Tag className="w-4 h-4 text-slate-500" />
@@ -214,7 +217,7 @@ const ViewProposals = () => {
                             </div>
                           )}
 
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-gray-400">
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-gray-400 mb-2">
                             <span className="inline-flex items-center gap-1">
                               <User className="w-4 h-4" />
                               {supName}
@@ -237,9 +240,28 @@ const ViewProposals = () => {
                               {p.status || "Pending"}
                             </span>
                           </div>
+
+                          {/* Supervisor feedback */}
+                          {Array.isArray(p.feedback) && p.feedback.length > 0 && (
+                            <div className="mt-2 p-3 rounded-md bg-slate-50 dark:bg-slate-700 text-sm text-slate-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600">
+                              <div className="flex items-center gap-2 mb-1 font-medium">
+                                <MessageSquare className="w-4 h-4 text-[#7b1e3c]" />
+                                Supervisor Feedback
+                              </div>
+                              {p.feedback.map((f, idx) => (
+                                <div key={idx} className="mb-2">
+                                  <p>{f.text}</p>
+                                  {f.date && (
+                                    <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                                      Given on: {new Date(f.date).toLocaleString()}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
 
-                        {/* Actions */}
                         <div className="flex flex-col items-end gap-2">
                           {p.driveLink && (
                             <a
@@ -261,7 +283,6 @@ const ViewProposals = () => {
           </>
         )}
 
-        {/* Back link */}
         <div className="mt-8">
           <Link to="/student-dashboard" className="text-[#7b1e3c] hover:underline">
             ← Back to Dashboard
