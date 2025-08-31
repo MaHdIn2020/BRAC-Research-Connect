@@ -27,6 +27,7 @@ import Savedpapers from "../pages/Student/Savedpapers";
 import Recommended from "../pages/Student/Recommended";
 import ScheduleMeetings from "../pages/Meeting/ScheduleMeetings";
 import AllThesis from "../pages/Thesis/AllThesis";
+import Semester from "../pages/Semester/Semester";
 
 const router = createBrowserRouter([
   {
@@ -121,6 +122,14 @@ const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <CreateFaqs></CreateFaqs>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/semester", 
+        element: (
+          <AdminRoute>
+            <Semester></Semester>
           </AdminRoute>
         ),
       },

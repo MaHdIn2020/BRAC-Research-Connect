@@ -60,6 +60,11 @@ const Navbar = () => {
               <li className="hover:text-[#7b1e3c] transition">Dashboard</li>
             </NavLink>
           )}
+          {User?.role === "admin" && (
+            <NavLink to="semester">
+              <li className="hover:text-[#7b1e3c] transition">Semester</li>
+            </NavLink>
+          )}
           {User?.role === "supervisor" && (
             <NavLink to="supervisor-dashboard">
               <li className="hover:text-[#7b1e3c] transition">Dashboard</li>
