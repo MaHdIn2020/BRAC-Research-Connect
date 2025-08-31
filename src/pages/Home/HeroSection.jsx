@@ -4,7 +4,7 @@ import { Link } from "react-router";
 const HeroSection = () => {
   return (
     <section className="bg-white dark:bg-slate-900 transition-colors">
-      <div className="container mx-auto px-6 py-16 flex flex-col-reverse md:flex-row items-center gap-10">
+      <div className="container mx-auto px-6 pt-5 flex flex-col-reverse md:flex-row items-center gap-10">
 
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">

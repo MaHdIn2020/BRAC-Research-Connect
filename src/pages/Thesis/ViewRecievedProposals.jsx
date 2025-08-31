@@ -222,7 +222,7 @@ const ViewRecievedProposals = () => {
                         <button
                           onClick={() => sendFeedback(pid)}
                           disabled={acting[pid]}
-                          className="mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
+                          className="mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#7b1e3c] text-white disabled:opacity-60"
                         >
                           <Send className="w-4 h-4" /> Send Feedback
                         </button>
@@ -276,7 +276,7 @@ const ViewRecievedProposals = () => {
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${
                           !pending || acting[pid]
                             ? "bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-gray-400 cursor-not-allowed"
-                            : "bg-emerald-600 text-white hover:bg-emerald-700"
+                            : "bg-white text-[#7b1e3c] border border-[#7b1e3c] hover:bg-[#fdf2f4]"
                         }`}
                       >
                         <Check className="w-4 h-4" /> Approve
@@ -288,7 +288,7 @@ const ViewRecievedProposals = () => {
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${
                           !pending || acting[pid]
                             ? "bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-gray-400 cursor-not-allowed"
-                            : "bg-rose-600 text-white hover:bg-rose-700"
+                            : "bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730]"
                         }`}
                       >
                         <X className="w-4 h-4" /> Reject
