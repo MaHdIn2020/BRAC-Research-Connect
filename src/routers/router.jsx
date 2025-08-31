@@ -118,7 +118,7 @@ const router = createBrowserRouter([
         Component: CreateGroup,
       },
       {
-        path: "/manage-faqs", // ✅ New FAQ management route
+        path: "/manage-faqs",
         element: (
           <AdminRoute>
             <CreateFaqs></CreateFaqs>
@@ -126,7 +126,8 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/semester", 
+        path: "/semester",
+        loader: () => fetch("http://localhost:3000/users/"),
         element: (
           <AdminRoute>
             <Semester></Semester>
@@ -165,7 +166,7 @@ const router = createBrowserRouter([
       {
         path: "/recommended",
         Component: Recommended,
-        loader: () => fetch("http://localhost:3000/users/")
+        loader: () => fetch("http://localhost:3000/users/"),
       },
       {
         path: "/schedule-meetings",
@@ -173,11 +174,10 @@ const router = createBrowserRouter([
         loader: () => fetch("http://localhost:3000/users/"),
       },
       {
-      path: "/all-thesis",
-      Component: AllThesis,
-      loader: () => fetch("http://localhost:3000/theses"),
-    },
-
+        path: "/all-thesis",
+        Component: AllThesis,
+        loader: () => fetch("http://localhost:3000/theses"),
+      },
     ],
   },
 ]);

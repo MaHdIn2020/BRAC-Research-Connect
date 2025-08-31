@@ -1,13 +1,21 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { AuthContext } from "../../contexts/Auth/AuthContext";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useLoaderData } from "react-router";
-import { FileText, Check, X, Link as LinkIcon, Send } from "lucide-react";
+import { AuthContext } from "../../contexts/Auth/AuthContext";
+import {
+  FileText,
+  Check,
+  X,
+  Link as LinkIcon,
+  Send,
+  Calendar,
+} from "lucide-react";
 
 const API_BASE = "http://localhost:3000";
 
 const ViewRecievedProposals = () => {
   const { user } = useContext(AuthContext);
   const data = useLoaderData();
+
   const dbUser = useMemo(
     () => data?.find?.((u) => u.email === user?.email) || null,
     [data, user?.email]
@@ -18,7 +26,23 @@ const ViewRecievedProposals = () => {
   const [proposals, setProposals] = useState([]);
   const [acting, setActing] = useState({});
   const [error, setError] = useState("");
-  const [feedbackDraft, setFeedbackDraft] = useState({}); // text per proposal
+  const [feedbackDraft, setFeedbackDraft] = useState({});
+
+  // Semester selection modal state
+  const [semesters, setSemesters] = useState([]);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [approveForProposalId, setApproveForProposalId] = useState(null);
+  const [selectedSemesterId, setSelectedSemesterId] = useState("");
+
+  const todayStr = useMemo(
+    () => new Date().toISOString().split("T")[0],
+    []
+  );
+
+  const upcomingSemesters = useMemo(() => {
+    // Safety filter client-side too: hide startDate <= today
+    return (semesters || []).filter((s) => s.startDate > todayStr);
+  }, [semesters, todayStr]);
 
   const fetchProposals = async () => {
     if (!supervisorId) {
@@ -30,8 +54,8 @@ const ViewRecievedProposals = () => {
     try {
       const res = await fetch(`${API_BASE}/proposals?supervisorId=${supervisorId}`);
       if (!res.ok) throw new Error("Failed to fetch proposals");
-      const data = await res.json();
-      setProposals(Array.isArray(data) ? data : []);
+      const d = await res.json();
+      setProposals(Array.isArray(d) ? d : []);
     } catch (e) {
       console.error(e);
       setError(e.message || "Failed to fetch proposals");
@@ -41,28 +65,69 @@ const ViewRecievedProposals = () => {
     }
   };
 
-  useEffect(() => { fetchProposals(); }, [supervisorId]);
+  const fetchUpcomingSemesters = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/semesters/upcoming`);
+      if (!res.ok) throw new Error("Failed to load semesters");
+      const list = await res.json();
+      setSemesters(Array.isArray(list) ? list : []);
+    } catch (e) {
+      console.error("Load semesters error:", e);
+      setSemesters([]);
+    }
+  };
 
-  const decide = async (proposalId, decision) => {
+  useEffect(() => {
+    fetchProposals();
+  }, [supervisorId]);
+
+  useEffect(() => {
+    // Preload upcoming semesters so the modal opens instantly
+    fetchUpcomingSemesters();
+  }, []);
+
+  const openApproveModal = (proposalId) => {
+    setApproveForProposalId(proposalId);
+    setSelectedSemesterId("");
+    setShowApproveModal(true);
+  };
+
+  const closeApproveModal = () => {
+    setShowApproveModal(false);
+    setApproveForProposalId(null);
+    setSelectedSemesterId("");
+  };
+
+  const decide = async (proposalId, decision, semesterId) => {
     if (!supervisorId) return;
     setActing((p) => ({ ...p, [proposalId]: true }));
     try {
       const res = await fetch(`${API_BASE}/proposals/${proposalId}/decision`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ supervisorId, decision }),
+        body: JSON.stringify({ supervisorId, decision, semesterId }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Failed to update proposal");
+
+      if (!res.ok) {
+        // surface cap / validation messages cleanly
+        const msg =
+          data?.message ||
+          (res.status === 409
+            ? "You’ve reached the maximum of 8 groups for this semester."
+            : "Failed to update proposal");
+        throw new Error(msg);
+      }
 
       setProposals((prev) =>
         prev.map((p) => (String(p._id) === String(proposalId) ? data.proposal : p))
       );
-      alert(
-        decision === "approve"
-          ? "Proposal approved successfully"
-          : "Proposal rejected successfully"
-      );
+
+      if (decision === "approve") {
+        alert("Proposal approved and starting semester assigned.");
+      } else {
+        alert("Proposal rejected successfully.");
+      }
     } catch (e) {
       console.error(e);
       alert(e.message || "Failed to update proposal");
@@ -100,6 +165,9 @@ const ViewRecievedProposals = () => {
     }
   };
 
+  const formatSemLabel = (s) =>
+    `${s.season?.charAt(0).toUpperCase()}${s.season?.slice(1)} ${s.year} — starts ${s.startDate}`;
+
   return (
     <section className="min-h-screen bg-white dark:bg-slate-900 transition-colors p-6">
       <div className="max-w-4xl mx-auto">
@@ -119,9 +187,7 @@ const ViewRecievedProposals = () => {
         ) : error ? (
           <div className="text-rose-700 dark:text-rose-300">{error}</div>
         ) : proposals.length === 0 ? (
-          <div className="text-slate-600 dark:text-gray-300">
-            No proposals submitted yet.
-          </div>
+          <div className="text-slate-600 dark:text-gray-300">No proposals submitted yet.</div>
         ) : (
           <ul className="space-y-4">
             {proposals.map((p) => {
@@ -134,7 +200,9 @@ const ViewRecievedProposals = () => {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{p.title}</h3>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        {p.title}
+                      </h3>
                       <div className="text-xs text-slate-500 dark:text-gray-400">
                         {p.groupName || "Unknown Group"} —{" "}
                         {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ""}
@@ -149,12 +217,12 @@ const ViewRecievedProposals = () => {
                             setFeedbackDraft((f) => ({ ...f, [pid]: e.target.value }))
                           }
                           placeholder="Write feedback..."
-                          className="w-full mt-2 p-2 border rounded-md text-sm"
+                          className="w-full mt-2 p-2 border rounded-md text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                         />
                         <button
                           onClick={() => sendFeedback(pid)}
                           disabled={acting[pid]}
-                          className="mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                          className="mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
                         >
                           <Send className="w-4 h-4" /> Send Feedback
                         </button>
@@ -201,8 +269,9 @@ const ViewRecievedProposals = () => {
                     </div>
 
                     <div className="shrink-0 flex flex-col gap-2">
+                      {/* Approve opens semester picker modal */}
                       <button
-                        onClick={() => decide(pid, "approve")}
+                        onClick={() => openApproveModal(pid)}
                         disabled={!pending || acting[pid]}
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${
                           !pending || acting[pid]
@@ -212,6 +281,7 @@ const ViewRecievedProposals = () => {
                       >
                         <Check className="w-4 h-4" /> Approve
                       </button>
+
                       <button
                         onClick={() => decide(pid, "reject")}
                         disabled={!pending || acting[pid]}
@@ -229,6 +299,70 @@ const ViewRecievedProposals = () => {
               );
             })}
           </ul>
+        )}
+
+        {/* Approve -> Select Starting Semester Modal */}
+        {showApproveModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+          >
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md">
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="w-5 h-5 text-[#7b1e3c]" />
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Choose Starting Semester
+                </h3>
+              </div>
+
+              <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">
+                Only upcoming semesters are shown. Current/past semesters are hidden.
+              </p>
+
+              <select
+                value={selectedSemesterId}
+                onChange={(e) => setSelectedSemesterId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md dark:bg-slate-700 dark:text-white"
+              >
+                <option value="">Select semester</option>
+                {upcomingSemesters.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {formatSemLabel(s)}
+                  </option>
+                ))}
+              </select>
+
+              {upcomingSemesters.length === 0 && (
+                <div className="mt-2 text-sm text-amber-600 dark:text-amber-300">
+                  No upcoming semesters available.
+                </div>
+              )}
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={closeApproveModal}
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-slate-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!selectedSemesterId) {
+                      alert("Please choose a semester.");
+                      return;
+                    }
+                    const pid = approveForProposalId;
+                    closeApproveModal();
+                    await decide(pid, "approve", selectedSemesterId);
+                  }}
+                  disabled={!selectedSemesterId}
+                  className="flex-1 px-4 py-2 bg-[#7b1e3c] text-white rounded-md hover:bg-[#691832] transition-colors disabled:opacity-50"
+                >
+                  Approve
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </section>

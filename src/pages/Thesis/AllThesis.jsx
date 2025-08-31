@@ -4,8 +4,6 @@ import { useState } from "react";
 const AllThesis = () => {
   const theses = useLoaderData();
   const [selectedGroup, setSelectedGroup] = useState(null);
-
-  // Filter states
   const [filterSupervisor, setFilterSupervisor] = useState("");
   const [filterGroup, setFilterGroup] = useState("");
   const [filterStatus, setFilterStatus] = useState("");

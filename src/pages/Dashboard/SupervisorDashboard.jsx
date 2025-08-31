@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useLoaderData } from "react-router";
 import { FileText, Users, BookOpen, Search } from "lucide-react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
 const API_BASE = "http://localhost:3000";
+
+const seasonOrderIndex = (s) => ({ spring: 1, summer: 2, fall: 3 }[s] ?? 0);
 
 const SupervisorDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -18,6 +20,7 @@ const SupervisorDashboard = () => {
 
   const [proposals, setProposals] = useState([]);
   const [assignedGroups, setAssignedGroups] = useState([]);
+  const [semesters, setSemesters] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Derived stats
@@ -38,24 +41,38 @@ const SupervisorDashboard = () => {
       const supervisorId = String(User._id);
 
       try {
-        // 1) Proposals submitted to this supervisor
-        const pres = await fetch(
-          `${API_BASE}/proposals?supervisorId=${supervisorId}`
-        );
+        const [pres, gres, sres] = await Promise.all([
+          fetch(`${API_BASE}/proposals?supervisorId=${supervisorId}`),
+          fetch(`${API_BASE}/groups`),
+          fetch(`${API_BASE}/admin/semesters`),
+        ]);
+
         const pjson = pres.ok ? await pres.json() : [];
         setProposals(Array.isArray(pjson) ? pjson : []);
 
-        // 2) All groups -> filter those assigned to this supervisor
-        const gres = await fetch(`${API_BASE}/groups`);
         const gjson = gres.ok ? await gres.json() : [];
         const mine = Array.isArray(gjson)
           ? gjson.filter((g) => String(g.assignedSupervisor) === supervisorId)
           : [];
         setAssignedGroups(mine);
+
+        const sjson = sres.ok ? await sres.json() : [];
+        const sems = Array.isArray(sjson) ? sjson : [];
+        // normalize season lower-case just in case
+        setSemesters(
+          sems
+            .map((s) => ({ ...s, season: String(s.season || "").toLowerCase() }))
+            .sort((a, b) =>
+              a.year !== b.year
+                ? b.year - a.year
+                : seasonOrderIndex(b.season) - seasonOrderIndex(a.season)
+            )
+        );
       } catch (err) {
         console.error("SupervisorDashboard fetch error:", err);
         setProposals([]);
         setAssignedGroups([]);
+        setSemesters([]);
       } finally {
         setLoading(false);
       }
@@ -63,7 +80,67 @@ const SupervisorDashboard = () => {
 
     fetchData();
   }, [User?._id]);
-  // const gotoSearchPapers = () => Navigate("/search");
+
+  // Build grouping map: by semester id, and fallback by (season|year) snapshot
+  const groupsBySemesterKey = useMemo(() => {
+    const map = {};
+    const add = (key, g) => {
+      if (!key) return;
+      const k = String(key);
+      if (!map[k]) map[k] = [];
+      map[k].push(g);
+    };
+
+    assignedGroups.forEach((g) => {
+      const ss = g.startingSemester || null;
+
+      // Prefer ObjectId path
+      const idKey =
+        (ss && typeof ss === "object" && ss._id) || // snapshot { _id, ... }
+        (typeof ss === "string" || typeof ss === "number" ? ss : null); // just an id stored
+      if (idKey) add(`id:${idKey}`, g);
+
+      // Fallback match by season/year snapshot if present
+      const season = ss?.season ? String(ss.season).toLowerCase() : null;
+      const year = ss?.year ?? null;
+      if (season && year) add(`pair:${season}|${year}`, g);
+    });
+
+    return map;
+  }, [assignedGroups]);
+
+  // Helper to get groups for a specific semester doc
+  const getGroupsForSemester = (sem) => {
+    const byId = groupsBySemesterKey[`id:${sem._id}`] || [];
+    const byPair =
+      groupsBySemesterKey[`pair:${String(sem.season).toLowerCase()}|${sem.year}`] || [];
+    // merge unique
+    const seen = new Set();
+    const merged = [];
+    [...byId, ...byPair].forEach((g) => {
+      const id = String(g._id);
+      if (!seen.has(id)) {
+        seen.add(id);
+        merged.push(g);
+      }
+    });
+    return merged;
+  };
+
+  // Only show semesters that actually have groups for this supervisor
+  const semestersWithGroups = useMemo(
+    () => semesters.filter((s) => getGroupsForSemester(s).length > 0),
+    [semesters, groupsBySemesterKey]
+  );
+
+  const formatDate = (dateStr) =>
+    dateStr
+      ? new Date(dateStr).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      : "";
 
   return (
     <section className="min-h-screen bg-white dark:bg-slate-900 p-6 transition-colors">
@@ -124,10 +201,7 @@ const SupervisorDashboard = () => {
             Create Announcement
           </button>
           <Link to="/search">
-            <button
-              // onClick={gotoSearchPapers}
-              className="px-4 py-2 border border-[#7b1e3c] text-[#7b1e3c] rounded-lg hover:bg-[#7b1e3c] hover:text-white transition"
-            >
+            <button className="px-4 py-2 border border-[#7b1e3c] text-[#7b1e3c] rounded-lg hover:bg-[#7b1e3c] hover:text-white transition">
               <Search className="inline w-4 h-4 mr-2" /> Search Papers
             </button>
           </Link>
@@ -146,40 +220,65 @@ const SupervisorDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Assigned Groups List */}
+            {/* Groups by Semester */}
             <div className="bg-white dark:bg-slate-800 rounded-lg p-5 shadow border border-gray-200 dark:border-slate-700">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Assigned Groups
+                Groups by Semester
               </h2>
 
               {loading ? (
-                <div className="text-slate-500">Loading groups...</div>
-              ) : assignedGroups.length === 0 ? (
-                <div className="text-slate-500">No groups assigned yet.</div>
+                <div className="text-slate-500">Loading groups…</div>
+              ) : semestersWithGroups.length === 0 ? (
+                <div className="text-slate-500">
+                  No groups assigned to any semester yet.
+                </div>
               ) : (
-                <ul className="space-y-3">
-                  {assignedGroups.map((g) => (
-                    <li
-                      key={g._id}
-                      className="p-3 rounded border border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
+                <div className="space-y-5">
+                  {semestersWithGroups.map((s) => {
+                    const groups = getGroupsForSemester(s);
+                    const title =
+                      `${String(s.season).charAt(0).toUpperCase()}${String(s.season).slice(1)} ${s.year}`;
+                    return (
+                      <div
+                        key={s._id}
+                        className="rounded-lg border border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4"
+                      >
+                        <div className="flex items-center justify-between mb-3">
                           <div className="font-semibold text-slate-900 dark:text-white">
-                            {g.name}
+                            {title}
                           </div>
-                          <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-                            Members: {(g.members || []).length} • Interests:{" "}
-                            {(g.researchInterests || []).join(", ") || "—"}
+                          <div className="text-xs text-slate-500 dark:text-gray-400">
+                            {formatDate(s.startDate)} — {formatDate(s.endDate)}
                           </div>
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-gray-400">
-                          Max Members: {g.maxMembers || 5}
-                        </div>
+
+                        <ul className="space-y-3">
+                          {groups.map((g) => (
+                            <li
+                              key={g._id}
+                              className="p-3 rounded border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800"
+                            >
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <div className="font-semibold text-slate-900 dark:text-white">
+                                    {g.name}
+                                  </div>
+                                  <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                                    Members: {(g.members || []).length} • Interests:{" "}
+                                    {(g.researchInterests || []).join(", ") || "—"}
+                                  </div>
+                                </div>
+                                <div className="text-xs text-slate-500 dark:text-gray-400">
+                                  Max Members: {g.maxMembers || 5}
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    </li>
-                  ))}
-                </ul>
+                    );
+                  })}
+                </div>
               )}
             </div>
 
@@ -206,9 +305,7 @@ const SupervisorDashboard = () => {
               {loading ? (
                 <div className="text-slate-500">Loading proposals...</div>
               ) : proposals.length === 0 ? (
-                <div className="text-slate-500">
-                  No proposals submitted yet.
-                </div>
+                <div className="text-slate-500">No proposals submitted yet.</div>
               ) : (
                 <>
                   <ul className="space-y-3 max-h-80 overflow-y-auto">
@@ -296,7 +393,7 @@ const SupervisorDashboard = () => {
                 <button className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">
                   View Recommendations
                 </button>
-               <Link to="/schedule-meetings">
+                <Link to="/schedule-meetings">
                   <button className="text-left px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-700">
                     Schedule Meeting
                   </button>
