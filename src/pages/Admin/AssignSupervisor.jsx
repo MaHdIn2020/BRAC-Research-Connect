@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   CheckCircle,
   XCircle,
@@ -6,6 +6,7 @@ import {
   Tag,
   Link as LinkIcon,
   Users,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 
 const API_BASE = "http://localhost:3000";
@@ -17,23 +18,42 @@ const statusBadge = (status = "Pending") => {
   return `${common} bg-yellow-100 text-yellow-800`;
 };
 
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 const AssignSupervisor = () => {
-  // const users = useLoaderData(); // loader gives you /users from RootLayout (not needed here)
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("All"); // All | Pending | Approved | Rejected
   const [proposals, setProposals] = useState([]);
   const [assigningId, setAssigningId] = useState(null);
   const [error, setError] = useState("");
 
+  // Modal state for semester-wise assignment
+  const [semModalOpen, setSemModalOpen] = useState(false);
+  const [semModalProposal, setSemModalProposal] = useState(null);
+  const [upcomingSemesters, setUpcomingSemesters] = useState([]);
+  const [semestersLoading, setSemestersLoading] = useState(false);
+  const [selectedSemesterId, setSelectedSemesterId] = useState(null);
+
+  // For capacity preview in modal
+  const [allGroups, setAllGroups] = useState([]);
+  const [groupsLoading, setGroupsLoading] = useState(false);
+
   const fetchProposals = async () => {
     setLoading(true);
     setError("");
     try {
-      let url = `${API_BASE}/proposals?status=Pending`; // default
+      let url = `${API_BASE}/proposals?status=Pending`;
       if (tab === "Approved" || tab === "Rejected") {
         url = `${API_BASE}/proposals?status=${tab}`;
       } else if (tab === "All") {
-        // Pull all three to render client-side
         const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
           fetch(`${API_BASE}/proposals?status=Pending`),
           fetch(`${API_BASE}/proposals?status=Approved`),
@@ -74,38 +94,6 @@ const AssignSupervisor = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
-  const assignSupervisor = async (proposalId) => {
-    if (!proposalId) return;
-    if (
-      !confirm(
-        "Assign this proposal’s supervisor to the group? This will remove all other proposals from that group."
-      )
-    ) {
-      return;
-    }
-
-    try {
-      setAssigningId(proposalId);
-      const res = await fetch(`${API_BASE}/admin/assign-supervisor`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ proposalId }),
-      });
-
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.message || "Failed to assign supervisor");
-      }
-
-      await fetchProposals();
-      alert("Supervisor assigned and notifications sent.");
-    } catch (e) {
-      alert(e.message || "Failed to assign supervisor");
-    } finally {
-      setAssigningId(null);
-    }
-  };
-
   // small counts for the tabs
   const [counts, setCounts] = useState({
     Pending: 0,
@@ -133,6 +121,99 @@ const AssignSupervisor = () => {
       .catch(() => {});
   }, []);
 
+  // ----- Semester-wise assignment helpers -----
+
+  const openSemesterModal = async (proposal) => {
+    setSemModalProposal(proposal);
+    setSelectedSemesterId(null);
+    setSemModalOpen(true);
+
+    // Fetch upcoming semesters (server already excludes "current")
+    setSemestersLoading(true);
+    try {
+      const r = await fetch(`${API_BASE}/semesters/upcoming`);
+      const arr = r.ok ? await r.json() : [];
+      setUpcomingSemesters(Array.isArray(arr) ? arr : []);
+    } catch {
+      setUpcomingSemesters([]);
+    } finally {
+      setSemestersLoading(false);
+    }
+
+    // Fetch all groups once for capacity preview
+    setGroupsLoading(true);
+    try {
+      const g = await fetch(`${API_BASE}/groups`);
+      const gj = g.ok ? await g.json() : [];
+      setAllGroups(Array.isArray(gj) ? gj : []);
+    } catch {
+      setAllGroups([]);
+    } finally {
+      setGroupsLoading(false);
+    }
+  };
+
+  const closeSemesterModal = () => {
+    setSemModalOpen(false);
+    setSemModalProposal(null);
+    setSelectedSemesterId(null);
+  };
+
+  // Compute how many groups are already assigned to this supervisor for each semester
+  const capacityBySemester = useMemo(() => {
+    if (!semModalProposal || !allGroups.length) return {};
+    const supId = String(semModalProposal.supervisor);
+    const map = {};
+    for (const g of allGroups) {
+      if (String(g.assignedSupervisor) !== supId) continue;
+      const sid = g.assignedSemester ? String(g.assignedSemester) : null;
+      if (!sid) continue;
+      map[sid] = (map[sid] || 0) + 1;
+    }
+    return map; // { semesterId: count }
+  }, [semModalProposal, allGroups]);
+
+  const MAX_PER_SEM = 8;
+
+  const assignSupervisor = async (proposalId, semesterId) => {
+    if (!proposalId) return;
+    if (!semesterId) {
+      alert("Please select a semester");
+      return;
+    }
+
+    if (
+      !confirm(
+        "Assign this proposal’s supervisor to the selected semester for this group? This will remove all other proposals from that group."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setAssigningId(proposalId);
+      const res = await fetch(`${API_BASE}/admin/assign-supervisor`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ proposalId, semesterId }),
+      });
+
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(j.message || "Failed to assign supervisor");
+      }
+
+      // refresh lists
+      await fetchProposals();
+      alert(j.message || "Supervisor assigned and notifications sent.");
+      closeSemesterModal();
+    } catch (e) {
+      alert(e.message || "Failed to assign supervisor");
+    } finally {
+      setAssigningId(null);
+    }
+  };
+
   return (
     <section className="min-h-screen bg-white dark:bg-slate-900 p-6 transition-colors">
       <div className="container mx-auto max-w-6xl">
@@ -141,8 +222,8 @@ const AssignSupervisor = () => {
             Manage Proposals & Assign Supervisors
           </h1>
           <p className="text-slate-600 dark:text-gray-400 mt-1">
-            View proposals by status. Assign the proposed supervisor to the
-            group with one click.
+            View proposals by status. Assign the proposed supervisor to a{" "}
+            <span className="font-semibold">specific upcoming semester</span> with one click.
           </p>
         </header>
 
@@ -185,10 +266,6 @@ const AssignSupervisor = () => {
           ) : (
             <ul className="divide-y divide-gray-100 dark:divide-slate-700">
               {proposals.map((p) => {
-                {
-                  p.supervisorName || p.supervisorEmail || p.supervisor;
-                }
-
                 return (
                   <li key={p._id} className="p-5">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -271,12 +348,14 @@ const AssignSupervisor = () => {
                           {p.status === "Pending" ? (
                             <button
                               disabled={assigningId === p._id}
-                              onClick={() => assignSupervisor(p._id)}
+                              onClick={() => openSemesterModal(p)}
                               className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60"
-                              title="Assign this proposed supervisor to the group"
+                              title="Assign this proposed supervisor to a semester for the group"
                             >
                               <CheckCircle className="w-4 h-4" />
-                              {assigningId === p._id ? "Assigning…" : "Assign Supervisor"}
+                              {assigningId === p._id
+                                ? "Assigning…"
+                                : "Assign (Pick Semester)"}
                             </button>
                           ) : p.status === "Approved" ? (
                             <span className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-100 text-emerald-800">
@@ -284,7 +363,6 @@ const AssignSupervisor = () => {
                               Already Assigned
                             </span>
                           ) : (
-                            // Rejected state – no assigning allowed
                             <span className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-100 text-red-800">
                               <XCircle className="w-4 h-4" />
                               Rejected (via Supervisor)
@@ -334,6 +412,123 @@ const AssignSupervisor = () => {
           )}
         </div>
       </div>
+
+      {/* Semester selection modal */}
+      {semModalOpen && semModalProposal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+        >
+          <div className="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-xl">
+            <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                Assign to Upcoming Semester
+              </h3>
+              <button
+                onClick={closeSemesterModal}
+                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div className="text-sm text-slate-600 dark:text-slate-300">
+                Proposal:{" "}
+                <span className="font-medium">{semModalProposal.title}</span>
+              </div>
+
+              {semestersLoading || groupsLoading ? (
+                <div className="py-6 text-slate-600 dark:text-slate-300">
+                  Loading semesters…
+                </div>
+              ) : upcomingSemesters.length === 0 ? (
+                <div className="py-6 text-slate-600 dark:text-slate-300">
+                  No upcoming semesters available.
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {upcomingSemesters.map((s) => {
+                    const sid = String(s._id || s.id);
+                    const taken = capacityBySemester[sid] || 0;
+                    const left = Math.max(0, MAX_PER_SEM - taken);
+                    const full = left <= 0;
+
+                    return (
+                      <li
+                        key={sid}
+                        className={`p-3 rounded-lg border ${
+                          selectedSemesterId === sid
+                            ? "border-[#7b1e3c] bg-[#7b1e3c]/5"
+                            : "border-gray-200 dark:border-slate-700"
+                        }`}
+                      >
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="semester"
+                            value={sid}
+                            disabled={full}
+                            checked={selectedSemesterId === sid}
+                            onChange={() => setSelectedSemesterId(sid)}
+                            className="mt-1"
+                          />
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-slate-900 dark:text-white capitalize">
+                                {s.season} {s.year}
+                              </span>
+                              <span
+                                className={`text-[10px] px-2 py-0.5 rounded-full ${
+                                  full
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-emerald-100 text-emerald-700"
+                                }`}
+                              >
+                                {full
+                                  ? "Full (0 left)"
+                                  : `${left} of ${MAX_PER_SEM} slots left`}
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2 mt-1">
+                              <CalendarIcon className="w-3.5 h-3.5" />
+                              {formatDate(s.startDate)} — {formatDate(s.endDate)}
+                            </div>
+                          </div>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 flex gap-3">
+              <button
+                onClick={closeSemesterModal}
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() =>
+                  assignSupervisor(semModalProposal._id, selectedSemesterId)
+                }
+                disabled={
+                  assigningId === semModalProposal._id ||
+                  !selectedSemesterId ||
+                  (capacityBySemester[selectedSemesterId] || 0) >= MAX_PER_SEM
+                }
+                className="flex-1 px-4 py-2 rounded-lg bg-[#7b1e3c] text-white hover:bg-[#691832] disabled:opacity-60"
+              >
+                {assigningId === semModalProposal._id
+                  ? "Assigning…"
+                  : "Confirm Assignment"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
