@@ -21,12 +21,6 @@ const adminModules = [
     link: "/manage-users",
   },
   {
-    title: "Thesis Proposal Submissions",
-    description: "View, approve, or reject thesis proposals.",
-    icon: <FileText className="w-8 h-8 text-[#7b1e3c]" />,
-    link: "/proposals",
-  },
-  {
     title: "Assign Supervisors",
     description: "Manually or automatically assign supervisors to students.",
     icon: <UserCheck className="w-8 h-8 text-[#7b1e3c]" />,
@@ -39,40 +33,16 @@ const adminModules = [
     link: "/announcements",
   },
   {
-    title: "Deadline Management",
-    description: "Set and manage deadlines for thesis stages.",
-    icon: <Calendar className="w-8 h-8 text-[#7b1e3c]" />,
-    link: "/deadlines",
-  },
-  {
     title: "Search & Filtering",
     description: "Search/filter across thesis topics and research papers.",
     icon: <Search className="w-8 h-8 text-[#7b1e3c]" />,
     link: "/search",
   },
   {
-    title: "Thesis Listings",
-    description: "View all theses with assigned supervisors.",
-    icon: <ClipboardList className="w-8 h-8 text-[#7b1e3c]" />,
-    link: "/thesis-list",
-  },
-  {
-    title: "Final Grades",
-    description: "Assign final grades after thesis review.",
-    icon: <Clock className="w-8 h-8 text-[#7b1e3c]" />,
-    link: "/final-grades",
-  },
-  {
     title: "Create or Answer FAQs and Post",
     description: "Manage frequently asked questions and publish responses.",
     icon: <MessageCircleQuestion className="w-8 h-8 text-[#7b1e3c]" />,
     link: "/manage-faqs",
-  },
-  {
-    title: "System Settings",
-    description: "Manage FAQs, notifications, and email alerts.",
-    icon: <Settings className="w-8 h-8 text-[#7b1e3c]" />,
-    link: "/settings",
   },
 ];
 
