@@ -36,15 +36,13 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-
     // Create user in Firebase Authentication
     createUser(formData.email, formData.password)
       .then((userCredential) => {
-
         alert("Registration successful!");
 
         // Conditional API POST request based on role
-        const endpoint = "http://localhost:3000/users";
+        const endpoint = "https://bracu-research-server-teal.vercel.app/users";
 
         // Prepare data to post
         const postData =
@@ -67,7 +65,6 @@ const Register = () => {
         })
           .then((response) => response.json())
           .then((data) => {
-           
             navigate("/login");
           })
           .catch((error) => {

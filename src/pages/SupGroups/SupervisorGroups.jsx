@@ -3,7 +3,7 @@ import { useLoaderData, Link } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { Users, FileText, Tag } from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const SupervisorGroups = () => {
   const { user } = useContext(AuthContext);
@@ -144,14 +144,17 @@ const SupervisorGroups = () => {
                         {group?.name || "Unnamed Group"}
                       </h3>
                       <div className="mt-1 text-sm text-slate-600 dark:text-gray-400">
-                        Assigned Supervisor: <span className="font-medium">You</span>
+                        Assigned Supervisor:{" "}
+                        <span className="font-medium">You</span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-gray-100 dark:bg-slate-800 text-slate-700 dark:text-gray-300">
                         <Users className="w-4 h-4" />
-                        {Array.isArray(group?.members) ? group.members.length : 0}
+                        {Array.isArray(group?.members)
+                          ? group.members.length
+                          : 0}
                         /{group?.maxMembers ?? 5}
                       </span>
                     </div>

@@ -1,9 +1,20 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useLoaderData } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
-import { Calendar, Clock, BookOpen, X, Edit, Trash2, Eye, Plus, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  BookOpen,
+  X,
+  Edit,
+  Trash2,
+  Eye,
+  Plus,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const Semester = () => {
   const { user } = useContext(AuthContext);
@@ -80,8 +91,9 @@ const Semester = () => {
     const latest = sortedSemesters[0];
     const seasonOrder = ["spring", "summer", "fall"];
     const currentIndex = seasonOrder.indexOf(latest.season);
-    
-    if (currentIndex === 2) { // fall -> next spring
+
+    if (currentIndex === 2) {
+      // fall -> next spring
       return { season: "spring", year: latest.year + 1 };
     } else {
       return { season: seasonOrder[currentIndex + 1], year: latest.year };
@@ -129,20 +141,25 @@ const Semester = () => {
     }
 
     // Check if semester already exists
-    const exists = semesters.some(s => 
-      s.season === season && 
-      s.year === parseInt(year) && 
-      (!editingSemester || s._id !== editingSemester._id)
+    const exists = semesters.some(
+      (s) =>
+        s.season === season &&
+        s.year === parseInt(year) &&
+        (!editingSemester || s._id !== editingSemester._id)
     );
     if (exists) {
-      errors.semester = `${season.charAt(0).toUpperCase() + season.slice(1)} ${year} already exists`;
+      errors.semester = `${
+        season.charAt(0).toUpperCase() + season.slice(1)
+      } ${year} already exists`;
     }
 
     // Check sequential order (if not editing and creating new)
     if (!editingSemester && semesters.length > 0) {
       const expected = getNextSemester();
       if (season !== expected.season || parseInt(year) !== expected.year) {
-        errors.sequence = `Next semester should be ${expected.season.charAt(0).toUpperCase() + expected.season.slice(1)} ${expected.year}`;
+        errors.sequence = `Next semester should be ${
+          expected.season.charAt(0).toUpperCase() + expected.season.slice(1)
+        } ${expected.year}`;
       }
     }
 
@@ -151,13 +168,18 @@ const Semester = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === 'year' ? parseInt(value) : value
+      [name]: name === "year" ? parseInt(value) : value,
     }));
-    
+
     // Clear errors when user makes changes
-    if (formErrors[name] || formErrors.duration || formErrors.semester || formErrors.sequence) {
+    if (
+      formErrors[name] ||
+      formErrors.duration ||
+      formErrors.semester ||
+      formErrors.sequence
+    ) {
       const newErrors = { ...formErrors };
       delete newErrors[name];
       delete newErrors.duration;
@@ -203,7 +225,12 @@ const Semester = () => {
 
   const handleSubmit = async () => {
     // Validate all fields
-    const errors = validateSemester(formData.season, formData.year, formData.startDate, formData.endDate);
+    const errors = validateSemester(
+      formData.season,
+      formData.year,
+      formData.startDate,
+      formData.endDate
+    );
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -212,12 +239,12 @@ const Semester = () => {
 
     setSubmitting(true);
     try {
-      const url = editingSemester 
+      const url = editingSemester
         ? `${API_BASE}/admin/semesters/${editingSemester._id}`
         : `${API_BASE}/admin/semesters`;
-      
+
       const method = editingSemester ? "PUT" : "POST";
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -231,16 +258,18 @@ const Semester = () => {
       if (response.ok) {
         if (editingSemester) {
           // Update existing semester
-          setSemesters(prev => 
-            prev.map(s => s._id === editingSemester._id ? result.semester : s)
+          setSemesters((prev) =>
+            prev.map((s) =>
+              s._id === editingSemester._id ? result.semester : s
+            )
           );
           setSuccessMessage("Semester updated successfully!");
         } else {
           // Add new semester
-          setSemesters(prev => [result.semester, ...prev]);
+          setSemesters((prev) => [result.semester, ...prev]);
           setSuccessMessage("Semester created successfully!");
         }
-        
+
         setShowModal(false);
         resetForm();
       } else {
@@ -248,7 +277,10 @@ const Semester = () => {
         if (result.message) {
           if (result.message.includes("already exists")) {
             setFormErrors({ semester: result.message });
-          } else if (result.message.includes("sequential") || result.message.includes("should be")) {
+          } else if (
+            result.message.includes("sequential") ||
+            result.message.includes("should be")
+          ) {
             setFormErrors({ sequence: result.message });
           } else if (result.message.includes("duration")) {
             setFormErrors({ duration: result.message });
@@ -270,18 +302,25 @@ const Semester = () => {
   };
 
   const handleDelete = async (semesterId) => {
-    if (!confirm("Are you sure you want to delete this semester? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this semester? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     setDeleteLoading(semesterId);
     try {
-      const response = await fetch(`${API_BASE}/admin/semesters/${semesterId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${API_BASE}/admin/semesters/${semesterId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
-        setSemesters(prev => prev.filter(s => s._id !== semesterId));
+        setSemesters((prev) => prev.filter((s) => s._id !== semesterId));
         setSuccessMessage("Semester deleted successfully!");
       } else {
         const error = await response.json();
@@ -296,10 +335,10 @@ const Semester = () => {
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -309,7 +348,7 @@ const Semester = () => {
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const weeks = Math.ceil(diffDays / 7);
-    const months = Math.round(diffDays / 30.44 * 10) / 10; // Round to 1 decimal
+    const months = Math.round((diffDays / 30.44) * 10) / 10; // Round to 1 decimal
     return `${weeks} weeks (${months} months)`;
   };
 
@@ -317,10 +356,21 @@ const Semester = () => {
     const today = new Date();
     const start = new Date(semester.startDate);
     const end = new Date(semester.endDate);
-    
-    if (today < start) return { status: "Upcoming", color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30" };
-    if (today >= start && today <= end) return { status: "Active", color: "text-green-600 bg-green-100 dark:bg-green-900/30" };
-    return { status: "Completed", color: "text-slate-500 bg-slate-100 dark:bg-slate-700" };
+
+    if (today < start)
+      return {
+        status: "Upcoming",
+        color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
+      };
+    if (today >= start && today <= end)
+      return {
+        status: "Active",
+        color: "text-green-600 bg-green-100 dark:bg-green-900/30",
+      };
+    return {
+      status: "Completed",
+      color: "text-slate-500 bg-slate-100 dark:bg-slate-700",
+    };
   };
 
   const closeModal = () => {
@@ -369,7 +419,9 @@ const Semester = () => {
         {successMessage && (
           <div className="mb-6 flex items-center gap-2 p-4 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <span className="text-green-800 dark:text-green-200">{successMessage}</span>
+            <span className="text-green-800 dark:text-green-200">
+              {successMessage}
+            </span>
           </div>
         )}
 
@@ -377,16 +429,29 @@ const Semester = () => {
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex gap-6 text-sm">
             <div className="text-slate-600 dark:text-slate-400">
-              Total: <span className="font-semibold text-slate-900 dark:text-white">{semesters.length}</span>
-            </div>
-            <div className="text-slate-600 dark:text-slate-400">
-              Active: <span className="font-semibold text-green-600">
-                {semesters.filter(s => getSemesterStatus(s).status === "Active").length}
+              Total:{" "}
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {semesters.length}
               </span>
             </div>
             <div className="text-slate-600 dark:text-slate-400">
-              Upcoming: <span className="font-semibold text-blue-600">
-                {semesters.filter(s => getSemesterStatus(s).status === "Upcoming").length}
+              Active:{" "}
+              <span className="font-semibold text-green-600">
+                {
+                  semesters.filter(
+                    (s) => getSemesterStatus(s).status === "Active"
+                  ).length
+                }
+              </span>
+            </div>
+            <div className="text-slate-600 dark:text-slate-400">
+              Upcoming:{" "}
+              <span className="font-semibold text-blue-600">
+                {
+                  semesters.filter(
+                    (s) => getSemesterStatus(s).status === "Upcoming"
+                  ).length
+                }
               </span>
             </div>
           </div>
@@ -395,13 +460,20 @@ const Semester = () => {
             onClick={handleCreateNew}
             disabled={!canCreateNext()}
             className="px-6 py-3 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#691832] disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-            title={!canCreateNext() ? "Cannot create semesters for past years" : "Create next semester"}
+            title={
+              !canCreateNext()
+                ? "Cannot create semesters for past years"
+                : "Create next semester"
+            }
           >
             <Plus className="w-5 h-5" />
             Create Semester
             {semesters.length > 0 && (
               <span className="text-xs bg-white/20 px-2 py-1 rounded">
-                Next: {getNextSemester().season.charAt(0).toUpperCase() + getNextSemester().season.slice(1)} {getNextSemester().year}
+                Next:{" "}
+                {getNextSemester().season.charAt(0).toUpperCase() +
+                  getNextSemester().season.slice(1)}{" "}
+                {getNextSemester().year}
               </span>
             )}
           </button>
@@ -417,8 +489,12 @@ const Semester = () => {
           ) : semesters.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <div className="text-slate-500 mb-2">No semesters created yet</div>
-              <div className="text-sm text-slate-400 mb-4">Create your first semester to get started</div>
+              <div className="text-slate-500 mb-2">
+                No semesters created yet
+              </div>
+              <div className="text-sm text-slate-400 mb-4">
+                Create your first semester to get started
+              </div>
               <button
                 onClick={handleCreateNew}
                 className="px-4 py-2 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#691832] transition-colors"
@@ -439,7 +515,9 @@ const Semester = () => {
                       <h3 className="text-xl font-semibold text-slate-900 dark:text-white capitalize">
                         {semester.season} {semester.year}
                       </h3>
-                      <div className={`inline-block text-xs font-medium px-2 py-1 rounded-full ${status.color}`}>
+                      <div
+                        className={`inline-block text-xs font-medium px-2 py-1 rounded-full ${status.color}`}
+                      >
                         {status.status}
                       </div>
                     </div>
@@ -484,7 +562,13 @@ const Semester = () => {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                       <Clock className="w-4 h-4 text-[#7b1e3c]" />
-                      <span>Duration: {getSemesterDuration(semester.startDate, semester.endDate)}</span>
+                      <span>
+                        Duration:{" "}
+                        {getSemesterDuration(
+                          semester.startDate,
+                          semester.endDate
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -495,7 +579,10 @@ const Semester = () => {
 
         {/* Create/Edit Semester Modal */}
         {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+          >
             <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -513,7 +600,10 @@ const Semester = () => {
               {!editingSemester && (
                 <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                   <div className="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>Next Expected:</strong> {getNextSemester().season.charAt(0).toUpperCase() + getNextSemester().season.slice(1)} {getNextSemester().year}
+                    <strong>Next Expected:</strong>{" "}
+                    {getNextSemester().season.charAt(0).toUpperCase() +
+                      getNextSemester().season.slice(1)}{" "}
+                    {getNextSemester().year}
                   </div>
                 </div>
               )}
@@ -566,8 +656,10 @@ const Semester = () => {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c] dark:bg-slate-700 dark:text-white"
                     required
                   >
-                    {yearOptions.map(year => (
-                      <option key={year} value={year}>{year}</option>
+                    {yearOptions.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
                     ))}
                   </select>
                   {formErrors.year && (
@@ -587,7 +679,11 @@ const Semester = () => {
                     name="startDate"
                     value={formData.startDate}
                     onChange={handleInputChange}
-                    min={!editingSemester ? new Date().toISOString().split('T')[0] : undefined}
+                    min={
+                      !editingSemester
+                        ? new Date().toISOString().split("T")[0]
+                        : undefined
+                    }
                     className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c] dark:bg-slate-700 dark:text-white"
                     required
                   />
@@ -627,13 +723,19 @@ const Semester = () => {
                 </div>
 
                 {/* Duration Preview */}
-                {formData.startDate && formData.endDate && new Date(formData.endDate) > new Date(formData.startDate) && (
-                  <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      <strong>Duration Preview:</strong> {getSemesterDuration(formData.startDate, formData.endDate)}
+                {formData.startDate &&
+                  formData.endDate &&
+                  new Date(formData.endDate) > new Date(formData.startDate) && (
+                    <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <div className="text-sm text-slate-600 dark:text-slate-400">
+                        <strong>Duration Preview:</strong>{" "}
+                        {getSemesterDuration(
+                          formData.startDate,
+                          formData.endDate
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* General Error */}
                 {formErrors.general && (
@@ -673,7 +775,10 @@ const Semester = () => {
 
         {/* View Semester Modal */}
         {showViewModal && viewingSemester && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+          >
             <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -701,7 +806,11 @@ const Semester = () => {
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Status
                   </label>
-                  <div className={`inline-block text-xs font-medium px-2 py-1 rounded-full ${getSemesterStatus(viewingSemester).color}`}>
+                  <div
+                    className={`inline-block text-xs font-medium px-2 py-1 rounded-full ${
+                      getSemesterStatus(viewingSemester).color
+                    }`}
+                  >
                     {getSemesterStatus(viewingSemester).status}
                   </div>
                 </div>
@@ -729,14 +838,20 @@ const Semester = () => {
                     Duration
                   </label>
                   <div className="text-slate-900 dark:text-white">
-                    {getSemesterDuration(viewingSemester.startDate, viewingSemester.endDate)}
+                    {getSemesterDuration(
+                      viewingSemester.startDate,
+                      viewingSemester.endDate
+                    )}
                   </div>
                 </div>
 
                 {/* Additional Info */}
                 <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Created: {viewingSemester.createdAt ? formatDate(viewingSemester.createdAt) : 'N/A'}
+                    Created:{" "}
+                    {viewingSemester.createdAt
+                      ? formatDate(viewingSemester.createdAt)
+                      : "N/A"}
                   </div>
                   {viewingSemester.updatedAt && (
                     <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -772,4 +887,3 @@ const Semester = () => {
 };
 
 export default Semester;
-

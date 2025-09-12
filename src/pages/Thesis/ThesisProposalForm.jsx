@@ -25,7 +25,7 @@ const ThesisProposalForm = () => {
     const fetchGroup = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/groups/by-admin/${User?._id}`
+          `https://bracu-research-server-teal.vercel.app/groups/by-admin/${User?._id}`
         );
         if (res.status === 404) {
           setErrorMsg("Only group creators can submit proposals.");
@@ -56,7 +56,9 @@ const ThesisProposalForm = () => {
   useEffect(() => {
     const fetchSupervisors = async () => {
       try {
-        const res = await fetch("http://localhost:3000/supervisors");
+        const res = await fetch(
+          "https://bracu-research-server-teal.vercel.app/supervisors"
+        );
         if (!res.ok) throw new Error("Failed to fetch supervisors");
         const data = await res.json();
         setSupervisors(data);
@@ -81,7 +83,9 @@ const ThesisProposalForm = () => {
       return;
     }
     if (group?.assignedSupervisor) {
-      alert("Your group already has an assigned supervisor. No more proposals allowed.");
+      alert(
+        "Your group already has an assigned supervisor. No more proposals allowed."
+      );
       return;
     }
 
@@ -96,19 +100,22 @@ const ThesisProposalForm = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/proposals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          domain: group?.researchInterests || [],
-          studentId: User?._id,
-          groupId: group._id,
-          adminapproved: false,
-          supervisorapproved: false,
-          groupName: group.name,
-        }),
-      });
+      const res = await fetch(
+        "https://bracu-research-server-teal.vercel.app/proposals",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...formData,
+            domain: group?.researchInterests || [],
+            studentId: User?._id,
+            groupId: group._id,
+            adminapproved: false,
+            supervisorapproved: false,
+            groupName: group.name,
+          }),
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to submit proposal");
 
@@ -223,7 +230,9 @@ const ThesisProposalForm = () => {
 
             {/* Drive Link */}
             <div>
-              <label className="block mb-1 font-medium">Google Drive Link</label>
+              <label className="block mb-1 font-medium">
+                Google Drive Link
+              </label>
               <input
                 type="url"
                 name="driveLink"

@@ -57,10 +57,14 @@ const SupervisorProfile = () => {
         setLoading(true);
         if (!User?._id) throw new Error("User not found");
 
-        const res = await fetch(`http://localhost:3000/supervisor/${User._id}`);
+        const res = await fetch(
+          `https://bracu-research-server-teal.vercel.app/supervisor/${User._id}`
+        );
         if (!res.ok) {
           throw new Error(
-            res.status === 404 ? "Supervisor not found" : "Failed to load profile"
+            res.status === 404
+              ? "Supervisor not found"
+              : "Failed to load profile"
           );
         }
 
@@ -95,7 +99,7 @@ const SupervisorProfile = () => {
       if (!User?._id) throw new Error("User not found");
 
       const res = await fetch(
-        `http://localhost:3000/supervisor/update/${User._id}`,
+        `https://bracu-research-server-teal.vercel.app/supervisor/update/${User._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -137,31 +141,42 @@ const SupervisorProfile = () => {
   return (
     <div className="w-full min-h-screen bg-gray-50 dark:bg-slate-900 p-4 sm:p-8">
       <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-        
         {/* LEFT: Update Profile */}
         <div className="flex-1 bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 sm:p-8">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
             Update <span className="text-[#7b1e3c]">Profile</span>
           </h2>
           <form onSubmit={handleSubmit} className="space-y-5">
-            {["name", "email", "department", "phone", "photoUrl"].map((field) => (
-              <div key={field}>
-                <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                  {field.charAt(0).toUpperCase() + field.slice(1)}
-                </label>
-                <input
-                  type={field === "email" ? "email" : "text"}
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:text-white ${errors[field] ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
-                  disabled={field === "email"}
-                />
-                {errors[field] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[field]}</p>}
-              </div>
-            ))}
+            {["name", "email", "department", "phone", "photoUrl"].map(
+              (field) => (
+                <div key={field}>
+                  <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <input
+                    type={field === "email" ? "email" : "text"}
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:text-white ${
+                      errors[field]
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-600"
+                    }`}
+                    disabled={field === "email"}
+                  />
+                  {errors[field] && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                      {errors[field]}
+                    </p>
+                  )}
+                </div>
+              )
+            )}
             <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Research Area</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+                Research Area
+              </label>
               <textarea
                 name="researchArea"
                 value={formData.researchArea}
@@ -189,34 +204,55 @@ const SupervisorProfile = () => {
 
           <div className="flex items-center gap-4 mb-4">
             {supervisor.photoUrl ? (
-              <img src={supervisor.photoUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover border-2 border-[#7b1e3c]" />
+              <img
+                src={supervisor.photoUrl}
+                alt="Profile"
+                className="w-20 h-20 rounded-full object-cover border-2 border-[#7b1e3c]"
+              />
             ) : (
               <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">{supervisor.name?.charAt(0)}</span>
+                <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                  {supervisor.name?.charAt(0)}
+                </span>
               </div>
             )}
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{supervisor.name}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{supervisor.email}</p>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                {supervisor.name}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {supervisor.email}
+              </p>
             </div>
           </div>
 
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
             <div>
-              <dt className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Department</dt>
-              <dd className="font-medium text-slate-900 dark:text-white">{supervisor.department}</dd>
+              <dt className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Department
+              </dt>
+              <dd className="font-medium text-slate-900 dark:text-white">
+                {supervisor.department}
+              </dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Phone</dt>
-              <dd className="font-medium text-slate-900 dark:text-white">{supervisor.phone || "—"}</dd>
+              <dt className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Phone
+              </dt>
+              <dd className="font-medium text-slate-900 dark:text-white">
+                {supervisor.phone || "—"}
+              </dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Research Area</dt>
-              <dd className="font-medium text-slate-900 dark:text-white">{supervisor.researchArea || "—"}</dd>
+              <dt className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Research Area
+              </dt>
+              <dd className="font-medium text-slate-900 dark:text-white">
+                {supervisor.researchArea || "—"}
+              </dd>
             </div>
           </dl>
         </div>
-
       </div>
     </div>
   );

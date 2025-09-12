@@ -2,13 +2,13 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const CreateGroup = () => {
   const { user } = useContext(AuthContext); // Firebase user (login gate only)
-  const { id: routeUserId } = useParams();  // Mongo user _id from URL: /create-group/:id
+  const { id: routeUserId } = useParams(); // Mongo user _id from URL: /create-group/:id
 
-  const [dbUser, setDbUser] = useState(null);         // Mongo user doc
+  const [dbUser, setDbUser] = useState(null); // Mongo user doc
   const [loadingUser, setLoadingUser] = useState(true);
 
   // Admin-created group (if any)
@@ -50,7 +50,9 @@ const CreateGroup = () => {
       }
     };
     load();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [routeUserId]);
 
   // 2) Check if this user already created a group (admin)
@@ -81,7 +83,9 @@ const CreateGroup = () => {
       }
     };
     checkAdminGroup();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [dbUser?._id]);
 
   // 3) Check if user is already a MEMBER of ANY group (includes admin as well, but we also check separately)
@@ -102,7 +106,8 @@ const CreateGroup = () => {
         const found = (Array.isArray(all) ? all : []).find(
           (g) =>
             String(g.admin) === myIdStr ||
-            (Array.isArray(g.members) && g.members.some((m) => String(m) === myIdStr))
+            (Array.isArray(g.members) &&
+              g.members.some((m) => String(m) === myIdStr))
         );
         if (!ignore) setMemberGroup(found || null);
       } catch (e) {
@@ -113,7 +118,9 @@ const CreateGroup = () => {
       }
     };
     checkMembership();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [dbUser?._id]);
 
   const alreadyBlocked = useMemo(() => {
@@ -135,7 +142,10 @@ const CreateGroup = () => {
   const addInterest = () => {
     const raw = interestInput.trim();
     if (!raw) return;
-    const parts = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    const parts = raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
     const merged = Array.from(new Set([...interests, ...parts]));
     setInterests(merged);
     setInterestInput("");
@@ -192,26 +202,36 @@ const CreateGroup = () => {
       </h1>
       <p className="text-slate-600 dark:text-gray-300 mt-1">
         Start a research group. You’ll be the{" "}
-        <span className="font-medium text-[#7b1e3c]">group admin</span>. Max members: 5.
+        <span className="font-medium text-[#7b1e3c]">group admin</span>. Max
+        members: 5.
       </p>
 
       <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm p-5">
         {loadingUser ? (
-          <div className="text-slate-600 dark:text-gray-300">Checking your account…</div>
+          <div className="text-slate-600 dark:text-gray-300">
+            Checking your account…
+          </div>
         ) : !routeUserId ? (
           <div className="text-amber-700 dark:text-amber-300">
-            No user id found in the URL. Make sure your route is like <code>/create-group/:id</code>.
+            No user id found in the URL. Make sure your route is like{" "}
+            <code>/create-group/:id</code>.
           </div>
         ) : !user ? (
-          <div className="text-amber-700 dark:text-amber-300">Please log in to create a group.</div>
+          <div className="text-amber-700 dark:text-amber-300">
+            Please log in to create a group.
+          </div>
         ) : !dbUser ? (
           <div className="text-amber-700 dark:text-amber-300">
             Couldn’t find your BRACU account in the database. Contact admin.
           </div>
         ) : dbUser.role !== "student" ? (
-          <div className="text-amber-700 dark:text-amber-300">Only students can create groups.</div>
+          <div className="text-amber-700 dark:text-amber-300">
+            Only students can create groups.
+          </div>
         ) : checkingAdminGroup || checkingMembership ? (
-          <div className="text-slate-600 dark:text-gray-300">Checking your group status…</div>
+          <div className="text-slate-600 dark:text-gray-300">
+            Checking your group status…
+          </div>
         ) : alreadyBlocked ? (
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-slate-800">
             <p className="text-[#7b1e3c] font-semibold">
@@ -221,46 +241,52 @@ const CreateGroup = () => {
             {myAdminGroup ? (
               <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
                 <div>
-                  <span className="font-medium">(You are the Admin) Name:</span> {myAdminGroup.name}
+                  <span className="font-medium">(You are the Admin) Name:</span>{" "}
+                  {myAdminGroup.name}
                 </div>
                 <div>
                   <span className="font-medium">Members:</span>{" "}
-                  {(myAdminGroup.members && myAdminGroup.members.length) || 1} / {myAdminGroup.maxMembers || 5}
+                  {(myAdminGroup.members && myAdminGroup.members.length) || 1} /{" "}
+                  {myAdminGroup.maxMembers || 5}
                 </div>
-                {Array.isArray(myAdminGroup.researchInterests) && myAdminGroup.researchInterests.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {myAdminGroup.researchInterests.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {Array.isArray(myAdminGroup.researchInterests) &&
+                  myAdminGroup.researchInterests.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {myAdminGroup.researchInterests.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
               </div>
             ) : memberGroup ? (
               <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
                 <div>
-                  <span className="font-medium">Group Name:</span> {memberGroup.name}
+                  <span className="font-medium">Group Name:</span>{" "}
+                  {memberGroup.name}
                 </div>
                 <div>
                   <span className="font-medium">Members:</span>{" "}
-                  {(memberGroup.members && memberGroup.members.length) || 0} / {memberGroup.maxMembers || 5}
+                  {(memberGroup.members && memberGroup.members.length) || 0} /{" "}
+                  {memberGroup.maxMembers || 5}
                 </div>
-                {Array.isArray(memberGroup.researchInterests) && memberGroup.researchInterests.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {memberGroup.researchInterests.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {Array.isArray(memberGroup.researchInterests) &&
+                  memberGroup.researchInterests.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {memberGroup.researchInterests.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
               </div>
             ) : null}
           </div>
@@ -284,7 +310,8 @@ const CreateGroup = () => {
             {/* Research Interests */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-gray-200 mb-1">
-                Research Interests (one or many) <span className="text-red-600">*</span>
+                Research Interests (one or many){" "}
+                <span className="text-red-600">*</span>
               </label>
 
               <div className="flex gap-2">
@@ -341,7 +368,8 @@ const CreateGroup = () => {
             </div>
 
             <p className="text-xs text-slate-500 dark:text-gray-400">
-              On create: assigned supervisor is <em>None</em>, proposals submitted to is <em>empty</em>.
+              On create: assigned supervisor is <em>None</em>, proposals
+              submitted to is <em>empty</em>.
             </p>
           </form>
         )}

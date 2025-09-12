@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext, useMemo } from "react";
 import { NavLink, useParams } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const FindGroup = () => {
   const { user } = useContext(AuthContext); // Firebase user (login gate only)
-  const { id: routeUserId } = useParams();  // Mongo user _id in URL, e.g. /find-group/:id
+  const { id: routeUserId } = useParams(); // Mongo user _id in URL, e.g. /find-group/:id
 
   // Mongo user doc for the currently logged-in person
   const [dbUser, setDbUser] = useState(null);
@@ -55,7 +55,9 @@ const FindGroup = () => {
       }
     };
     loadUser();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [routeUserId]);
 
   // Load all groups
@@ -75,7 +77,9 @@ const FindGroup = () => {
       }
     };
     loadGroups();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   // Derived ids / flags
@@ -174,9 +178,7 @@ const FindGroup = () => {
     setSearching(true);
     try {
       const res = await fetch(
-        `${API_BASE}/users/by-studentId/${encodeURIComponent(
-          searchId.trim()
-        )}`
+        `${API_BASE}/users/by-studentId/${encodeURIComponent(searchId.trim())}`
       );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -299,7 +301,8 @@ const FindGroup = () => {
             Find Groups
           </h1>
           <p className="text-slate-600 dark:text-gray-300 mt-1">
-            Browse existing research groups and join one that matches your interests.
+            Browse existing research groups and join one that matches your
+            interests.
           </p>
         </div>
 
@@ -390,13 +393,18 @@ const FindGroup = () => {
       {dbUser?.role === "student" && myAdminGroup && (
         <div className="mt-6 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-white mb-3">
-            Join Requests to <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
+            Join Requests to{" "}
+            <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
           </h2>
 
           {loadingRequests ? (
-            <div className="text-slate-600 dark:text-gray-300">Loading requests…</div>
+            <div className="text-slate-600 dark:text-gray-300">
+              Loading requests…
+            </div>
           ) : adminRequests.length === 0 ? (
-            <div className="text-slate-600 dark:text-gray-300">No pending requests right now.</div>
+            <div className="text-slate-600 dark:text-gray-300">
+              No pending requests right now.
+            </div>
           ) : (
             <ul className="space-y-3">
               {adminRequests.map((r) => {
@@ -464,7 +472,9 @@ const FindGroup = () => {
       {/* List of groups */}
       <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
         {loadingUser || loadingGroups ? (
-          <div className="p-6 text-slate-600 dark:text-gray-300">Loading groups…</div>
+          <div className="p-6 text-slate-600 dark:text-gray-300">
+            Loading groups…
+          </div>
         ) : !user ? (
           <div className="p-6 text-amber-700 dark:text-amber-300">
             Please log in to view and request to join groups.
@@ -482,7 +492,12 @@ const FindGroup = () => {
               // Disable “Send Join Request” if: user id not loaded, they’re admin/member, group full,
               // already requesting, or already in some group (can’t join another).
               const disabled =
-                !myId || isAdmin || isMember || full || requesting[gid] || iAmInAnyGroup;
+                !myId ||
+                isAdmin ||
+                isMember ||
+                full ||
+                requesting[gid] ||
+                iAmInAnyGroup;
 
               return (
                 <li
@@ -494,23 +509,25 @@ const FindGroup = () => {
                       {g.name}
                     </h3>
                     <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-slate-800 text-slate-700 dark:text-gray-200">
-                      {Array.isArray(g.members) ? g.members.length : 0}/{g.maxMembers || 5}
+                      {Array.isArray(g.members) ? g.members.length : 0}/
+                      {g.maxMembers || 5}
                     </span>
                   </div>
 
                   {/* Interests */}
-                  {Array.isArray(g.researchInterests) && g.researchInterests.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {g.researchInterests.map((tag) => (
-                        <span
-                          key={`${gid}-${tag}`}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  {Array.isArray(g.researchInterests) &&
+                    g.researchInterests.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {g.researchInterests.map((tag) => (
+                          <span
+                            key={`${gid}-${tag}`}
+                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[#7b1e3c]/10 text-[#7b1e3c]"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                   {/* Status badges */}
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">

@@ -10,7 +10,7 @@ import {
   Calendar,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const ViewRecievedProposals = () => {
   const { user } = useContext(AuthContext);
@@ -34,10 +34,7 @@ const ViewRecievedProposals = () => {
   const [approveForProposalId, setApproveForProposalId] = useState(null);
   const [selectedSemesterId, setSelectedSemesterId] = useState("");
 
-  const todayStr = useMemo(
-    () => new Date().toISOString().split("T")[0],
-    []
-  );
+  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   const upcomingSemesters = useMemo(() => {
     // Safety filter client-side too: hide startDate <= today
@@ -52,7 +49,9 @@ const ViewRecievedProposals = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API_BASE}/proposals?supervisorId=${supervisorId}`);
+      const res = await fetch(
+        `${API_BASE}/proposals?supervisorId=${supervisorId}`
+      );
       if (!res.ok) throw new Error("Failed to fetch proposals");
       const d = await res.json();
       setProposals(Array.isArray(d) ? d : []);
@@ -120,7 +119,9 @@ const ViewRecievedProposals = () => {
       }
 
       setProposals((prev) =>
-        prev.map((p) => (String(p._id) === String(proposalId) ? data.proposal : p))
+        prev.map((p) =>
+          String(p._id) === String(proposalId) ? data.proposal : p
+        )
       );
 
       if (decision === "approve") {
@@ -154,7 +155,9 @@ const ViewRecievedProposals = () => {
       if (!res.ok) throw new Error(data?.message || "Failed to send feedback");
 
       setProposals((prev) =>
-        prev.map((p) => (String(p._id) === String(proposalId) ? data.proposal : p))
+        prev.map((p) =>
+          String(p._id) === String(proposalId) ? data.proposal : p
+        )
       );
       setFeedbackDraft((d) => ({ ...d, [proposalId]: "" }));
     } catch (e) {
@@ -166,7 +169,9 @@ const ViewRecievedProposals = () => {
   };
 
   const formatSemLabel = (s) =>
-    `${s.season?.charAt(0).toUpperCase()}${s.season?.slice(1)} ${s.year} — starts ${s.startDate}`;
+    `${s.season?.charAt(0).toUpperCase()}${s.season?.slice(1)} ${
+      s.year
+    } — starts ${s.startDate}`;
 
   return (
     <section className="min-h-screen bg-white dark:bg-slate-900 transition-colors p-6">
@@ -183,11 +188,15 @@ const ViewRecievedProposals = () => {
             Couldn’t resolve your supervisor account.
           </div>
         ) : loading ? (
-          <div className="text-slate-600 dark:text-gray-300">Loading proposals…</div>
+          <div className="text-slate-600 dark:text-gray-300">
+            Loading proposals…
+          </div>
         ) : error ? (
           <div className="text-rose-700 dark:text-rose-300">{error}</div>
         ) : proposals.length === 0 ? (
-          <div className="text-slate-600 dark:text-gray-300">No proposals submitted yet.</div>
+          <div className="text-slate-600 dark:text-gray-300">
+            No proposals submitted yet.
+          </div>
         ) : (
           <ul className="space-y-4">
             {proposals.map((p) => {
@@ -205,16 +214,23 @@ const ViewRecievedProposals = () => {
                       </h3>
                       <div className="text-xs text-slate-500 dark:text-gray-400">
                         {p.groupName || "Unknown Group"} —{" "}
-                        {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ""}
+                        {p.createdAt
+                          ? new Date(p.createdAt).toLocaleDateString()
+                          : ""}
                       </div>
-                      <p className="mt-3 text-sm text-slate-700 dark:text-gray-300">{p.abstract}</p>
+                      <p className="mt-3 text-sm text-slate-700 dark:text-gray-300">
+                        {p.abstract}
+                      </p>
 
                       {/* Supervisor feedback section */}
                       <div className="mt-3">
                         <textarea
                           value={feedbackDraft[pid] || ""}
                           onChange={(e) =>
-                            setFeedbackDraft((f) => ({ ...f, [pid]: e.target.value }))
+                            setFeedbackDraft((f) => ({
+                              ...f,
+                              [pid]: e.target.value,
+                            }))
                           }
                           placeholder="Write feedback..."
                           className="w-full mt-2 p-2 border rounded-md text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
@@ -232,7 +248,10 @@ const ViewRecievedProposals = () => {
                       {Array.isArray(p.feedback) && p.feedback.length > 0 && (
                         <ul className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
                           {p.feedback.map((f, idx) => (
-                            <li key={idx} className="border-l-2 pl-2 border-blue-500">
+                            <li
+                              key={idx}
+                              className="border-l-2 pl-2 border-blue-500"
+                            >
                               {f.text}{" "}
                               <span className="text-xs text-gray-400">
                                 ({new Date(f.date).toLocaleString()})
@@ -316,7 +335,8 @@ const ViewRecievedProposals = () => {
               </div>
 
               <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">
-                Only upcoming semesters are shown. Current/past semesters are hidden.
+                Only upcoming semesters are shown. Current/past semesters are
+                hidden.
               </p>
 
               <select

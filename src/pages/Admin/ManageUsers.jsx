@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const normalizeId = (rawId) => {
   // handle different shapes of _id that may come from your API
@@ -18,7 +18,7 @@ const ManageUsers = () => {
   const [editData, setEditData] = useState({ name: "", photoUrl: "" });
   const [loading, setLoading] = useState(false);
   const [currentUserEmail, setCurrentUserEmail] = useState("");
-  const {deleteCurrentUser} = useContext(AuthContext);
+  const { deleteCurrentUser } = useContext(AuthContext);
 
   const fetchUsers = async () => {
     try {
@@ -126,72 +126,83 @@ const ManageUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {users.filter((u) => u.role !== "admin").map((u) => (
-                <tr key={u.id} className="border-t dark:border-slate-600">
-                  <td className="py-2 px-4">
-                    {editUserId === u.id ? (
-                      <input
-                        value={editData.name}
-                        onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                        className="border rounded p-1 w-56"
-                      />
-                    ) : (
-                      u.name || "-"
-                    )}
-                  </td>
+              {users
+                .filter((u) => u.role !== "admin")
+                .map((u) => (
+                  <tr key={u.id} className="border-t dark:border-slate-600">
+                    <td className="py-2 px-4">
+                      {editUserId === u.id ? (
+                        <input
+                          value={editData.name}
+                          onChange={(e) =>
+                            setEditData({ ...editData, name: e.target.value })
+                          }
+                          className="border rounded p-1 w-56"
+                        />
+                      ) : (
+                        u.name || "-"
+                      )}
+                    </td>
 
-                  <td className="py-2 px-4">{u.email}</td>
-                  <td className="py-2 px-4 capitalize">{u.role}</td>
-                  <td className="py-2 px-4 max-w-xs truncate">
-                    {editUserId === u.id ? (
-                      <input
-                        value={editData.photoUrl}
-                        onChange={(e) => setEditData({ ...editData, photoUrl: e.target.value })}
-                        className="border rounded p-1 w-64"
-                        placeholder="https://..."
-                      />
-                    ) : (
-                      u.photoUrl || "-"
-                    )}
-                  </td>
+                    <td className="py-2 px-4">{u.email}</td>
+                    <td className="py-2 px-4 capitalize">{u.role}</td>
+                    <td className="py-2 px-4 max-w-xs truncate">
+                      {editUserId === u.id ? (
+                        <input
+                          value={editData.photoUrl}
+                          onChange={(e) =>
+                            setEditData({
+                              ...editData,
+                              photoUrl: e.target.value,
+                            })
+                          }
+                          className="border rounded p-1 w-64"
+                          placeholder="https://..."
+                        />
+                      ) : (
+                        u.photoUrl || "-"
+                      )}
+                    </td>
 
-                  <td className="py-2 px-4 space-x-2">
-                    {editUserId === u.id ? (
-                      <>
-                        <button
-                          disabled={loading}
-                          onClick={() => handleSaveEdit(u.id)}
-                          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-700"
-                        >
-                          {loading ? "Saving..." : "Save"}
-                        </button>
-                        <button
-                          disabled={loading}
-                          onClick={handleCancelEdit}
-                          className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-600"
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => handleEditClick(u)}
-                          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(u.id, u.role, u.email)}
-                          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                    <td className="py-2 px-4 space-x-2">
+                      {editUserId === u.id ? (
+                        <>
+                          <button
+                            disabled={loading}
+                            onClick={() => handleSaveEdit(u.id)}
+                            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-700"
+                          >
+                            {loading ? "Saving..." : "Save"}
+                          </button>
+                          <button
+                            disabled={loading}
+                            onClick={handleCancelEdit}
+                            className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-600"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleEditClick(u)}
+                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteUser(u.id, u.role, u.email)
+                            }
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
 
               {users.filter((u) => u.role !== "admin").length === 0 && (
                 <tr>

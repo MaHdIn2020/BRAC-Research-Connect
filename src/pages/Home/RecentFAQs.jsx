@@ -10,7 +10,9 @@ const RecentFAQs = () => {
   useEffect(() => {
     const fetchFAQs = async () => {
       try {
-        const res = await fetch("http://localhost:3000/faqs");
+        const res = await fetch(
+          "https://bracu-research-server-teal.vercel.app/faqs"
+        );
         if (!res.ok) throw new Error("Failed to fetch FAQs");
         const data = await res.json();
         setFaqs(data.slice(0, 6));

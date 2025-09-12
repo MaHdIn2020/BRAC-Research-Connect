@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { useLoaderData } from "react-router";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const Recommended = () => {
   const { user } = useContext(AuthContext);
   const users = useLoaderData(); // expects your router to load /users
   // Inline compute (no useMemo)
-  const mongoUser = Array.isArray(users) ? users.find((u) => u.email === user?.email) : null;
+  const mongoUser = Array.isArray(users)
+    ? users.find((u) => u.email === user?.email)
+    : null;
   const USER_ID = mongoUser?._id;
 
   const [loading, setLoading] = useState(true);
@@ -83,7 +85,9 @@ const Recommended = () => {
         </header>
 
         {loading && (
-          <div className="text-slate-600 dark:text-gray-300">Loading recommendations…</div>
+          <div className="text-slate-600 dark:text-gray-300">
+            Loading recommendations…
+          </div>
         )}
 
         {!loading && error && (

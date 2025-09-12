@@ -10,7 +10,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const ViewProposals = () => {
   const { user } = useContext(AuthContext);
@@ -38,7 +38,9 @@ const ViewProposals = () => {
       }
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/groups/by-member/${currentUser._id}`);
+        const res = await fetch(
+          `${API_BASE}/groups/by-member/${currentUser._id}`
+        );
         if (res.status === 404) {
           setGroup(null);
           setProposals([]);
@@ -109,7 +111,9 @@ const ViewProposals = () => {
         }
 
         const myGroupId = String(group._id);
-        const filtered = allProposals.filter((p) => String(p.groupId) === myGroupId);
+        const filtered = allProposals.filter(
+          (p) => String(p.groupId) === myGroupId
+        );
 
         // Remove duplicates
         const seen = new Set();
@@ -183,7 +187,8 @@ const ViewProposals = () => {
             ) : (
               <ul className="space-y-4">
                 {proposals.map((p) => {
-                  const supName = supervisorMap[String(p.supervisor)] || "Supervisor";
+                  const supName =
+                    supervisorMap[String(p.supervisor)] || "Supervisor";
                   const created = p.createdAt ? new Date(p.createdAt) : null;
                   return (
                     <li
@@ -242,24 +247,26 @@ const ViewProposals = () => {
                           </div>
 
                           {/* Supervisor feedback */}
-                          {Array.isArray(p.feedback) && p.feedback.length > 0 && (
-                            <div className="mt-2 p-3 rounded-md bg-slate-50 dark:bg-slate-700 text-sm text-slate-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600">
-                              <div className="flex items-center gap-2 mb-1 font-medium">
-                                <MessageSquare className="w-4 h-4 text-[#7b1e3c]" />
-                                Supervisor Feedback
-                              </div>
-                              {p.feedback.map((f, idx) => (
-                                <div key={idx} className="mb-2">
-                                  <p>{f.text}</p>
-                                  {f.date && (
-                                    <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-                                      Given on: {new Date(f.date).toLocaleString()}
-                                    </div>
-                                  )}
+                          {Array.isArray(p.feedback) &&
+                            p.feedback.length > 0 && (
+                              <div className="mt-2 p-3 rounded-md bg-slate-50 dark:bg-slate-700 text-sm text-slate-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600">
+                                <div className="flex items-center gap-2 mb-1 font-medium">
+                                  <MessageSquare className="w-4 h-4 text-[#7b1e3c]" />
+                                  Supervisor Feedback
                                 </div>
-                              ))}
-                            </div>
-                          )}
+                                {p.feedback.map((f, idx) => (
+                                  <div key={idx} className="mb-2">
+                                    <p>{f.text}</p>
+                                    {f.date && (
+                                      <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                                        Given on:{" "}
+                                        {new Date(f.date).toLocaleString()}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                         </div>
 
                         <div className="flex flex-col items-end gap-2">
@@ -284,7 +291,10 @@ const ViewProposals = () => {
         )}
 
         <div className="mt-8">
-          <Link to="/student-dashboard" className="text-[#7b1e3c] hover:underline">
+          <Link
+            to="/student-dashboard"
+            className="text-[#7b1e3c] hover:underline"
+          >
             ← Back to Dashboard
           </Link>
         </div>

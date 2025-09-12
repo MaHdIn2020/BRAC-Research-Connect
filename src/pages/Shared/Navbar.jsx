@@ -1,9 +1,16 @@
-import React, { useContext, useEffect, useMemo, useState, useCallback } from "react";
+/* eslint-disable no-unused-vars */
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 import { NavLink, useLoaderData } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { Bell } from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const Navbar = () => {
   const { user, logOut, loading } = useContext(AuthContext);
@@ -11,7 +18,8 @@ const Navbar = () => {
 
   // Static (loader) match for role/nav visibility
   const UserFromLoader = useMemo(
-    () => (Array.isArray(data) ? data.find((u) => u.email === user?.email) : null),
+    () =>
+      Array.isArray(data) ? data.find((u) => u.email === user?.email) : null,
     [data, user?.email]
   );
 
@@ -83,7 +91,13 @@ const Navbar = () => {
     }
 
     // If there are unseen notifications, mark them as seen immediately for UX
-    if (next && userDoc && userDoc._id && userDoc.isSeen === false && !markingSeen) {
+    if (
+      next &&
+      userDoc &&
+      userDoc._id &&
+      userDoc.isSeen === false &&
+      !markingSeen
+    ) {
       try {
         setMarkingSeen(true);
         await fetch(`${API_BASE}/users/${userDoc._id}/notifications/seen`, {
@@ -121,14 +135,19 @@ const Navbar = () => {
           {roleUser?.role === "student" && (
             <>
               <NavLink to="thesis-proposal">
-                <li className="hover:text-[#7b1e3c] transition">Proposal Submission</li>
+                <li className="hover:text-[#7b1e3c] transition">
+                  Proposal Submission
+                </li>
               </NavLink>
             </>
           )}
 
-          {(roleUser?.role === "supervisor" || roleUser?.role === "student") && (
+          {(roleUser?.role === "supervisor" ||
+            roleUser?.role === "student") && (
             <NavLink to="/view-announcement">
-              <li className="hover:text-[#7b1e3c] transition">View Announcement</li>
+              <li className="hover:text-[#7b1e3c] transition">
+                View Announcement
+              </li>
             </NavLink>
           )}
 
@@ -161,7 +180,8 @@ const Navbar = () => {
         {/* Right - Notifications, Auth */}
         <div className="flex items-center space-x-4 relative">
           {/* Notifications Bell */}
-          {(roleUser?.role === "student" || roleUser?.role === "supervisor") && (
+          {(roleUser?.role === "student" ||
+            roleUser?.role === "supervisor") && (
             <div className="relative">
               <button onClick={toggleNotifications} className="relative">
                 <Bell className="text-slate-900 dark:text-white" size={22} />
@@ -174,24 +194,24 @@ const Navbar = () => {
                 <div className="absolute right-0 mt-2 w-72 max-h-80 overflow-y-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-50">
                   {Array.isArray(notifUser?.notifications) &&
                   notifUser.notifications.length > 0 ? (
-                    [...notifUser.notifications]
-                      .reverse()
-                      .map((n, i) => (
-                        <div
-                          key={i}
-                          className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
-                          onClick={() => {
-                            if (n.link) window.location.href = n.link;
-                          }}
-                        >
-                          <p className="font-medium">{n.message}</p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(n.date).toLocaleString()}
-                          </p>
-                        </div>
-                      ))
+                    [...notifUser.notifications].reverse().map((n, i) => (
+                      <div
+                        key={i}
+                        className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
+                        onClick={() => {
+                          if (n.link) window.location.href = n.link;
+                        }}
+                      >
+                        <p className="font-medium">{n.message}</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(n.date).toLocaleString()}
+                        </p>
+                      </div>
+                    ))
                   ) : (
-                    <p className="p-4 text-sm text-gray-500">No notifications</p>
+                    <p className="p-4 text-sm text-gray-500">
+                      No notifications
+                    </p>
                   )}
                 </div>
               )}

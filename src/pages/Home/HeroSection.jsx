@@ -35,7 +35,7 @@ const HeroSection = () => {
 
         <div className="flex-1 flex justify-center">
           <img
-            src="../../../public/banner.jpg" 
+            src="https://i.ibb.co.com/RTjKHzb5/banner.jpg" 
             alt="Thesis management illustration"
             className="w-full h-full object-cover"
             

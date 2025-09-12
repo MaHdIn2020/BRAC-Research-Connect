@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { useLoaderData } from "react-router";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const Searchpaper = () => {
   const [query, setQuery] = useState("");
@@ -25,7 +25,9 @@ const Searchpaper = () => {
   const { user } = useContext(AuthContext);
   const userdata = useLoaderData();
 
-  const User = Array.isArray(userdata) ? userdata.find((u) => u.email === user?.email) : null;
+  const User = Array.isArray(userdata)
+    ? userdata.find((u) => u.email === user?.email)
+    : null;
   const USER_ID = User?._id;
   const role = User?.role;
   const isStudent = role === "student";
@@ -60,7 +62,9 @@ const Searchpaper = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/search-papers?q=${encodeURIComponent(query)}`);
+      const res = await fetch(
+        `${API_BASE}/search-papers?q=${encodeURIComponent(query)}`
+      );
       const data = await res.json();
       setPapers(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -176,15 +180,21 @@ const Searchpaper = () => {
   };
 
   const PaperCard = ({ paper }) => {
-    const isBookmarked = isStudent ? bookmarkedPapers.includes(paper.id) : false;
+    const isBookmarked = isStudent
+      ? bookmarkedPapers.includes(paper.id)
+      : false;
 
     return (
       <div className="border border-gray-200 dark:border-slate-700 p-4 mb-2 rounded bg-slate-50 dark:bg-slate-900">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{paper.title}</h3>
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+          {paper.title}
+        </h3>
         <p className="text-sm text-slate-700 dark:text-gray-300">
           Authors: {(paper.authors && paper.authors.join(", ")) || "Unknown"}
         </p>
-        <p className="text-sm mt-2 text-slate-800 dark:text-gray-200">{paper.summary}</p>
+        <p className="text-sm mt-2 text-slate-800 dark:text-gray-200">
+          {paper.summary}
+        </p>
         <div className="flex items-center gap-4 mt-2">
           <a
             href={paper.link}
@@ -201,7 +211,11 @@ const Searchpaper = () => {
               disabled={savingId === paper.id || isBookmarked}
               className="bg-[#7b1e3c] hover:bg-[#691832] text-white px-3 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isBookmarked ? "Bookmarked" : savingId === paper.id ? "Saving..." : "Bookmark"}
+              {isBookmarked
+                ? "Bookmarked"
+                : savingId === paper.id
+                ? "Saving..."
+                : "Bookmark"}
             </button>
           )}
 
@@ -220,7 +234,9 @@ const Searchpaper = () => {
 
   return (
     <div className="p-6 mx-[9%]">
-      <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Search Academic Papers</h2>
+      <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+        Search Academic Papers
+      </h2>
 
       <div className="flex mb-4">
         <input
@@ -241,7 +257,9 @@ const Searchpaper = () => {
       {/* Search Results */}
       {papers.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">Search Results</h3>
+          <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+            Search Results
+          </h3>
           {papers.map((paper) => (
             <PaperCard key={paper.id} paper={paper} />
           ))}
@@ -250,11 +268,17 @@ const Searchpaper = () => {
 
       {/* Suggested Papers (Random 5) */}
       <div className="mt-8">
-        <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">Suggested Papers</h3>
+        <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+          Suggested Papers
+        </h3>
         {randomPapers.length === 0 ? (
-          <p className="text-sm text-slate-600 dark:text-gray-400">No suggestions available.</p>
+          <p className="text-sm text-slate-600 dark:text-gray-400">
+            No suggestions available.
+          </p>
         ) : (
-          randomPapers.map((paper) => <PaperCard key={paper.id} paper={paper} />)
+          randomPapers.map((paper) => (
+            <PaperCard key={paper.id} paper={paper} />
+          ))
         )}
       </div>
 
@@ -268,7 +292,9 @@ const Searchpaper = () => {
           <div className="relative z-10 w-full max-w-2xl bg-white dark:bg-slate-800 rounded-lg shadow-lg p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Recommend Paper</h3>
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  Recommend Paper
+                </h3>
                 <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">
                   {selectedPaper?.title}
                 </p>
@@ -284,26 +310,42 @@ const Searchpaper = () => {
             </div>
 
             <div className="mt-4">
-              <h4 className="text-base font-semibold mb-2 text-slate-900 dark:text-white">Your Groups</h4>
+              <h4 className="text-base font-semibold mb-2 text-slate-900 dark:text-white">
+                Your Groups
+              </h4>
 
-              {groupsLoading && <p className="text-sm text-slate-600 dark:text-gray-400">Loading groups…</p>}
-              {groupsError && <p className="text-sm text-red-600">{groupsError}</p>}
+              {groupsLoading && (
+                <p className="text-sm text-slate-600 dark:text-gray-400">
+                  Loading groups…
+                </p>
+              )}
+              {groupsError && (
+                <p className="text-sm text-red-600">{groupsError}</p>
+              )}
 
               {!groupsLoading && !groupsError && groups.length === 0 && (
-                <p className="text-sm text-slate-600 dark:text-gray-400">No groups assigned yet.</p>
+                <p className="text-sm text-slate-600 dark:text-gray-400">
+                  No groups assigned yet.
+                </p>
               )}
 
               {!groupsLoading && groups.length > 0 && (
                 <ul className="divide-y rounded border border-slate-200 dark:border-slate-700">
                   {groups.map((g) => {
-                    const already =
-                      (recommendedForPaper[selectedPaper?.id] || []).includes(String(g._id));
+                    const already = (
+                      recommendedForPaper[selectedPaper?.id] || []
+                    ).includes(String(g._id));
                     const isSaving = recommendingGroupId === String(g._id);
 
                     return (
-                      <li key={g._id} className="p-3 flex items-center justify-between">
+                      <li
+                        key={g._id}
+                        className="p-3 flex items-center justify-between"
+                      >
                         <div>
-                          <div className="font-medium text-slate-900 dark:text-white">{g.name}</div>
+                          <div className="font-medium text-slate-900 dark:text-white">
+                            {g.name}
+                          </div>
                           <div className="text-xs text-slate-600 dark:text-gray-400 mt-0.5">
                             Members: {(g.members || []).length} • Interests:{" "}
                             {(g.researchInterests || []).join(", ") || "—"}
@@ -318,7 +360,11 @@ const Searchpaper = () => {
                           disabled={already || isSaving}
                           onClick={() => recommendToGroup(g._id)}
                         >
-                          {already ? "Recommended" : isSaving ? "Saving..." : "Choose"}
+                          {already
+                            ? "Recommended"
+                            : isSaving
+                            ? "Saving..."
+                            : "Choose"}
                         </button>
                       </li>
                     );

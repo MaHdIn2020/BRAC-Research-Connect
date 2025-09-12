@@ -33,7 +33,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     Component: RootLayout,
-    loader: () => fetch("http://localhost:3000/users/"),
+    loader: () => fetch("https://bracu-research-server-teal.vercel.app/users/"),
     children: [
       {
         path: "/",
@@ -50,7 +50,8 @@ const router = createBrowserRouter([
       {
         path: "/thesis-proposal",
         Component: ThesisProposalForm,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "view-announcement",
@@ -59,12 +60,14 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         Component: Profile,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/supervisor-profile",
         Component: SupervisorProfile,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/supervisors",
@@ -89,7 +92,8 @@ const router = createBrowserRouter([
       {
         path: "/announcements",
         Component: Announcement,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/admin-dashboard",
@@ -102,12 +106,14 @@ const router = createBrowserRouter([
       {
         path: "/supervisor-dashboard",
         element: <SupervisorDashboard></SupervisorDashboard>,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/student-dashboard",
         Component: StudentDashboard,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/find-group/:id",
@@ -127,7 +133,8 @@ const router = createBrowserRouter([
       },
       {
         path: "/semester",
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
         element: (
           <AdminRoute>
             <Semester></Semester>
@@ -141,42 +148,50 @@ const router = createBrowserRouter([
       {
         path: "/view-proposals",
         Component: ViewProposals,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/supervisor-groups",
         Component: SupervisorGroups,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/view-recieved-proposals",
         Component: ViewRecievedProposals,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/search",
         Component: Searchpaper,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/saved-papers",
         Component: Savedpapers,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/recommended",
         Component: Recommended,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/schedule-meetings",
         Component: ScheduleMeetings,
-        loader: () => fetch("http://localhost:3000/users/"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/users/"),
       },
       {
         path: "/all-thesis",
         Component: AllThesis,
-        loader: () => fetch("http://localhost:3000/theses"),
+        loader: () =>
+          fetch("https://bracu-research-server-teal.vercel.app/theses"),
       },
     ],
   },

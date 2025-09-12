@@ -3,7 +3,7 @@ import { Link, Navigate, useLoaderData } from "react-router";
 import { FileText, Users, BookOpen, Search } from "lucide-react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const seasonOrderIndex = (s) => ({ spring: 1, summer: 2, fall: 3 }[s] ?? 0);
 
@@ -61,7 +61,10 @@ const SupervisorDashboard = () => {
         // normalize season lower-case just in case
         setSemesters(
           sems
-            .map((s) => ({ ...s, season: String(s.season || "").toLowerCase() }))
+            .map((s) => ({
+              ...s,
+              season: String(s.season || "").toLowerCase(),
+            }))
             .sort((a, b) =>
               a.year !== b.year
                 ? b.year - a.year
@@ -113,7 +116,9 @@ const SupervisorDashboard = () => {
   const getGroupsForSemester = (sem) => {
     const byId = groupsBySemesterKey[`id:${sem._id}`] || [];
     const byPair =
-      groupsBySemesterKey[`pair:${String(sem.season).toLowerCase()}|${sem.year}`] || [];
+      groupsBySemesterKey[
+        `pair:${String(sem.season).toLowerCase()}|${sem.year}`
+      ] || [];
     // merge unique
     const seen = new Set();
     const merged = [];
@@ -236,8 +241,9 @@ const SupervisorDashboard = () => {
                 <div className="space-y-5">
                   {semestersWithGroups.map((s) => {
                     const groups = getGroupsForSemester(s);
-                    const title =
-                      `${String(s.season).charAt(0).toUpperCase()}${String(s.season).slice(1)} ${s.year}`;
+                    const title = `${String(s.season)
+                      .charAt(0)
+                      .toUpperCase()}${String(s.season).slice(1)} ${s.year}`;
                     return (
                       <div
                         key={s._id}
@@ -264,8 +270,10 @@ const SupervisorDashboard = () => {
                                     {g.name}
                                   </div>
                                   <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-                                    Members: {(g.members || []).length} • Interests:{" "}
-                                    {(g.researchInterests || []).join(", ") || "—"}
+                                    Members: {(g.members || []).length} •
+                                    Interests:{" "}
+                                    {(g.researchInterests || []).join(", ") ||
+                                      "—"}
                                   </div>
                                 </div>
                                 <div className="text-xs text-slate-500 dark:text-gray-400">
@@ -305,7 +313,9 @@ const SupervisorDashboard = () => {
               {loading ? (
                 <div className="text-slate-500">Loading proposals...</div>
               ) : proposals.length === 0 ? (
-                <div className="text-slate-500">No proposals submitted yet.</div>
+                <div className="text-slate-500">
+                  No proposals submitted yet.
+                </div>
               ) : (
                 <>
                   <ul className="space-y-3 max-h-80 overflow-y-auto">

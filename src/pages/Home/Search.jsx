@@ -20,7 +20,7 @@ import {
   Columns3,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 function useDebouncedValue(value, delay = 150) {
   const [v, setV] = useState(value);

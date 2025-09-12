@@ -37,7 +37,7 @@ const adminModules = [
     description: "Search/filter across thesis topics and research papers.",
     icon: <Search className="w-8 h-8 text-[#7b1e3c]" />,
     link: "/search",
-  },
+  }, 
   {
     title: "Create or Answer FAQs and Post",
     description: "Manage frequently asked questions and publish responses.",

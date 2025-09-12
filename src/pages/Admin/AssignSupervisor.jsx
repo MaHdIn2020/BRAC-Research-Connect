@@ -9,7 +9,7 @@ import {
   Calendar as CalendarIcon,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const statusBadge = (status = "Pending") => {
   const common = "px-2 py-1 rounded-full text-xs font-medium";
@@ -223,7 +223,8 @@ const AssignSupervisor = () => {
           </h1>
           <p className="text-slate-600 dark:text-gray-400 mt-1">
             View proposals by status. Assign the proposed supervisor to a{" "}
-            <span className="font-semibold">specific upcoming semester</span> with one click.
+            <span className="font-semibold">specific upcoming semester</span>{" "}
+            with one click.
           </p>
         </header>
 
@@ -256,7 +257,9 @@ const AssignSupervisor = () => {
         {/* Content */}
         <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           {loading ? (
-            <div className="p-6 text-slate-600 dark:text-gray-300">Loading…</div>
+            <div className="p-6 text-slate-600 dark:text-gray-300">
+              Loading…
+            </div>
           ) : error ? (
             <div className="p-6 text-rose-600 dark:text-rose-300">{error}</div>
           ) : proposals.length === 0 ? (
@@ -285,7 +288,8 @@ const AssignSupervisor = () => {
                           </span>{" "}
                           •
                           <span className="ml-2">
-                            Submitted {new Date(p.createdAt).toLocaleDateString()}
+                            Submitted{" "}
+                            {new Date(p.createdAt).toLocaleDateString()}
                           </span>
                         </div>
 
@@ -309,7 +313,9 @@ const AssignSupervisor = () => {
                         </p>
 
                         <div className="flex items-center gap-3 text-xs">
-                          <span className={statusBadge(p.status)}>{p.status}</span>
+                          <span className={statusBadge(p.status)}>
+                            {p.status}
+                          </span>
                           {p.driveLink && (
                             <a
                               href={p.driveLink}
@@ -331,7 +337,9 @@ const AssignSupervisor = () => {
                             Proposed Supervisor
                           </div>
                           <div className="font-medium text-slate-900 dark:text-white">
-                            {p.supervisorName || p.supervisorEmail || p.supervisor}
+                            {p.supervisorName ||
+                              p.supervisorEmail ||
+                              p.supervisor}
                           </div>
                           <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
                             {p.supervisorEmail}
@@ -374,13 +382,16 @@ const AssignSupervisor = () => {
                           <div className="mt-2">
                             <button
                               onClick={async () => {
-                                if (!confirm("Mark this proposal as Rejected?")) return;
+                                if (!confirm("Mark this proposal as Rejected?"))
+                                  return;
                                 try {
                                   const res = await fetch(
                                     `${API_BASE}/proposals/${p._id}/decision`,
                                     {
                                       method: "PATCH",
-                                      headers: { "Content-Type": "application/json" },
+                                      headers: {
+                                        "Content-Type": "application/json",
+                                      },
                                       body: JSON.stringify({
                                         supervisorId: p.supervisor,
                                         decision: "reject",
@@ -388,8 +399,12 @@ const AssignSupervisor = () => {
                                     }
                                   );
                                   if (!res.ok) {
-                                    const j = await res.json().catch(() => ({}));
-                                    throw new Error(j.message || "Failed to reject");
+                                    const j = await res
+                                      .json()
+                                      .catch(() => ({}));
+                                    throw new Error(
+                                      j.message || "Failed to reject"
+                                    );
                                   }
                                   fetchProposals();
                                 } catch (err) {
@@ -492,7 +507,8 @@ const AssignSupervisor = () => {
                             </div>
                             <div className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2 mt-1">
                               <CalendarIcon className="w-3.5 h-3.5" />
-                              {formatDate(s.startDate)} — {formatDate(s.endDate)}
+                              {formatDate(s.startDate)} —{" "}
+                              {formatDate(s.endDate)}
                             </div>
                           </div>
                         </label>

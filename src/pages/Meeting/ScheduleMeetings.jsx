@@ -1,9 +1,18 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useLoaderData } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
-import { Calendar, Clock, Users, Video, X, Edit, Trash2, Eye } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Users,
+  Video,
+  X,
+  Edit,
+  Trash2,
+  Eye,
+} from "lucide-react";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const ScheduleMeetings = () => {
   const { user } = useContext(AuthContext);
@@ -51,7 +60,9 @@ const ScheduleMeetings = () => {
         setAssignedGroups(mine);
 
         // Fetch meetings
-        const mres = await fetch(`${API_BASE}/meetings?supervisorId=${supervisorId}`);
+        const mres = await fetch(
+          `${API_BASE}/meetings?supervisorId=${supervisorId}`
+        );
         const mjson = mres.ok ? await mres.json() : [];
         setMeetings(Array.isArray(mjson) ? mjson : []);
       } catch (err) {
@@ -68,9 +79,9 @@ const ScheduleMeetings = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -109,19 +120,24 @@ const ScheduleMeetings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.title || !formData.date || !formData.time || !formData.groupId) {
+
+    if (
+      !formData.title ||
+      !formData.date ||
+      !formData.time ||
+      !formData.groupId
+    ) {
       alert("Please fill in all required fields");
       return;
     }
 
     try {
-      const url = editingMeeting 
+      const url = editingMeeting
         ? `${API_BASE}/meetings/${editingMeeting._id}`
         : `${API_BASE}/meetings`;
-      
+
       const method = editingMeeting ? "PUT" : "POST";
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -135,19 +151,19 @@ const ScheduleMeetings = () => {
 
       if (response.ok) {
         const result = await response.json();
-        
+
         if (editingMeeting) {
           // Update existing meeting
-          setMeetings(prev => 
-            prev.map(m => m._id === editingMeeting._id ? result.meeting : m)
+          setMeetings((prev) =>
+            prev.map((m) => (m._id === editingMeeting._id ? result.meeting : m))
           );
           alert("Meeting updated successfully!");
         } else {
           // Add new meeting
-          setMeetings(prev => [result.meeting, ...prev]);
+          setMeetings((prev) => [result.meeting, ...prev]);
           alert("Meeting scheduled successfully!");
         }
-        
+
         setShowModal(false);
         resetForm();
       } else {
@@ -177,7 +193,7 @@ const ScheduleMeetings = () => {
       });
 
       if (response.ok) {
-        setMeetings(prev => prev.filter(m => m._id !== meetingId));
+        setMeetings((prev) => prev.filter((m) => m._id !== meetingId));
         alert("Meeting deleted successfully!");
       } else {
         const error = await response.json();
@@ -195,7 +211,7 @@ const ScheduleMeetings = () => {
   };
 
   const getGroupName = (groupId) => {
-    const group = assignedGroups.find(g => String(g._id) === String(groupId));
+    const group = assignedGroups.find((g) => String(g._id) === String(groupId));
     return group?.name || "Unknown Group";
   };
 
@@ -210,15 +226,25 @@ const ScheduleMeetings = () => {
   };
 
   // Separate meetings by status and time
-  const upcomingMeetings = meetings.filter(meeting => {
-    const meetingDateTime = new Date(`${meeting.date}T${meeting.time}`);
-    return meetingDateTime >= new Date() && meeting.status === 'scheduled';
-  }).sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+  const upcomingMeetings = meetings
+    .filter((meeting) => {
+      const meetingDateTime = new Date(`${meeting.date}T${meeting.time}`);
+      return meetingDateTime >= new Date() && meeting.status === "scheduled";
+    })
+    .sort(
+      (a, b) =>
+        new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
+    );
 
-  const pastMeetings = meetings.filter(meeting => {
-    const meetingDateTime = new Date(`${meeting.date}T${meeting.time}`);
-    return meetingDateTime < new Date() || meeting.status !== 'scheduled';
-  }).sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`));
+  const pastMeetings = meetings
+    .filter((meeting) => {
+      const meetingDateTime = new Date(`${meeting.date}T${meeting.time}`);
+      return meetingDateTime < new Date() || meeting.status !== "scheduled";
+    })
+    .sort(
+      (a, b) =>
+        new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
+    );
 
   return (
     <section className="min-h-screen bg-white dark:bg-slate-900 p-6 transition-colors">
@@ -399,7 +425,10 @@ const ScheduleMeetings = () => {
 
         {/* Create/Edit Meeting Modal */}
         {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+          >
             <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -513,7 +542,10 @@ const ScheduleMeetings = () => {
 
         {/* View Meeting Modal */}
         {showViewModal && viewingMeeting && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+          >
             <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -589,7 +621,8 @@ const ScheduleMeetings = () => {
                     Close
                   </button>
                   {/* Show edit button only for upcoming meetings */}
-                  {new Date(`${viewingMeeting.date}T${viewingMeeting.time}`) >= new Date() && (
+                  {new Date(`${viewingMeeting.date}T${viewingMeeting.time}`) >=
+                    new Date() && (
                     <button
                       onClick={() => {
                         closeViewModal();

@@ -18,7 +18,9 @@ const Savedpapers = () => {
     const fetchBookmarks = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:3000/users/${USER_ID}/bookmarks`);
+        const res = await fetch(
+          `https://bracu-research-server-teal.vercel.app/users/${USER_ID}/bookmarks`
+        );
         if (!res.ok) throw new Error("Failed to fetch bookmarks");
         const data = await res.json();
         setBookmarks(data || []);
@@ -35,11 +37,14 @@ const Savedpapers = () => {
 
   // Remove bookmark from backend and local state
   const removeBookmark = async (paperId) => {
-    if (!window.confirm("Are you sure you want to remove this bookmark?")) return;
+    if (!window.confirm("Are you sure you want to remove this bookmark?"))
+      return;
 
     try {
       const res = await fetch(
-        `http://localhost:3000/users/${USER_ID}/bookmarks/${encodeURIComponent(paperId)}`,
+        `https://bracu-research-server-teal.vercel.app/users/${USER_ID}/bookmarks/${encodeURIComponent(
+          paperId
+        )}`,
         { method: "DELETE" }
       );
 
@@ -79,9 +84,12 @@ const Savedpapers = () => {
                 {paper.title}
               </h3>
               <p className="text-sm text-gray-600 mb-2 line-clamp-1">
-                Authors: {(paper.authors && paper.authors.join(", ")) || "Unknown"}
+                Authors:{" "}
+                {(paper.authors && paper.authors.join(", ")) || "Unknown"}
               </p>
-              <p className="text-gray-700 text-sm line-clamp-5">{paper.summary}</p>
+              <p className="text-gray-700 text-sm line-clamp-5">
+                {paper.summary}
+              </p>
             </div>
             <div className="mt-4 flex gap-2">
               <a

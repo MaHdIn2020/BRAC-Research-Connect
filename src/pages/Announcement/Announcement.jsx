@@ -3,7 +3,7 @@ import { Plus, Eye, Edit2, Trash2, X } from "lucide-react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { useLoaderData } from "react-router";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const Announcement = () => {
   const { user } = useContext(AuthContext); // Assuming user.role exists

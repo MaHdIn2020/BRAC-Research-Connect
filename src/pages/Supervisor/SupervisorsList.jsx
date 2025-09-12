@@ -9,7 +9,9 @@ const SupervisorsList = () => {
     const fetchSupervisors = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:3000/supervisors");
+        const res = await fetch(
+          "https://bracu-research-server-teal.vercel.app/supervisors"
+        );
         if (!res.ok) throw new Error("Failed to fetch supervisors");
         const data = await res.json();
         setSupervisors(data);
@@ -40,14 +42,14 @@ const SupervisorsList = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6 sm:p-12">
-      
       {/* Page Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
           Thesis Supervisors
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
-          Explore the faculty members and their research areas. Connect with the right supervisor for your academic journey.
+          Explore the faculty members and their research areas. Connect with the
+          right supervisor for your academic journey.
         </p>
       </div>
 

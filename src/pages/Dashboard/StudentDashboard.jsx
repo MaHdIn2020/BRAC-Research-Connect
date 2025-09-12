@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, {
   useState,
   useEffect,
@@ -18,7 +19,7 @@ import {
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { Link, useLoaderData, useNavigate } from "react-router";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://bracu-research-server-teal.vercel.app";
 
 const StudentDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -147,7 +148,6 @@ const StudentDashboard = () => {
       setLoading(false);
     }
   }, [studentId]);
-
 
   useEffect(() => {
     fetchAll();
