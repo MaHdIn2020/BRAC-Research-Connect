@@ -25,7 +25,7 @@ const HeroSection = () => {
               Get Started
             </Link>
             <Link
-              to="/search"
+              to="/search-feature"
               className="px-6 py-3 border border-[#7b1e3c] text-[#7b1e3c] dark:text-[#d08ea3] rounded-lg hover:bg-[#7b1e3c] hover:text-white dark:hover:text-white transition font-medium"
             >
               Explore Features

@@ -44,7 +44,7 @@ const router = createBrowserRouter([
         Component: Home,
       },
       {
-        path: "/search",
+        path: "/search-feature",
         Component: Search,
       },
       {
