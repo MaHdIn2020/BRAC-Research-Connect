@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { useLoaderData } from "react-router";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 const Recommended = () => {
   const { user } = useContext(AuthContext);

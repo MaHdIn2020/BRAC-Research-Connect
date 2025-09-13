@@ -10,12 +10,10 @@ import { NavLink, useLoaderData } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { Bell, Menu, X } from "lucide-react";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
-const linkBase =
-  "block px-4 py-2 rounded-lg transition hover:text-[#7b1e3c]";
-const linkActive =
-  "text-[#7b1e3c] bg-[#7b1e3c]/10 dark:bg-[#7b1e3c]/20";
+const linkBase = "block px-4 py-2 rounded-lg transition hover:text-[#7b1e3c]";
+const linkActive = "text-[#7b1e3c] bg-[#7b1e3c]/10 dark:bg-[#7b1e3c]/20";
 
 const Navbar = () => {
   const { user, logOut, loading } = useContext(AuthContext);
@@ -93,7 +91,7 @@ const Navbar = () => {
           headers: { "Content-Type": "application/json" },
         });
         setUserDoc((prev) => (prev ? { ...prev, isSeen: true } : prev));
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch (err) {
       } finally {
         setMarkingSeen(false);
@@ -107,9 +105,7 @@ const Navbar = () => {
   const LinkItem = ({ to, children }) => (
     <NavLink
       to={to}
-      className={({ isActive }) =>
-        `${linkBase} ${isActive ? linkActive : ""}`
-      }
+      className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ""}`}
       onClick={() => setMobileOpen(false)}
     >
       {children}
@@ -216,7 +212,9 @@ const Navbar = () => {
                       </button>
                     ))
                   ) : (
-                    <p className="p-4 text-sm text-gray-500">No notifications</p>
+                    <p className="p-4 text-sm text-gray-500">
+                      No notifications
+                    </p>
                   )}
                 </div>
               )}
@@ -313,7 +311,9 @@ const Navbar = () => {
                       </button>
                     ))
                   ) : (
-                    <p className="p-4 text-sm text-gray-500">No notifications</p>
+                    <p className="p-4 text-sm text-gray-500">
+                      No notifications
+                    </p>
                   )}
                 </div>
               )}

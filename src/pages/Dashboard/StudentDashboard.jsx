@@ -19,7 +19,7 @@ import {
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import { Link, useLoaderData, useNavigate } from "react-router";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 const StudentDashboard = () => {
   const { user } = useContext(AuthContext);

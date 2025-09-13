@@ -14,7 +14,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 const Semester = () => {
   const { user } = useContext(AuthContext);

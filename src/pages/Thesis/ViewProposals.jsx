@@ -10,7 +10,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 const ViewProposals = () => {
   const { user } = useContext(AuthContext);

@@ -10,7 +10,7 @@ const SupervisorsList = () => {
       try {
         setLoading(true);
         const res = await fetch(
-          "https://bracu-research-server-teal.vercel.app/supervisors"
+          "https://bracu-research-server-eta.vercel.app/supervisors"
         );
         if (!res.ok) throw new Error("Failed to fetch supervisors");
         const data = await res.json();

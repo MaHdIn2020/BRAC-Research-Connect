@@ -20,7 +20,7 @@ import {
   Columns3,
 } from "lucide-react";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 function useDebouncedValue(value, delay = 150) {
   const [v, setV] = useState(value);
@@ -57,7 +57,7 @@ function buildFeatureIndex(ctx) {
     },
     {
       title: "Thesis Process & Guidelines",
-      path: "/thesis-process", 
+      path: "/thesis-process",
       icon: <FileText className="w-4 h-4" />,
       description:
         "Complete thesis journey, rules, penalties, and submission steps.",

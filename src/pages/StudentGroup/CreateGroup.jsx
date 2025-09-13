@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 const CreateGroup = () => {
   const { user } = useContext(AuthContext); // Firebase user (login gate only)

@@ -58,7 +58,7 @@ const SupervisorProfile = () => {
         if (!User?._id) throw new Error("User not found");
 
         const res = await fetch(
-          `https://bracu-research-server-teal.vercel.app/supervisor/${User._id}`
+          `https://bracu-research-server-eta.vercel.app/supervisor/${User._id}`
         );
         if (!res.ok) {
           throw new Error(
@@ -99,7 +99,7 @@ const SupervisorProfile = () => {
       if (!User?._id) throw new Error("User not found");
 
       const res = await fetch(
-        `https://bracu-research-server-teal.vercel.app/supervisor/update/${User._id}`,
+        `https://bracu-research-server-eta.vercel.app/supervisor/update/${User._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

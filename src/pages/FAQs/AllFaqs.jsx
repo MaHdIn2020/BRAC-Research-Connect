@@ -9,7 +9,7 @@ const AllFaqs = () => {
     const fetchFAQs = async () => {
       try {
         const res = await fetch(
-          "https://bracu-research-server-teal.vercel.app/faqs"
+          "https://bracu-research-server-eta.vercel.app/faqs"
         );
         if (!res.ok) throw new Error("Failed to fetch FAQs");
         const data = await res.json();

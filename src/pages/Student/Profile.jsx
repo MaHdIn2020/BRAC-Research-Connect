@@ -61,7 +61,7 @@ const Profile = () => {
         if (!User?._id) throw new Error("User not found");
 
         const res = await fetch(
-          `https://bracu-research-server-teal.vercel.app/profile/${User._id}`
+          `https://bracu-research-server-eta.vercel.app/profile/${User._id}`
         );
         if (!res.ok) {
           throw new Error(
@@ -103,7 +103,7 @@ const Profile = () => {
       if (!User?._id) throw new Error("User not found");
 
       const res = await fetch(
-        `https://bracu-research-server-teal.vercel.app/profile/update/${User._id}`,
+        `https://bracu-research-server-eta.vercel.app/profile/update/${User._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

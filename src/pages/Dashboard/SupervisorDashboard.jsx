@@ -3,7 +3,7 @@ import { Link, Navigate, useLoaderData } from "react-router";
 import { FileText, Users, BookOpen, Search } from "lucide-react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-const API_BASE = "https://bracu-research-server-teal.vercel.app";
+const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 const seasonOrderIndex = (s) => ({ spring: 1, summer: 2, fall: 3 }[s] ?? 0);
 
