@@ -96,7 +96,7 @@ const ThesisWorkflow = () => {
 
         <div className="mt-12 flex justify-center">
           <a
-            href="/thesis-guidelines"
+            href="/thesis-process"
             className="px-6 py-3 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition font-medium"
           >
             View Full Process

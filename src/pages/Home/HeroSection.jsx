@@ -19,13 +19,13 @@ const HeroSection = () => {
           
           <div className="mt-6 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center md:justify-start">
             <Link
-              to="/login"
+              to="/thesis-process"
               className="px-6 py-3 bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730] transition font-medium"
             >
               Get Started
             </Link>
             <Link
-              to="/features"
+              to="/search"
               className="px-6 py-3 border border-[#7b1e3c] text-[#7b1e3c] dark:text-[#d08ea3] rounded-lg hover:bg-[#7b1e3c] hover:text-white dark:hover:text-white transition font-medium"
             >
               Explore Features

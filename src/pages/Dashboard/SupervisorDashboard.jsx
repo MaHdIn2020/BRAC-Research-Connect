@@ -210,16 +210,13 @@ const SupervisorDashboard = () => {
               <Search className="inline w-4 h-4 mr-2" /> Search Papers
             </button>
           </Link>
-          <button className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-            View All Theses
-          </button>
 
           {/* View Accepted (Assigned) Groups */}
-          <Link to="/supervisor-groups">
+          {/* <Link to="/supervisor-groups">
             <button className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition">
               View Accepted Groups
             </button>
-          </Link>
+          </Link> */}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

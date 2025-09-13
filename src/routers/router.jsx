@@ -28,16 +28,24 @@ import Recommended from "../pages/Student/Recommended";
 import ScheduleMeetings from "../pages/Meeting/ScheduleMeetings";
 import AllThesis from "../pages/Thesis/AllThesis";
 import Semester from "../pages/Semester/Semester";
+import ThesisProcess from "../pages/Thesis/ThesisProcess";
+import Error from "../pages/Error/Error";
+import Search from "../pages/Home/Search";
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: RootLayout,
     loader: () => fetch("https://bracu-research-server-teal.vercel.app/users/"),
+    errorElement: <Error></Error>,
     children: [
       {
         path: "/",
         Component: Home,
+      },
+      {
+        path: "/search",
+        Component: Search,
       },
       {
         path: "/register",
@@ -193,6 +201,10 @@ const router = createBrowserRouter([
         loader: () =>
           fetch("https://bracu-research-server-teal.vercel.app/theses"),
       },
+      {
+        path: "/thesis-process",
+        Component: ThesisProcess,
+      }
     ],
   },
 ]);

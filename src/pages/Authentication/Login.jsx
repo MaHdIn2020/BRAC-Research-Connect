@@ -1,28 +1,38 @@
-import React, { use, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const { signIn } = use(AuthContext);
-  const navigate = useNavigate(); 
+  const { signIn } = useContext(AuthContext); // <-- useContext (not use)
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    signIn(formData.email, formData.password)
-      .then((userCredential) => {
-        alert("Login successful!");
-        navigate("/"); 
-      })
-      .catch((error) => {
-        console.error("Error signing in:", error);
-        alert("Login failed! Please check your credentials.");
-      });
 
+    try {
+      await toast.promise(
+        signIn(formData.email, formData.password),
+        {
+          pending: "Signing you in…",
+          success: "Login successful! 🎉",
+          error: {
+            render({ data }) {
+              // data is the error from signIn
+              return data?.message || "Login failed! Please check your credentials.";
+            },
+          },
+        }
+      );
+      navigate("/");
+    } catch {
+      // error already shown by toast.promise
+    }
   };
 
   return (

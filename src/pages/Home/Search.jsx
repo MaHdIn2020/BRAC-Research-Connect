@@ -45,13 +45,23 @@ function buildFeatureIndex(ctx) {
   };
 
   return [
-    // ——— General (visible to all roles; public subset used for signed-out users)
+    // ——— General (accessible to everyone; signed-out users see only these)
     {
       title: "Home",
       path: "/",
       icon: <Columns3 className="w-4 h-4" />,
       description: "Landing page with hero, workflow, and FAQs.",
       tags: ["home", "landing", "overview"],
+      roles: ["student", "supervisor", "admin"],
+      section: "General",
+    },
+    {
+      title: "Thesis Process & Guidelines",
+      path: "/thesis-process", 
+      icon: <FileText className="w-4 h-4" />,
+      description:
+        "Complete thesis journey, rules, penalties, and submission steps.",
+      tags: ["thesis", "process", "guidelines", "policy", "steps"],
       roles: ["student", "supervisor", "admin"],
       section: "General",
     },
@@ -175,15 +185,16 @@ function buildFeatureIndex(ctx) {
       roles: ["supervisor"],
       section: "Supervisor",
     },
-    {
-      title: "Your Accepted Groups",
-      path: "/supervisor-groups",
-      icon: <Users className="w-4 h-4" />,
-      description: "See groups assigned under your supervision by semester.",
-      tags: ["groups", "assigned", "semester"],
-      roles: ["supervisor"],
-      section: "Supervisor",
-    },
+    // ❌ REMOVED:
+    // {
+    //   title: "Your Accepted Groups",
+    //   path: "/supervisor-groups",
+    //   icon: <Users className="w-4 h-4" />,
+    //   description: "See groups assigned under your supervision by semester.",
+    //   tags: ["groups", "assigned", "semester"],
+    //   roles: ["supervisor"],
+    //   section: "Supervisor",
+    // },
     {
       title: "Schedule Meetings",
       path: "/schedule-meetings",
@@ -462,12 +473,12 @@ const Search = () => {
   };
 
   return (
-    <section className="bg-white dark:bg-slate-900 transition-colors">
+    <section className="bg-white dark:bg-slate-900 transition-colors mt-4">
       {/* Width aligned with banner & other sections */}
       <div className="container mx-auto px-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-            Search features
+            Quick Navigation
           </h2>
           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
             <ArrowUpDown className="w-4 h-4" />
