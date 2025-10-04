@@ -203,16 +203,19 @@ Add a `.env` file for both client and server with the following:
 #### **Client (.env)**
 
 ```
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_API_KEY=AIzaSyAOYuacz4fo1SE3mCNL5ssrNT1JirZyiAI
+VITE_FIREBASE_AUTH_DOMAIN=bracu-research-connect.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=bracu-research-connect
+VITE_FIREBASE_STORAGE_BUCKET=bracu-research-connect.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=947640377158
+VITE_FIREBASE_APP_ID=1:947640377158:web:260b9b71d87527a2eecf47
 ```
 
 #### **Server (.env)**
 
 ```
-MONGODB_URI=your_mongodb_connection
-PORT=5000
+DB_USER=bracu-research-admin
+DB_PASS=ePUqucSrt2lUJ7Dc
 ```
 
 ---
@@ -231,16 +234,6 @@ PORT=5000
 * Real-time chat between supervisors and students
 * Automated plagiarism detection for thesis uploads
 * Integration with BRACU’s institutional repository
-
----
-
-## 🤝 Contributors
-
-| Name                   | Role                |
-| ---------------------- | ------------------- |
-| **IFTI-KAR**           | Frontend Developer  |
-| **Akhilakur07**        | Backend Developer   |
-| **BRACU CSE Students** | Testers & Reviewers |
 
 ---
 
