@@ -29,24 +29,24 @@ const ViewAnnouncements = () => {
     return <p className="p-4">No announcements available.</p>;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 p-6">
+    <div className="min-h-screen bg-white    p-6">
       <div className="container mx-auto max-w-3xl">
-        <h1 className="text-3xl font-bold mb-6 text-slate-900 dark:text-white">
+        <h1 className="text-3xl font-bold mb-6 text-slate-900   :text-white">
           Announcements
         </h1>
         <div className="space-y-6">
           {announcements.map((a) => (
             <div
               key={a._id}
-              className="p-4 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+              className="p-4 border border-gray-200   :border-slate-700 rounded-lg bg-white   :bg-slate-800"
             >
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-slate-900   :text-white">
                 {a.title}
               </h2>
               <p className="text-gray-500 text-sm mb-2">
                 Posted on {new Date(a.createdAt).toLocaleDateString()}
               </p>
-              <p className="text-slate-700 dark:text-gray-300 whitespace-pre-line">
+              <p className="text-slate-700   :text-gray-300 whitespace-pre-line">
                 {a.description}
               </p>
             </div>

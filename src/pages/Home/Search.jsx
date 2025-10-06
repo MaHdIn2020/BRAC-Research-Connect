@@ -327,7 +327,7 @@ const ResultRow = ({ item, onGo, active, query }) => {
     return (
       <>
         {text.slice(0, i)}
-        <mark className="bg-yellow-200 dark:bg-yellow-600/40 rounded px-0.5">
+        <mark className="bg-yellow-200   :bg-yellow-600/40 rounded px-0.5">
           {text.slice(i, i + q.length)}
         </mark>
         {text.slice(i + q.length)}
@@ -342,11 +342,11 @@ const ResultRow = ({ item, onGo, active, query }) => {
       className={`w-full text-left px-3 py-2 rounded-lg border transition-colors flex items-start gap-3 ${
         active
           ? "border-[#7b1e3c] bg-[#7b1e3c]/5"
-          : "border-gray-200 dark:border-slate-700"
+          : "border-gray-200   :border-slate-700"
       } ${
         item.disabled
           ? "opacity-50 cursor-not-allowed"
-          : "hover:bg-slate-50 dark:hover:bg-slate-800"
+          : "hover:bg-slate-50   :hover:bg-slate-800"
       }`}
       title={
         item.disabled ? "Sign in to resolve this link" : `Go to ${item.title}`
@@ -357,13 +357,13 @@ const ResultRow = ({ item, onGo, active, query }) => {
       </span>
       <span className="min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-slate-900 dark:text-white truncate">
+          <span className="font-medium text-slate-900   :text-white truncate">
             {highlight(item.title)}
           </span>
           {/* Section tag removed from UI */}
         </div>
         {item.description ? (
-          <div className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 line-clamp-2">
+          <div className="text-xs text-slate-600   -300 mt-0.5 line-clamp-2">
             {highlight(item.description)}
           </div>
         ) : null}
@@ -473,14 +473,14 @@ const Search = () => {
   };
 
   return (
-    <section className="bg-white dark:bg-slate-900 transition-colors mt-4">
+    <section className="bg-white    transition-colors mt-4">
       {/* Width aligned with banner & other sections */}
       <div className="container mx-auto px-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900   :text-white">
             Quick Navigation
           </h2>
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-xs text-slate-500   -400">
             <ArrowUpDown className="w-4 h-4" />
             Use ↑↓ then Enter
           </div>
@@ -494,7 +494,7 @@ const Search = () => {
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Try “proposal”, “groups”, “semester”, “meetings”…"
-            className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
+            className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300   :border-slate-700 bg-white   :bg-slate-800 text-slate-900   :text-white focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]"
           />
         </div>
 
@@ -503,7 +503,7 @@ const Search = () => {
           className="mt-4 space-y-2 max-h-[420px] overflow-auto rounded-lg"
         >
           {!results.length ? (
-            <div className="p-6 border border-dashed rounded-lg text-slate-600 dark:text-slate-300 dark:border-slate-700">
+            <div className="p-6 border border-dashed rounded-lg text-slate-600   -300   :border-slate-700">
               {dq.trim()
                 ? "No matches. Try different keywords."
                 : userRole
@@ -523,7 +523,7 @@ const Search = () => {
           )}
         </div>
 
-        <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+        <div className="mt-4 text-xs text-slate-500   ">
           {userRole
             ? `Role: ${userRole}. Results are limited to your access.`
             : "Not signed in — showing general features only."}

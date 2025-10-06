@@ -197,49 +197,49 @@ const CreateGroup = () => {
   // Render
   return (
     <section className="px-6 py-10 max-w-3xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 dark:text-white">
+      <h1 className="text-2xl md:text-3xl font-semibold text-slate-900   :text-white">
         Create Group
       </h1>
-      <p className="text-slate-600 dark:text-gray-300 mt-1">
+      <p className="text-slate-600   :text-gray-300 mt-1">
         Start a research group. You’ll be the{" "}
         <span className="font-medium text-[#7b1e3c]">group admin</span>. Max
         members: 5.
       </p>
 
-      <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm p-5">
+      <div className="mt-6 rounded-2xl border border-gray-200   :border-gray-700 bg-white    shadow-sm p-5">
         {loadingUser ? (
-          <div className="text-slate-600 dark:text-gray-300">
+          <div className="text-slate-600   :text-gray-300">
             Checking your account…
           </div>
         ) : !routeUserId ? (
-          <div className="text-amber-700 dark:text-amber-300">
+          <div className="text-amber-700   :text-amber-300">
             No user id found in the URL. Make sure your route is like{" "}
             <code>/create-group/:id</code>.
           </div>
         ) : !user ? (
-          <div className="text-amber-700 dark:text-amber-300">
+          <div className="text-amber-700   :text-amber-300">
             Please log in to create a group.
           </div>
         ) : !dbUser ? (
-          <div className="text-amber-700 dark:text-amber-300">
+          <div className="text-amber-700   :text-amber-300">
             Couldn’t find your BRACU account in the database. Contact admin.
           </div>
         ) : dbUser.role !== "student" ? (
-          <div className="text-amber-700 dark:text-amber-300">
+          <div className="text-amber-700   :text-amber-300">
             Only students can create groups.
           </div>
         ) : checkingAdminGroup || checkingMembership ? (
-          <div className="text-slate-600 dark:text-gray-300">
+          <div className="text-slate-600   :text-gray-300">
             Checking your group status…
           </div>
         ) : alreadyBlocked ? (
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-slate-800">
+          <div className="rounded-xl border border-gray-200   :border-gray-700 p-5 bg-gray-50   :bg-slate-800">
             <p className="text-[#7b1e3c] font-semibold">
               You already belong to a group. You can’t create another group.
             </p>
 
             {myAdminGroup ? (
-              <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
+              <div className="mt-2 text-sm text-slate-600   :text-gray-300 space-y-1">
                 <div>
                   <span className="font-medium">(You are the Admin) Name:</span>{" "}
                   {myAdminGroup.name}
@@ -264,7 +264,7 @@ const CreateGroup = () => {
                   )}
               </div>
             ) : memberGroup ? (
-              <div className="mt-2 text-sm text-slate-600 dark:text-gray-300 space-y-1">
+              <div className="mt-2 text-sm text-slate-600   :text-gray-300 space-y-1">
                 <div>
                   <span className="font-medium">Group Name:</span>{" "}
                   {memberGroup.name}
@@ -294,7 +294,7 @@ const CreateGroup = () => {
           <form onSubmit={submit} className="space-y-5">
             {/* Group Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-slate-700   :text-gray-200 mb-1">
                 Group Name <span className="text-red-600">*</span>
               </label>
               <input
@@ -302,14 +302,14 @@ const CreateGroup = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-[#7b1e3c] focus:border-[#7b1e3c] text-slate-900 dark:text-gray-100"
+                className="w-full rounded-lg border border-gray-300   :border-gray-700 bg-white   :bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-[#7b1e3c] focus:border-[#7b1e3c] text-slate-900   :text-gray-100"
                 placeholder="e.g., Vision & NLP Group"
               />
             </div>
 
             {/* Research Interests */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-slate-700   :text-gray-200 mb-1">
                 Research Interests (one or many){" "}
                 <span className="text-red-600">*</span>
               </label>
@@ -320,7 +320,7 @@ const CreateGroup = () => {
                   value={interestInput}
                   onChange={(e) => setInterestInput(e.target.value)}
                   onKeyDown={onKeyDownInterest}
-                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-[#7b1e3c] focus:border-[#7b1e3c] text-slate-900 dark:text-gray-100"
+                  className="flex-1 rounded-lg border border-gray-300   :border-gray-700 bg-white   :bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-[#7b1e3c] focus:border-[#7b1e3c] text-slate-900   :text-gray-100"
                   placeholder="Add and press Enter (or comma). e.g., NLP, Computer Vision"
                 />
                 <button
@@ -367,7 +367,7 @@ const CreateGroup = () => {
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-gray-400">
+            <p className="text-xs text-slate-500   :text-gray-400">
               On create: assigned supervisor is <em>None</em>, proposals
               submitted to is <em>empty</em>.
             </p>

@@ -297,10 +297,10 @@ const FindGroup = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900   :text-white">
             Find Groups
           </h1>
-          <p className="text-slate-600 dark:text-gray-300 mt-1">
+          <p className="text-slate-600   :text-gray-300 mt-1">
             Browse existing research groups and join one that matches your
             interests.
           </p>
@@ -316,7 +316,7 @@ const FindGroup = () => {
             </NavLink>
           ) : (
             <button
-              className="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 dark:bg-slate-700 dark:text-gray-300 cursor-not-allowed"
+              className="px-4 py-2 rounded-lg bg-gray-300 text-gray-700   :bg-slate-700   :text-gray-300 cursor-not-allowed"
               disabled
               title={
                 !routeUserId
@@ -332,8 +332,8 @@ const FindGroup = () => {
 
       {/* Admin-only: invite a student */}
       {dbUser?.role === "student" && myAdminGroup && (
-        <div className="mt-6 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
-          <h2 className="font-semibold text-slate-900 dark:text-white mb-2">
+        <div className="mt-6 p-4 rounded-2xl border border-gray-200   :border-gray-700 bg-white    shadow-sm">
+          <h2 className="font-semibold text-slate-900   :text-white mb-2">
             Invite a Student to{" "}
             <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
           </h2>
@@ -344,7 +344,7 @@ const FindGroup = () => {
               value={searchId}
               onChange={(e) => setSearchId(e.target.value)}
               placeholder="Enter Student ID (e.g., 22101234)"
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-[#7b1e3c]"
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-300   :border-gray-700 bg-white   :bg-slate-800 text-slate-900   :text-gray-100 outline-none focus:ring-2 focus:ring-[#7b1e3c]"
             />
             <button
               onClick={searchStudent}
@@ -356,23 +356,23 @@ const FindGroup = () => {
           </div>
 
           {searchError && (
-            <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">
+            <p className="mt-2 text-sm text-rose-600   :text-rose-400">
               {searchError}
             </p>
           )}
 
           {searchedUser && (
-            <div className="mt-4 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800">
+            <div className="mt-4 p-3 rounded-xl border border-gray-200   :border-gray-700 bg-gray-50   :bg-slate-800">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="font-medium text-slate-900 dark:text-white">
+                  <div className="font-medium text-slate-900   :text-white">
                     {searchedUser.name || "Unnamed"}
                   </div>
-                  <div className="text-sm text-slate-600 dark:text-gray-300">
+                  <div className="text-sm text-slate-600   :text-gray-300">
                     Student ID: {searchedUser.studentId || "N/A"}
                   </div>
                   {searchedUser.email && (
-                    <div className="text-sm text-slate-600 dark:text-gray-300">
+                    <div className="text-sm text-slate-600   :text-gray-300">
                       {searchedUser.email}
                     </div>
                   )}
@@ -391,18 +391,18 @@ const FindGroup = () => {
 
       {/* Admin-only: incoming join requests (students -> your group) */}
       {dbUser?.role === "student" && myAdminGroup && (
-        <div className="mt-6 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
-          <h2 className="font-semibold text-slate-900 dark:text-white mb-3">
+        <div className="mt-6 p-4 rounded-2xl border border-gray-200   :border-gray-700 bg-white    shadow-sm">
+          <h2 className="font-semibold text-slate-900   :text-white mb-3">
             Join Requests to{" "}
             <span className="text-[#7b1e3c]">{myAdminGroup.name}</span>
           </h2>
 
           {loadingRequests ? (
-            <div className="text-slate-600 dark:text-gray-300">
+            <div className="text-slate-600   :text-gray-300">
               Loading requests…
             </div>
           ) : adminRequests.length === 0 ? (
-            <div className="text-slate-600 dark:text-gray-300">
+            <div className="text-slate-600   :text-gray-300">
               No pending requests right now.
             </div>
           ) : (
@@ -412,22 +412,22 @@ const FindGroup = () => {
                 return (
                   <li
                     key={sid}
-                    className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-slate-800"
+                    className="p-3 rounded-lg border border-gray-200   :border-gray-700 bg-slate-50   :bg-slate-800"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="font-medium text-slate-900 dark:text-white">
+                        <div className="font-medium text-slate-900   :text-white">
                           {r.name || "Unnamed Student"}
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-gray-300">
+                        <div className="text-sm text-slate-600   :text-gray-300">
                           Student ID: {r.studentIdStr || "N/A"}
                         </div>
                         {r.email && (
-                          <div className="text-sm text-slate-600 dark:text-gray-300">
+                          <div className="text-sm text-slate-600   :text-gray-300">
                             {r.email}
                           </div>
                         )}
-                        <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                        <div className="text-xs text-slate-500   :text-gray-400 mt-1">
                           Requested on{" "}
                           {r.requestedAt
                             ? new Date(r.requestedAt).toLocaleString()
@@ -464,23 +464,23 @@ const FindGroup = () => {
 
       {/* Global banner if already in a group (info only; admins can still invite) */}
       {iAmInAnyGroup && (
-        <div className="mt-4 p-3 rounded-lg bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+        <div className="mt-4 p-3 rounded-lg bg-amber-50 text-amber-800   :bg-amber-500/10   :text-amber-300">
           You already belong to a group. You can’t join or create another group.
         </div>
       )}
 
       {/* List of groups */}
-      <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 shadow-sm">
+      <div className="mt-6 rounded-2xl border border-gray-200   :border-gray-700 bg-white    shadow-sm">
         {loadingUser || loadingGroups ? (
-          <div className="p-6 text-slate-600 dark:text-gray-300">
+          <div className="p-6 text-slate-600   :text-gray-300">
             Loading groups…
           </div>
         ) : !user ? (
-          <div className="p-6 text-amber-700 dark:text-amber-300">
+          <div className="p-6 text-amber-700   :text-amber-300">
             Please log in to view and request to join groups.
           </div>
         ) : groups.length === 0 ? (
-          <div className="p-6 text-slate-600 dark:text-gray-300">
+          <div className="p-6 text-slate-600   :text-gray-300">
             No groups yet. Be the first to create one!
           </div>
         ) : (
@@ -502,13 +502,13 @@ const FindGroup = () => {
               return (
                 <li
                   key={gid}
-                  className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-slate-900 hover:shadow-sm transition"
+                  className="rounded-xl border border-gray-200   :border-gray-700 p-4 bg-white    hover:shadow-sm transition"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-slate-900   :text-white">
                       {g.name}
                     </h3>
-                    <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-slate-800 text-slate-700 dark:text-gray-200">
+                    <span className="text-xs px-2 py-1 rounded bg-gray-100   :bg-slate-800 text-slate-700   :text-gray-200">
                       {Array.isArray(g.members) ? g.members.length : 0}/
                       {g.maxMembers || 5}
                     </span>
@@ -532,26 +532,26 @@ const FindGroup = () => {
                   {/* Status badges */}
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                     {g.assignedSupervisor ? (
-                      <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
+                      <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-800   :bg-emerald-500/15   :text-emerald-300">
                         Supervisor Assigned
                       </span>
                     ) : (
-                      <span className="px-2 py-1 rounded bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+                      <span className="px-2 py-1 rounded bg-amber-100 text-amber-800   :bg-amber-500/15   :text-amber-300">
                         No Supervisor
                       </span>
                     )}
                     {isAdmin && (
-                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300">
+                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-800   :bg-blue-500/15   :text-blue-300">
                         You are the Admin
                       </span>
                     )}
                     {isMember && !isAdmin && (
-                      <span className="px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-500/15 dark:text-purple-300">
+                      <span className="px-2 py-1 rounded bg-purple-100 text-purple-800   :bg-purple-500/15   :text-purple-300">
                         You’re a Member
                       </span>
                     )}
                     {full && !isMember && !isAdmin && (
-                      <span className="px-2 py-1 rounded bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300">
+                      <span className="px-2 py-1 rounded bg-rose-100 text-rose-800   :bg-rose-500/15   :text-rose-300">
                         Group Full
                       </span>
                     )}
@@ -565,7 +565,7 @@ const FindGroup = () => {
                       className={`w-full inline-flex items-center justify-center px-4 py-2 rounded-lg transition 
                         ${
                           disabled
-                            ? "bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-gray-400 cursor-not-allowed"
+                            ? "bg-gray-200 text-gray-600   :bg-slate-800   :text-gray-400 cursor-not-allowed"
                             : "bg-[#7b1e3c] text-white hover:bg-[#651730]"
                         }`}
                       title={

@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-white dark:bg-slate-900 text-slate-700 dark:text-gray-300 border-t border-gray-200 dark:border-slate-700">
+    <footer className="bg-white    text-slate-700   :text-gray-300 border-t border-gray-200   :border-slate-700">
       <div className="container mx-auto px-6 py-8">
         
  
@@ -10,10 +10,10 @@ const Footer = () => {
           
 
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-slate-900   :text-white">
               BRACU Research <span className="text-[#7b1e3c]">Connect</span>
             </h1>
-            <p className="mt-2 max-w-xs text-sm text-slate-600 dark:text-gray-400">
+            <p className="mt-2 max-w-xs text-sm text-slate-600   :text-gray-400">
               A thesis management portal for BRAC University students to collaborate, manage, and succeed.
             </p>
           </div>
@@ -47,7 +47,7 @@ const Footer = () => {
         </div>
 
 
-        <div className="border-t border-gray-200 dark:border-slate-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-sm">
+        <div className="border-t border-gray-200   :border-slate-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-sm">
           <p>© {new Date().getFullYear()} Study Sync. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0">
             <a href="#" className="hover:text-[#7b1e3c] transition">Facebook</a>

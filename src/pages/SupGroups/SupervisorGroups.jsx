@@ -101,28 +101,28 @@ const SupervisorGroups = () => {
   }, [proposalsByGroup, groupsById]);
 
   return (
-    <section className="min-h-screen bg-white dark:bg-slate-900 p-6 transition-colors">
+    <section className="min-h-screen bg-white    p-6 transition-colors">
       <div className="container mx-auto max-w-5xl">
         <header className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900   :text-white">
             Groups You’ve Accepted
           </h1>
-          <p className="text-slate-600 dark:text-gray-400 mt-1">
+          <p className="text-slate-600   :text-gray-400 mt-1">
             One row per group with its accepted proposal(s).
           </p>
         </header>
 
         {loading ? (
-          <div className="rounded-lg border border-gray-200 dark:border-slate-700 p-6 bg-white dark:bg-slate-800">
-            <p className="text-slate-600 dark:text-gray-300">Loading…</p>
+          <div className="rounded-lg border border-gray-200   :border-slate-700 p-6 bg-white   :bg-slate-800">
+            <p className="text-slate-600   :text-gray-300">Loading…</p>
           </div>
         ) : error ? (
-          <div className="rounded-lg border border-rose-200 dark:border-rose-700 p-6 bg-rose-50 dark:bg-rose-900/20">
-            <p className="text-rose-700 dark:text-rose-300">{error}</p>
+          <div className="rounded-lg border border-rose-200   :border-rose-700 p-6 bg-rose-50   :bg-rose-900/20">
+            <p className="text-rose-700   :text-rose-300">{error}</p>
           </div>
         ) : orderedGroupIds.length === 0 ? (
-          <div className="rounded-lg border border-gray-200 dark:border-slate-700 p-6 bg-white dark:bg-slate-800">
-            <p className="text-slate-600 dark:text-gray-300">
+          <div className="rounded-lg border border-gray-200   :border-slate-700 p-6 bg-white   :bg-slate-800">
+            <p className="text-slate-600   :text-gray-300">
               You haven’t accepted any proposals yet.
             </p>
           </div>
@@ -135,22 +135,22 @@ const SupervisorGroups = () => {
               return (
                 <li
                   key={gid}
-                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 p-5"
+                  className="rounded-xl border border-gray-200   :border-gray-700 bg-white    p-5"
                 >
                   {/* Row top: prominent group summary */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                      <h3 className="text-xl font-semibold text-slate-900   :text-white">
                         {group?.name || "Unnamed Group"}
                       </h3>
-                      <div className="mt-1 text-sm text-slate-600 dark:text-gray-400">
+                      <div className="mt-1 text-sm text-slate-600   :text-gray-400">
                         Assigned Supervisor:{" "}
                         <span className="font-medium">You</span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-gray-100 dark:bg-slate-800 text-slate-700 dark:text-gray-300">
+                      <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-gray-100   :bg-slate-800 text-slate-700   :text-gray-300">
                         <Users className="w-4 h-4" />
                         {Array.isArray(group?.members)
                           ? group.members.length
@@ -177,13 +177,13 @@ const SupervisorGroups = () => {
                     )}
 
                   {/* Divider */}
-                  <div className="my-4 h-px bg-gray-200 dark:bg-slate-700" />
+                  <div className="my-4 h-px bg-gray-200   :bg-slate-700" />
 
                   {/* Accepted proposal(s) for this group */}
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <FileText className="w-4 h-4 text-[#7b1e3c]" />
-                      <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                      <span className="text-sm font-medium text-slate-800   -200">
                         Accepted Proposal{groupProps.length > 1 ? "s" : ""}
                       </span>
                     </div>
@@ -192,14 +192,14 @@ const SupervisorGroups = () => {
                       {groupProps.map((p) => (
                         <li
                           key={p._id}
-                          className="p-3 rounded border border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+                          className="p-3 rounded border border-gray-100   :border-slate-700 bg-slate-50   :bg-slate-800"
                         >
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                             <div>
-                              <div className="font-medium text-slate-900 dark:text-white">
+                              <div className="font-medium text-slate-900   :text-white">
                                 {p.title}
                               </div>
-                              <div className="text-xs text-slate-500 dark:text-gray-400">
+                              <div className="text-xs text-slate-500   :text-gray-400">
                                 {p.createdAt
                                   ? new Date(p.createdAt).toLocaleDateString()
                                   : ""}
@@ -223,7 +223,7 @@ const SupervisorGroups = () => {
                           </div>
 
                           {p.abstract && (
-                            <p className="mt-2 text-sm text-slate-700 dark:text-gray-300">
+                            <p className="mt-2 text-sm text-slate-700   :text-gray-300">
                               {p.abstract}
                             </p>
                           )}
@@ -234,7 +234,7 @@ const SupervisorGroups = () => {
                               {p.domain.map((d) => (
                                 <span
                                   key={`${p._id}-${d}`}
-                                  className="text-[11px] px-2 py-0.5 rounded bg-gray-100 dark:bg-slate-700 text-slate-700 dark:text-gray-200"
+                                  className="text-[11px] px-2 py-0.5 rounded bg-gray-100   :bg-slate-700 text-slate-700   :text-gray-200"
                                 >
                                   {d}
                                 </span>

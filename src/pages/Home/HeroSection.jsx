@@ -3,15 +3,15 @@ import { Link } from "react-router";
 
 const HeroSection = () => {
   return (
-    <section className="bg-white dark:bg-slate-900 transition-colors">
+    <section className="bg-white    transition-colors">
       <div className="container mx-auto px-6 pt-5 flex flex-col-reverse md:flex-row items-center gap-10">
 
         <div className="flex-1 text-center md:text-left">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900   :text-white leading-tight">
             Manage Your BRAC University Thesis <br />
             <span className="text-[#7b1e3c]">With Ease</span>
           </h1>
-          <p className="mt-4 text-lg text-slate-600 dark:text-gray-400 max-w-lg">
+          <p className="mt-4 text-lg text-slate-600   :text-gray-400 max-w-lg">
             BRACU Research Connect helps BRAC University students and supervisors streamline
             thesis proposals, track progress, share resources, and collaborate effectively —
             all in one portal.
@@ -26,7 +26,7 @@ const HeroSection = () => {
             </Link>
             <Link
               to="/search-feature"
-              className="px-6 py-3 border border-[#7b1e3c] text-[#7b1e3c] dark:text-[#d08ea3] rounded-lg hover:bg-[#7b1e3c] hover:text-white dark:hover:text-white transition font-medium"
+              className="px-6 py-3 border border-[#7b1e3c] text-[#7b1e3c]   :text-[#d08ea3] rounded-lg hover:bg-[#7b1e3c] hover:text-white   :hover:text-white transition font-medium"
             >
               Explore Features
             </Link>

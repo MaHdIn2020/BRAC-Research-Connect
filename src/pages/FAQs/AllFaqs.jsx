@@ -33,13 +33,13 @@ const AllFaqs = () => {
         {faqs.map((faq) => (
           <div
             key={faq._id}
-            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+            className=" p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
           >
             <div className="flex items-center mb-4">
-              <div className="bg-[#7b1e3c] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-3">
+              <div className="bg-[#7b1e3c]  w-8 h-8 rounded-full flex items-center justify-center font-bold mr-3">
                 Q
               </div>
-              <h3 className="font-semibold text-lg">{faq.question}</h3>
+              <h3 className="font-semibold text-lg text-black">{faq.question}</h3>
             </div>
             <p className="text-gray-700 mt-2">{faq.answer}</p>
           </div>

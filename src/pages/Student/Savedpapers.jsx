@@ -96,7 +96,7 @@ const Savedpapers = () => {
                 href={paper.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 text-center px-6 py-3 border border-[#7b1e3c] text-[#7b1e3c] dark:text-[#d08ea3] rounded-lg hover:bg-[#7b1e3c] hover:text-white dark:hover:text-white transition font-medium"
+                className="flex-1 text-center px-6 py-3 border border-[#7b1e3c] text-[#7b1e3c]   :text-[#d08ea3] rounded-lg hover:bg-[#7b1e3c] hover:text-white   :hover:text-white transition font-medium"
               >
                 View Paper
               </a>

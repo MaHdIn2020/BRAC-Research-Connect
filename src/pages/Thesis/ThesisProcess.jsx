@@ -2,7 +2,7 @@ import React from "react";
 import { GraduationCap, Users, FileText, Landmark, ClipboardList, Gavel } from "lucide-react";
 
 const Row = ({ label, value }) => (
-  <tr className="border-b border-gray-200 dark:border-gray-700">
+  <tr className="border-b border-gray-200   :border-gray-700">
     <td className="py-3 pr-4 font-medium">{label}</td>
     <td className="py-3">{value}</td>
   </tr>
@@ -10,7 +10,7 @@ const Row = ({ label, value }) => (
 
 const ThesisProcess = () => {
   return (
-    <main className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+    <main className="bg-white    text-slate-900   :text-white">
       <div className="container mx-auto px-6 py-12 grid gap-10 lg:grid-cols-[1fr_280px]">
         {/* Content */}
         <article>
@@ -38,10 +38,10 @@ const ThesisProcess = () => {
               <GraduationCap className="w-6 h-6 text-[#7b1e3c]" />
               <h2 className="text-2xl font-semibold">Requirements to Start Thesis / Project / Internship</h2>
             </div>
-            <p className="text-slate-700 dark:text-gray-300 mb-4">
+            <p className="text-slate-700   :text-gray-300 mb-4">
               Each member must individually satisfy the criteria below and register for Pre-Thesis 1 via the department’s Google Form. Effective for groups registering from Fall 2022.
             </p>
-            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="overflow-x-auto rounded-xl border border-gray-200   :border-gray-700">
               <table className="w-full text-sm md:text-base">
                 <tbody className="[&>tr>td]:align-top [&>tr>td]:px-4">
                   <Row label="Minimum Credits" value="75" />
@@ -65,7 +65,7 @@ const ThesisProcess = () => {
               <Users className="w-6 h-6 text-[#7b1e3c]" />
               <h2 className="text-2xl font-semibold">General Policies</h2>
             </div>
-            <ol className="space-y-3 text-slate-700 dark:text-gray-300 list-decimal pl-5">
+            <ol className="space-y-3 text-slate-700   :text-gray-300 list-decimal pl-5">
               <li>At most two supervisors and two co-supervisors are allowed per group.</li>
               <li>Students in the final thesis/project/internship phase may take a maximum of 3 additional courses with CSE400. Exceptional cases may petition.</li>
               <li>Pre-Thesis I and Pre-Thesis II must be completed before appearing at the thesis defense.</li>
@@ -82,7 +82,7 @@ const ThesisProcess = () => {
               <ClipboardList className="w-6 h-6 text-[#7b1e3c]" />
               <h2 className="text-2xl font-semibold">Marking Criteria</h2>
             </div>
-            <p className="text-slate-700 dark:text-gray-300">
+            <p className="text-slate-700   :text-gray-300">
               The detailed rubrics are maintained by the department. A group needs at least <strong>60%</strong> in Pre-Thesis 1 and 2 to be promoted to the next stage.{" "}
               <a
                 className="text-[#7b1e3c] underline decoration-2 underline-offset-4"
@@ -102,7 +102,7 @@ const ThesisProcess = () => {
               <FileText className="w-6 h-6 text-[#7b1e3c]" />
               <h2 className="text-2xl font-semibold">Reports</h2>
             </div>
-            <ul className="space-y-2 text-slate-700 dark:text-gray-300 list-disc pl-5">
+            <ul className="space-y-2 text-slate-700   :text-gray-300 list-disc pl-5">
               <li>All reports must have plagiarism ≤ <strong>15%</strong> (Turnitin). Email <a className="text-[#7b1e3c]" href="mailto:librarian@bracu.ac.bd">librarian@bracu.ac.bd</a> or consult your supervisor.</li>
               <li>Submit the <strong>AI report</strong> generated from Turnitin along with the plagiarism report.</li>
               <li>All reports must be submitted within the semester’s declared deadlines.</li>
@@ -116,20 +116,20 @@ const ThesisProcess = () => {
               <h2 className="text-2xl font-semibold">Penalties</h2>
             </div>
 
-            <p className="text-slate-700 dark:text-gray-300 mb-4">
+            <p className="text-slate-700   :text-gray-300 mb-4">
               The following actions incur mark deductions (affect all group members unless noted).
             </p>
 
-            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="overflow-x-auto rounded-xl border border-gray-200   :border-gray-700">
               <table className="w-full text-sm md:text-base">
-                <thead className="bg-gray-50 dark:bg-slate-800">
+                <thead className="bg-gray-50   :bg-slate-800">
                   <tr className="text-left">
                     <th className="py-3 px-4">Category</th>
                     <th className="py-3 px-4">Deduction</th>
                     <th className="py-3 px-4">Notes</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="divide-y divide-gray-200   :divide-gray-700">
                   <tr>
                     <td className="py-3 px-4">Break/Division of a group</td>
                     <td className="py-3 px-4">Pre-Thesis 1: −2; Pre-Thesis 2: −3; Final Defense: −5</td>
@@ -176,7 +176,7 @@ const ThesisProcess = () => {
               <Landmark className="w-6 h-6 text-[#7b1e3c]" />
               <h2 className="text-2xl font-semibold">Internship Notes</h2>
             </div>
-            <ul className="space-y-2 text-slate-700 dark:text-gray-300 list-disc pl-5">
+            <ul className="space-y-2 text-slate-700   :text-gray-300 list-disc pl-5">
               <li>Internship group size: maximum 1 student.</li>
               <li>Apply to the CSE Chairperson. Use an approved company list; special cases may propose another company with a detailed profile for approval.</li>
               <li>An internal faculty member will be assigned as internship supervisor/co-supervisor.</li>
@@ -186,7 +186,7 @@ const ThesisProcess = () => {
 
           {/* Back / top */}
           <div className="mt-12 flex flex-wrap gap-3">
-            <a href="/" className="px-5 py-2.5 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition">
+            <a href="/" className="px-5 py-2.5 rounded-lg bg-gray-100   :bg-slate-800 hover:bg-gray-200   :hover:bg-slate-700 transition">
               ← Back to Home
             </a>
             <a href="#start" className="px-5 py-2.5 rounded-lg bg-[#7b1e3c] text-white hover:bg-[#651730] transition">
@@ -197,7 +197,7 @@ const ThesisProcess = () => {
 
         {/* Sticky Sidebar */}
         <aside className="hidden lg:block lg:sticky lg:top-24 h-max">
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
+          <div className="rounded-2xl border border-gray-200   :border-gray-700 p-5">
             <p className="text-sm font-semibold mb-3">On this page</p>
             <ul className="space-y-2 text-sm">
               <li><a href="#start" className="text-[#7b1e3c] hover:underline">Requirements to Start</a></li>

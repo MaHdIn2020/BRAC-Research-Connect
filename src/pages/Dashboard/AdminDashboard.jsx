@@ -48,12 +48,12 @@ const adminModules = [
 
 const AdminDashboard = () => {
   return (
-    <section className="bg-white dark:bg-slate-900 min-h-screen transition-colors px-6 py-12">
+    <section className="bg-white    min-h-screen transition-colors px-6 py-12">
       <div className="container mx-auto">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-8">
+        <h1 className="text-4xl font-bold text-slate-900   :text-white mb-8">
           Admin Dashboard
         </h1>
-        <p className="text-slate-600 dark:text-gray-400 mb-12 max-w-3xl">
+        <p className="text-slate-600   :text-gray-400 mb-12 max-w-3xl">
           Manage all aspects of the BRACU Research Connect platform — from user accounts to thesis tracking, announcements, and system settings.
         </p>
 
@@ -62,13 +62,13 @@ const AdminDashboard = () => {
             <Link
               key={idx}
               to={mod.link}
-              className="p-6 bg-slate-100 dark:bg-slate-800 rounded-xl shadow hover:shadow-lg hover:scale-105 transition transform"
+              className="p-6 bg-slate-100   :bg-slate-800 rounded-xl shadow hover:shadow-lg hover:scale-105 transition transform"
             >
               <div className="mb-4">{mod.icon}</div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-xl font-semibold text-slate-900   :text-white mb-2">
                 {mod.title}
               </h3>
-              <p className="text-slate-600 dark:text-gray-400 text-sm">
+              <p className="text-slate-600   :text-gray-400 text-sm">
                 {mod.description}
               </p>
             </Link>

@@ -42,14 +42,14 @@ const steps = [
 
 const ThesisWorkflow = () => {
   return (
-    <section className="bg-white dark:bg-slate-900 py-16 transition-colors">
+    <section className="bg-white    py-16 transition-colors">
       <div className="container mx-auto px-6">
 
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900   :text-white">
             Your Thesis Journey
           </h2>
-          <p className="mt-3 text-slate-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="mt-3 text-slate-600   :text-gray-400 max-w-2xl mx-auto">
             From forming your group to submitting your final thesis, follow these
             clear steps to successfully complete your BRAC University thesis.
           </p>
@@ -58,7 +58,7 @@ const ThesisWorkflow = () => {
 
         <div className="relative">
 
-          <div className="absolute left-4 top-0 bottom-0 border-l-2 border-gray-200 dark:border-gray-700 md:hidden"></div>
+          <div className="absolute left-4 top-0 bottom-0 border-l-2 border-gray-200   :border-gray-700 md:hidden"></div>
 
           <div className="grid md:grid-cols-3 gap-10">
             {steps.map((step, index) => (
@@ -75,18 +75,18 @@ const ThesisWorkflow = () => {
                 <div className="ml-6 md:ml-0">
                   <div className="mb-2 flex items-center md:justify-center gap-2">
                     {step.icon}
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-slate-900   :text-white">
                       {step.title}
                     </h3>
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-gray-400">
+                  <p className="text-sm text-slate-600   :text-gray-400">
                     {step.description}
                   </p>
                 </div>
 
 
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-5 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-0.5 bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="hidden md:block absolute top-5 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-0.5 bg-gray-200   :bg-gray-700"></div>
                 )}
               </div>
             ))}

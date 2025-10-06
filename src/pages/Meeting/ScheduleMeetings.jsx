@@ -247,14 +247,14 @@ const ScheduleMeetings = () => {
     );
 
   return (
-    <section className="min-h-screen bg-white dark:bg-slate-900 p-6 transition-colors">
+    <section className="min-h-screen bg-white    p-6 transition-colors">
       <div className="container mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900   :text-white mb-2">
             Schedule Meetings
           </h1>
-          <p className="text-slate-600 dark:text-gray-400">
+          <p className="text-slate-600   :text-gray-400">
             Manage and schedule meetings with your assigned groups
           </p>
         </div>
@@ -278,8 +278,8 @@ const ScheduleMeetings = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Assigned Groups */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow border border-gray-200 dark:border-slate-700">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <div className="bg-white   :bg-slate-800 rounded-lg p-6 shadow border border-gray-200   :border-slate-700">
+            <h2 className="text-xl font-semibold text-slate-900   :text-white mb-4 flex items-center gap-2">
               <Users className="w-5 h-5 text-[#7b1e3c]" />
               Your Assigned Groups
             </h2>
@@ -293,12 +293,12 @@ const ScheduleMeetings = () => {
                 {assignedGroups.map((group) => (
                   <div
                     key={group._id}
-                    className="p-4 rounded border border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900"
+                    className="p-4 rounded border border-gray-100   :border-slate-700 bg-slate-50   "
                   >
-                    <div className="font-semibold text-slate-900 dark:text-white">
+                    <div className="font-semibold text-slate-900   :text-white">
                       {group.name}
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">
+                    <div className="text-sm text-slate-500   :text-gray-400 mt-1">
                       Members: {(group.members || []).length} • Interests:{" "}
                       {(group.researchInterests || []).join(", ") || "—"}
                     </div>
@@ -309,8 +309,8 @@ const ScheduleMeetings = () => {
           </div>
 
           {/* Upcoming Meetings */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow border border-gray-200 dark:border-slate-700">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <div className="bg-white   :bg-slate-800 rounded-lg p-6 shadow border border-gray-200   :border-slate-700">
+            <h2 className="text-xl font-semibold text-slate-900   :text-white mb-4 flex items-center gap-2">
               <Clock className="w-5 h-5 text-[#7b1e3c]" />
               Upcoming Meetings
             </h2>
@@ -324,10 +324,10 @@ const ScheduleMeetings = () => {
                 {upcomingMeetings.map((meeting) => (
                   <div
                     key={meeting._id}
-                    className="p-4 rounded border border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900"
+                    className="p-4 rounded border border-gray-100   :border-slate-700 bg-slate-50   "
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <div className="font-semibold text-slate-900 dark:text-white">
+                      <div className="font-semibold text-slate-900   :text-white">
                         {meeting.title}
                       </div>
                       <div className="flex gap-1">
@@ -354,10 +354,10 @@ const ScheduleMeetings = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">
+                    <div className="text-sm text-slate-500   :text-gray-400 mt-1">
                       Group: {getGroupName(meeting.groupId)}
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-gray-400">
+                    <div className="text-sm text-slate-500   :text-gray-400">
                       {formatDateTime(meeting.date, meeting.time)}
                     </div>
                     {meeting.meetingLink && (
@@ -378,8 +378,8 @@ const ScheduleMeetings = () => {
           </div>
 
           {/* Past Meetings */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow border border-gray-200 dark:border-slate-700">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <div className="bg-white   :bg-slate-800 rounded-lg p-6 shadow border border-gray-200   :border-slate-700">
+            <h2 className="text-xl font-semibold text-slate-900   :text-white mb-4 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-[#7b1e3c]" />
               Past Meetings
             </h2>
@@ -393,10 +393,10 @@ const ScheduleMeetings = () => {
                 {pastMeetings.slice(0, 10).map((meeting) => (
                   <div
                     key={meeting._id}
-                    className="p-4 rounded border border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900"
+                    className="p-4 rounded border border-gray-100   :border-slate-700 bg-slate-50   "
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <div className="font-semibold text-slate-900 dark:text-white">
+                      <div className="font-semibold text-slate-900   :text-white">
                         {meeting.title}
                       </div>
                       <button
@@ -407,10 +407,10 @@ const ScheduleMeetings = () => {
                         <Eye className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">
+                    <div className="text-sm text-slate-500   :text-gray-400 mt-1">
                       Group: {getGroupName(meeting.groupId)}
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-gray-400">
+                    <div className="text-sm text-slate-500   :text-gray-400">
                       {formatDateTime(meeting.date, meeting.time)}
                     </div>
                     <div className="text-xs text-slate-400 mt-1">
@@ -429,14 +429,14 @@ const ScheduleMeetings = () => {
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
           >
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="bg-white   :bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900   :text-white">
                   {editingMeeting ? "Edit Meeting" : "Schedule New Meeting"}
                 </h3>
                 <button
                   onClick={closeModal}
-                  className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  className="text-slate-500 hover:text-slate-700   :hover:text-slate-300"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -444,7 +444,7 @@ const ScheduleMeetings = () => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Meeting Title *
                   </label>
                   <input
@@ -452,14 +452,14 @@ const ScheduleMeetings = () => {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c] dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300   :border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]   :bg-slate-700   :text-white"
                     placeholder="Enter meeting title"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Date *
                   </label>
                   <input
@@ -467,13 +467,13 @@ const ScheduleMeetings = () => {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c] dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300   :border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]   :bg-slate-700   :text-white"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Time *
                   </label>
                   <input
@@ -481,20 +481,20 @@ const ScheduleMeetings = () => {
                     name="time"
                     value={formData.time}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c] dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300   :border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]   :bg-slate-700   :text-white"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Select Group *
                   </label>
                   <select
                     name="groupId"
                     value={formData.groupId}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c] dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300   :border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]   :bg-slate-700   :text-white"
                     required
                   >
                     <option value="">Select a group</option>
@@ -507,7 +507,7 @@ const ScheduleMeetings = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Meeting Link (Optional)
                   </label>
                   <input
@@ -515,7 +515,7 @@ const ScheduleMeetings = () => {
                     name="meetingLink"
                     value={formData.meetingLink}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c] dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300   :border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7b1e3c]   :bg-slate-700   :text-white"
                     placeholder="https://meet.google.com/... or Zoom link"
                   />
                 </div>
@@ -524,7 +524,7 @@ const ScheduleMeetings = () => {
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-slate-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700"
+                    className="flex-1 px-4 py-2 border border-gray-300   :border-slate-600 rounded-md text-slate-700   -300 hover:bg-gray-50   :hover:bg-slate-700"
                   >
                     Cancel
                   </button>
@@ -546,14 +546,14 @@ const ScheduleMeetings = () => {
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
           >
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md">
+            <div className="bg-white   :bg-slate-800 rounded-lg p-6 w-full max-w-md">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900   :text-white">
                   Meeting Details
                 </h3>
                 <button
                   onClick={closeViewModal}
-                  className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  className="text-slate-500 hover:text-slate-700   :hover:text-slate-300"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -561,44 +561,44 @@ const ScheduleMeetings = () => {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Title
                   </label>
-                  <div className="text-slate-900 dark:text-white">
+                  <div className="text-slate-900   :text-white">
                     {viewingMeeting.title}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Group
                   </label>
-                  <div className="text-slate-900 dark:text-white">
+                  <div className="text-slate-900   :text-white">
                     {getGroupName(viewingMeeting.groupId)}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Date & Time
                   </label>
-                  <div className="text-slate-900 dark:text-white">
+                  <div className="text-slate-900   :text-white">
                     {formatDateTime(viewingMeeting.date, viewingMeeting.time)}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                     Status
                   </label>
-                  <div className="text-slate-900 dark:text-white">
+                  <div className="text-slate-900   :text-white">
                     {viewingMeeting.status || "Scheduled"}
                   </div>
                 </div>
 
                 {viewingMeeting.meetingLink && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-slate-700   -300 mb-1">
                       Meeting Link
                     </label>
                     <a
@@ -616,7 +616,7 @@ const ScheduleMeetings = () => {
                 <div className="flex gap-3 mt-6">
                   <button
                     onClick={closeViewModal}
-                    className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600"
+                    className="flex-1 px-4 py-2 bg-slate-100   :bg-slate-700 text-slate-700   -300 rounded-md hover:bg-slate-200   :hover:bg-slate-600"
                   >
                     Close
                   </button>

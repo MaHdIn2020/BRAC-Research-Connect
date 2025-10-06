@@ -41,13 +41,13 @@ const SupervisorsList = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6 sm:p-12">
+    <div className="min-h-screen bg-gray-50    p-6 sm:p-12">
       {/* Page Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+        <h1 className="text-4xl font-bold text-slate-900   :text-white mb-2">
           Thesis Supervisors
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300">
+        <p className="text-lg text-gray-600   :text-gray-300">
           Explore the faculty members and their research areas. Connect with the
           right supervisor for your academic journey.
         </p>
@@ -58,7 +58,7 @@ const SupervisorsList = () => {
         {supervisors.map((sup) => (
           <div
             key={sup._id}
-            className="bg-white dark:bg-slate-900 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
+            className="bg-white    rounded-lg shadow p-6 border border-gray-200   :border-gray-700 hover:shadow-lg transition"
           >
             <div className="flex items-center gap-4 mb-4">
               {sup.photoUrl ? (
@@ -68,22 +68,22 @@ const SupervisorsList = () => {
                   className="w-16 h-16 rounded-full object-cover border-2 border-[#7b1e3c]"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                <div className="w-16 h-16 rounded-full bg-gray-200   :bg-gray-700 flex items-center justify-center">
+                  <span className="text-lg font-semibold text-gray-600   :text-gray-300">
                     {sup.name?.charAt(0)}
                   </span>
                 </div>
               )}
               <div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900   :text-white">
                   {sup.name}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600   :text-gray-400">
                   {sup.department || "—"}
                 </p>
               </div>
             </div>
-            <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+            <div className="text-sm text-gray-700   :text-gray-300 space-y-1">
               <p>
                 <strong>Phone:</strong> {sup.phone || "—"}
               </p>

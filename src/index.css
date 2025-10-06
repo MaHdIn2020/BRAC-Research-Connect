@@ -1,2 +1,9 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: light;
+}
+
+/* Or alternatively */
+:root {
+  color-scheme: light;
+}

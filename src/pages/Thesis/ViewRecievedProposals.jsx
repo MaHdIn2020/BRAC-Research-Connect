@@ -174,27 +174,27 @@ const ViewRecievedProposals = () => {
     } — starts ${s.startDate}`;
 
   return (
-    <section className="min-h-screen bg-white dark:bg-slate-900 transition-colors p-6">
+    <section className="min-h-screen bg-white    transition-colors p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 flex items-center gap-3">
           <FileText className="w-7 h-7 text-[#7b1e3c]" />
-          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900   :text-white">
             Proposals Submitted to You
           </h1>
         </div>
 
         {!supervisorId ? (
-          <div className="text-amber-700 dark:text-amber-300">
+          <div className="text-amber-700   :text-amber-300">
             Couldn’t resolve your supervisor account.
           </div>
         ) : loading ? (
-          <div className="text-slate-600 dark:text-gray-300">
+          <div className="text-slate-600   :text-gray-300">
             Loading proposals…
           </div>
         ) : error ? (
-          <div className="text-rose-700 dark:text-rose-300">{error}</div>
+          <div className="text-rose-700   :text-rose-300">{error}</div>
         ) : proposals.length === 0 ? (
-          <div className="text-slate-600 dark:text-gray-300">
+          <div className="text-slate-600   :text-gray-300">
             No proposals submitted yet.
           </div>
         ) : (
@@ -205,20 +205,20 @@ const ViewRecievedProposals = () => {
               return (
                 <li
                   key={pid}
-                  className="rounded-xl border border-gray-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-900"
+                  className="rounded-xl border border-gray-200   :border-slate-700 p-4 bg-white   "
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                      <h3 className="text-lg font-semibold text-slate-900   :text-white">
                         {p.title}
                       </h3>
-                      <div className="text-xs text-slate-500 dark:text-gray-400">
+                      <div className="text-xs text-slate-500   :text-gray-400">
                         {p.groupName || "Unknown Group"} —{" "}
                         {p.createdAt
                           ? new Date(p.createdAt).toLocaleDateString()
                           : ""}
                       </div>
-                      <p className="mt-3 text-sm text-slate-700 dark:text-gray-300">
+                      <p className="mt-3 text-sm text-slate-700   :text-gray-300">
                         {p.abstract}
                       </p>
 
@@ -233,7 +233,7 @@ const ViewRecievedProposals = () => {
                             }))
                           }
                           placeholder="Write feedback..."
-                          className="w-full mt-2 p-2 border rounded-md text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                          className="w-full mt-2 p-2 border rounded-md text-sm   :bg-slate-800   :border-slate-700   :text-white"
                         />
                         <button
                           onClick={() => sendFeedback(pid)}
@@ -246,7 +246,7 @@ const ViewRecievedProposals = () => {
 
                       {/* Show feedback history */}
                       {Array.isArray(p.feedback) && p.feedback.length > 0 && (
-                        <ul className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
+                        <ul className="mt-3 space-y-1 text-sm text-slate-600   :text-gray-400">
                           {p.feedback.map((f, idx) => (
                             <li
                               key={idx}
@@ -294,7 +294,7 @@ const ViewRecievedProposals = () => {
                         disabled={!pending || acting[pid]}
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${
                           !pending || acting[pid]
-                            ? "bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-gray-400 cursor-not-allowed"
+                            ? "bg-gray-200 text-gray-600   :bg-slate-800   :text-gray-400 cursor-not-allowed"
                             : "bg-white text-[#7b1e3c] border border-[#7b1e3c] hover:bg-[#fdf2f4]"
                         }`}
                       >
@@ -306,7 +306,7 @@ const ViewRecievedProposals = () => {
                         disabled={!pending || acting[pid]}
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${
                           !pending || acting[pid]
-                            ? "bg-gray-200 text-gray-600 dark:bg-slate-800 dark:text-gray-400 cursor-not-allowed"
+                            ? "bg-gray-200 text-gray-600   :bg-slate-800   :text-gray-400 cursor-not-allowed"
                             : "bg-[#7b1e3c] text-white rounded-lg hover:bg-[#651730]"
                         }`}
                       >
@@ -326,15 +326,15 @@ const ViewRecievedProposals = () => {
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
           >
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md">
+            <div className="bg-white   :bg-slate-800 rounded-lg p-6 w-full max-w-md">
               <div className="flex items-center gap-2 mb-4">
                 <Calendar className="w-5 h-5 text-[#7b1e3c]" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900   :text-white">
                   Choose Starting Semester
                 </h3>
               </div>
 
-              <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">
+              <p className="text-sm text-slate-600   :text-gray-300 mb-3">
                 Only upcoming semesters are shown. Current/past semesters are
                 hidden.
               </p>
@@ -342,7 +342,7 @@ const ViewRecievedProposals = () => {
               <select
                 value={selectedSemesterId}
                 onChange={(e) => setSelectedSemesterId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md dark:bg-slate-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300   :border-slate-600 rounded-md   :bg-slate-700   :text-white"
               >
                 <option value="">Select semester</option>
                 {upcomingSemesters.map((s) => (
@@ -353,7 +353,7 @@ const ViewRecievedProposals = () => {
               </select>
 
               {upcomingSemesters.length === 0 && (
-                <div className="mt-2 text-sm text-amber-600 dark:text-amber-300">
+                <div className="mt-2 text-sm text-amber-600   :text-amber-300">
                   No upcoming semesters available.
                 </div>
               )}
@@ -361,7 +361,7 @@ const ViewRecievedProposals = () => {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={closeApproveModal}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-slate-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-300   :border-slate-600 rounded-md text-slate-700   -300 hover:bg-gray-50   :hover:bg-slate-700 transition-colors"
                 >
                   Cancel
                 </button>

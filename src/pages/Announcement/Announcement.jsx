@@ -119,10 +119,10 @@ const Announcement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 p-6">
+    <div className="min-h-screen bg-white    p-6">
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-slate-900   :text-white">
             Announcements
           </h1>
           {User?.role === "admin" && (
@@ -143,12 +143,12 @@ const Announcement = () => {
             {announcements.map((a) => (
               <div
                 key={a._id}
-                className="p-4 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                className="p-4 border border-gray-200   :border-slate-700 rounded-lg bg-white   :bg-slate-800"
               >
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h2 className="text-lg font-semibold text-slate-900   :text-white">
                   {a.title}
                 </h2>
-                <p className="text-slate-600 dark:text-gray-400">
+                <p className="text-slate-600   :text-gray-400">
                   {a.description}
                 </p>
                 {user?.role === "admin" && (
@@ -179,8 +179,8 @@ const Announcement = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg w-full max-w-lg">
-            <div className="flex justify-between items-center p-4 border-b dark:border-slate-700">
+          <div className="bg-white   :bg-slate-800 rounded-lg shadow-lg w-full max-w-lg">
+            <div className="flex justify-between items-center p-4 border-b   :border-slate-700">
               <h2 className="text-xl font-bold">
                 {isEditing ? "Edit Announcement" : "New Announcement"}
               </h2>
@@ -205,7 +205,7 @@ const Announcement = () => {
                 rows={4}
               />
             </div>
-            <div className="flex justify-end p-4 border-t dark:border-slate-700 gap-2">
+            <div className="flex justify-end p-4 border-t   :border-slate-700 gap-2">
               <button onClick={closeModal} className="px-4 py-2 border rounded">
                 Cancel
               </button>

@@ -215,13 +215,13 @@ const AssignSupervisor = () => {
   };
 
   return (
-    <section className="min-h-screen bg-white dark:bg-slate-900 p-6 transition-colors">
+    <section className="min-h-screen bg-white    p-6 transition-colors">
       <div className="container mx-auto max-w-6xl">
         <header className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900   :text-white">
             Manage Proposals & Assign Supervisors
           </h1>
-          <p className="text-slate-600 dark:text-gray-400 mt-1">
+          <p className="text-slate-600   :text-gray-400 mt-1">
             View proposals by status. Assign the proposed supervisor to a{" "}
             <span className="font-semibold">specific upcoming semester</span>{" "}
             with one click.
@@ -237,7 +237,7 @@ const AssignSupervisor = () => {
               className={`px-3 py-1.5 rounded-lg border text-sm ${
                 tab === t
                   ? "bg-[#7b1e3c] text-white border-[#7b1e3c]"
-                  : "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-slate-700 dark:text-gray-300"
+                  : "bg-white   :bg-slate-800 border-gray-200   :border-slate-700 text-slate-700   :text-gray-300"
               }`}
             >
               {t}
@@ -255,19 +255,19 @@ const AssignSupervisor = () => {
         </div>
 
         {/* Content */}
-        <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <div className="rounded-lg border border-gray-200   :border-slate-700 bg-white   :bg-slate-800">
           {loading ? (
-            <div className="p-6 text-slate-600 dark:text-gray-300">
+            <div className="p-6 text-slate-600   :text-gray-300">
               Loading…
             </div>
           ) : error ? (
-            <div className="p-6 text-rose-600 dark:text-rose-300">{error}</div>
+            <div className="p-6 text-rose-600   :text-rose-300">{error}</div>
           ) : proposals.length === 0 ? (
-            <div className="p-6 text-slate-600 dark:text-gray-300">
+            <div className="p-6 text-slate-600   :text-gray-300">
               No proposals found.
             </div>
           ) : (
-            <ul className="divide-y divide-gray-100 dark:divide-slate-700">
+            <ul className="divide-y divide-gray-100   :divide-slate-700">
               {proposals.map((p) => {
                 return (
                   <li key={p._id} className="p-5">
@@ -276,12 +276,12 @@ const AssignSupervisor = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <FileText className="w-4 h-4 text-[#7b1e3c]" />
-                          <h3 className="font-semibold text-slate-900 dark:text-white text-lg">
+                          <h3 className="font-semibold text-slate-900   :text-white text-lg">
                             {p.title}
                           </h3>
                         </div>
 
-                        <div className="text-xs text-slate-500 dark:text-gray-400 mb-2">
+                        <div className="text-xs text-slate-500   :text-gray-400 mb-2">
                           Group:{" "}
                           <span className="font-medium">
                             {p.groupName || "Unknown Group"}
@@ -308,7 +308,7 @@ const AssignSupervisor = () => {
                           </div>
                         )}
 
-                        <p className="text-sm text-slate-700 dark:text-gray-300 mb-2">
+                        <p className="text-sm text-slate-700   :text-gray-300 mb-2">
                           {p.abstract}
                         </p>
 
@@ -332,21 +332,21 @@ const AssignSupervisor = () => {
 
                       {/* Right: meta + actions */}
                       <div className="w-full md:w-72 shrink-0">
-                        <div className="rounded-lg border border-gray-200 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-900">
-                          <div className="text-xs text-slate-500 dark:text-gray-400 mb-1">
+                        <div className="rounded-lg border border-gray-200   :border-slate-700 p-3 bg-slate-50   ">
+                          <div className="text-xs text-slate-500   :text-gray-400 mb-1">
                             Proposed Supervisor
                           </div>
-                          <div className="font-medium text-slate-900 dark:text-white">
+                          <div className="font-medium text-slate-900   :text-white">
                             {p.supervisorName ||
                               p.supervisorEmail ||
                               p.supervisor}
                           </div>
-                          <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                          <div className="text-xs text-slate-500   :text-gray-400 mt-1">
                             {p.supervisorEmail}
                           </div>
                         </div>
 
-                        <div className="mt-3 text-xs text-slate-500 dark:text-gray-400 flex items-center gap-2">
+                        <div className="mt-3 text-xs text-slate-500   :text-gray-400 flex items-center gap-2">
                           <Users className="w-4 h-4" />
                           Group: {p.groupName || "Unknown"}
                         </div>
@@ -434,31 +434,31 @@ const AssignSupervisor = () => {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
         >
-          <div className="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-xl">
-            <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+          <div className="w-full max-w-lg bg-white   :bg-slate-800 rounded-xl border border-gray-200   :border-slate-700 shadow-xl">
+            <div className="px-5 py-4 border-b border-gray-200   :border-slate-700 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-900   :text-white">
                 Assign to Upcoming Semester
               </h3>
               <button
                 onClick={closeSemesterModal}
-                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                className="text-slate-500 hover:text-slate-700   :hover:text-slate-300"
               >
                 ✕
               </button>
             </div>
 
             <div className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
-              <div className="text-sm text-slate-600 dark:text-slate-300">
+              <div className="text-sm text-slate-600   -300">
                 Proposal:{" "}
                 <span className="font-medium">{semModalProposal.title}</span>
               </div>
 
               {semestersLoading || groupsLoading ? (
-                <div className="py-6 text-slate-600 dark:text-slate-300">
+                <div className="py-6 text-slate-600   -300">
                   Loading semesters…
                 </div>
               ) : upcomingSemesters.length === 0 ? (
-                <div className="py-6 text-slate-600 dark:text-slate-300">
+                <div className="py-6 text-slate-600   -300">
                   No upcoming semesters available.
                 </div>
               ) : (
@@ -475,7 +475,7 @@ const AssignSupervisor = () => {
                         className={`p-3 rounded-lg border ${
                           selectedSemesterId === sid
                             ? "border-[#7b1e3c] bg-[#7b1e3c]/5"
-                            : "border-gray-200 dark:border-slate-700"
+                            : "border-gray-200   :border-slate-700"
                         }`}
                       >
                         <label className="flex items-start gap-3 cursor-pointer">
@@ -490,7 +490,7 @@ const AssignSupervisor = () => {
                           />
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-slate-900 dark:text-white capitalize">
+                              <span className="font-medium text-slate-900   :text-white capitalize">
                                 {s.season} {s.year}
                               </span>
                               <span
@@ -505,7 +505,7 @@ const AssignSupervisor = () => {
                                   : `${left} of ${MAX_PER_SEM} slots left`}
                               </span>
                             </div>
-                            <div className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2 mt-1">
+                            <div className="text-xs text-slate-600   -300 flex items-center gap-2 mt-1">
                               <CalendarIcon className="w-3.5 h-3.5" />
                               {formatDate(s.startDate)} —{" "}
                               {formatDate(s.endDate)}
@@ -519,10 +519,10 @@ const AssignSupervisor = () => {
               )}
             </div>
 
-            <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 flex gap-3">
+            <div className="px-5 py-4 border-t border-gray-200   :border-slate-700 flex gap-3">
               <button
                 onClick={closeSemesterModal}
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-200   :border-slate-700 text-slate-700   -200 hover:bg-slate-50   :hover:bg-slate-700"
               >
                 Cancel
               </button>

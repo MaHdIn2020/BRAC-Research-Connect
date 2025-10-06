@@ -72,36 +72,36 @@ const Recommended = () => {
   }, [group]);
 
   return (
-    <section className="p-6 min-h-screen bg-white dark:bg-slate-900 transition-colors">
+    <section className="p-6 min-h-screen bg-white    transition-colors">
       <div className="max-w-5xl mx-auto">
         <header className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900   :text-white">
             Recommended Papers
           </h1>
-          <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-slate-600   :text-gray-400 mt-1">
             Papers your supervisor has shared with your group
             {group?.name ? ` (${group.name})` : ""}.
           </p>
         </header>
 
         {loading && (
-          <div className="text-slate-600 dark:text-gray-300">
+          <div className="text-slate-600   :text-gray-300">
             Loading recommendations…
           </div>
         )}
 
         {!loading && error && (
-          <div className="text-red-600 dark:text-red-400">{error}</div>
+          <div className="text-red-600   :text-red-400">{error}</div>
         )}
 
         {!loading && !error && !group && (
-          <div className="text-slate-600 dark:text-gray-300">
+          <div className="text-slate-600   :text-gray-300">
             You’re not in a group yet, so there are no recommendations to show.
           </div>
         )}
 
         {!loading && !error && group && recommendations.length === 0 && (
-          <div className="text-slate-600 dark:text-gray-300">
+          <div className="text-slate-600   :text-gray-300">
             No papers have been recommended to your group yet.
           </div>
         )}
@@ -111,19 +111,19 @@ const Recommended = () => {
             {recommendations.map((paper) => (
               <li
                 key={paper.paperId || paper.link || paper.title}
-                className="border border-gray-200 dark:border-slate-700 rounded-lg p-4 bg-slate-50 dark:bg-slate-900"
+                className="border border-gray-200   :border-slate-700 rounded-lg p-4 bg-slate-50   "
               >
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900   :text-white">
                   {paper.title}
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-gray-400 mt-1">
+                <p className="text-xs text-slate-600   :text-gray-400 mt-1">
                   Authors:{" "}
                   {Array.isArray(paper.authors) && paper.authors.length > 0
                     ? paper.authors.join(", ")
                     : "Unknown"}
                 </p>
                 {paper.summary && (
-                  <p className="text-sm text-slate-700 dark:text-gray-300 mt-2">
+                  <p className="text-sm text-slate-700   :text-gray-300 mt-2">
                     {paper.summary}
                   </p>
                 )}
@@ -136,7 +136,7 @@ const Recommended = () => {
                   >
                     View Paper
                   </a>
-                  <span className="text-xs text-slate-500 dark:text-gray-400">
+                  <span className="text-xs text-slate-500   :text-gray-400">
                     Recommended on{" "}
                     {paper.recommendedAt
                       ? new Date(paper.recommendedAt).toLocaleDateString()

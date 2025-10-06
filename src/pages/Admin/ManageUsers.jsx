@@ -110,13 +110,13 @@ const ManageUsers = () => {
   };
 
   return (
-    <section className="bg-white dark:bg-slate-900 min-h-screen p-6 transition-colors">
+    <section className="bg-white    min-h-screen p-6 transition-colors">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-[#7b1e3c] mb-6">Manage Users</h1>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-x-auto">
+        <div className="bg-white   :bg-slate-800 rounded-lg shadow-md overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-100 dark:bg-slate-700">
+            <thead className="bg-gray-100   :bg-slate-700">
               <tr>
                 <th className="py-2 px-4 text-left">Name</th>
                 <th className="py-2 px-4 text-left">Email</th>
@@ -129,7 +129,7 @@ const ManageUsers = () => {
               {users
                 .filter((u) => u.role !== "admin")
                 .map((u) => (
-                  <tr key={u.id} className="border-t dark:border-slate-600">
+                  <tr key={u.id} className="border-t   :border-slate-600">
                     <td className="py-2 px-4">
                       {editUserId === u.id ? (
                         <input

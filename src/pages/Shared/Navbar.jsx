@@ -13,7 +13,7 @@ import { Bell, Menu, X } from "lucide-react";
 const API_BASE = "https://bracu-research-server-eta.vercel.app";
 
 const linkBase = "block px-4 py-2 rounded-lg transition hover:text-[#7b1e3c]";
-const linkActive = "text-[#7b1e3c] bg-[#7b1e3c]/10 dark:bg-[#7b1e3c]/20";
+const linkActive = "text-[#7b1e3c] bg-[#7b1e3c]/10   :bg-[#7b1e3c]/20";
 
 const Navbar = () => {
   const { user, logOut, loading } = useContext(AuthContext);
@@ -113,14 +113,14 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="bg-white dark:bg-slate-900 shadow-md sticky top-0 z-50 ">
+    <nav className="bg-white    shadow-md sticky top-0 z-50 ">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         {/* Left - Logo */}
         <button
           onClick={() => {
             window.location.href = "/";
           }}
-          className="text-2xl font-bold text-slate-900 dark:text-white"
+          className="text-2xl font-bold text-slate-900   :text-white"
           aria-label="Go to home"
         >
           BRACU Research <span className="text-[#7b1e3c]">Connect</span>
@@ -128,21 +128,21 @@ const Navbar = () => {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800"
+          className="md:hidden p-2 rounded-lg hover:bg-gray-100   :hover:bg-slate-800"
           onClick={() => setMobileOpen((s) => !s)}
           aria-label="Toggle navigation menu"
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav"
         >
           {mobileOpen ? (
-            <X className="h-6 w-6 text-slate-900 dark:text-white" />
+            <X className="h-6 w-6 text-slate-900   :text-white" />
           ) : (
-            <Menu className="h-6 w-6 text-slate-900 dark:text-white" />
+            <Menu className="h-6 w-6 text-slate-900   :text-white" />
           )}
         </button>
 
         {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-2 text-slate-700 dark:text-gray-300 font-medium">
+        <ul className="hidden md:flex items-center gap-2 text-slate-700   :text-gray-300 font-medium">
           <LinkItem to="/">Home</LinkItem>
 
           {roleUser?.role === "student" && (
@@ -178,11 +178,11 @@ const Navbar = () => {
             <div className="relative">
               <button
                 onClick={toggleNotifications}
-                className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800"
+                className="relative p-2 rounded-lg hover:bg-gray-100   :hover:bg-slate-800"
                 aria-haspopup="menu"
                 aria-expanded={showNotifications}
               >
-                <Bell className="text-slate-900 dark:text-white" size={22} />
+                <Bell className="text-slate-900   :text-white" size={22} />
                 {notifUser?.isSeen === false && (
                   <span
                     aria-hidden="true"
@@ -193,13 +193,13 @@ const Navbar = () => {
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 max-h-80 overflow-y-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-80 max-h-80 overflow-y-auto bg-white   :bg-slate-800 border border-gray-200   :border-gray-700 rounded-xl shadow-lg z-50">
                   {Array.isArray(notifUser?.notifications) &&
                   notifUser.notifications.length > 0 ? (
                     [...notifUser.notifications].reverse().map((n, i) => (
                       <button
                         key={i}
-                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-slate-700"
+                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100   :hover:bg-slate-700"
                         onClick={() => {
                           if (n.link) window.location.href = n.link;
                           setShowNotifications(false);
@@ -244,11 +244,11 @@ const Navbar = () => {
       {/* Mobile panel */}
       <div
         id="mobile-nav"
-        className={`md:hidden border-t border-gray-200 dark:border-gray-800 ${
+        className={`md:hidden border-t border-gray-200   :border-gray-800 ${
           mobileOpen ? "block" : "hidden"
         }`}
       >
-        <div className="px-6 py-4 space-y-2 text-slate-800 dark:text-gray-200 font-medium">
+        <div className="px-6 py-4 space-y-2 text-slate-800   :text-gray-200 font-medium">
           <LinkItem to="/">Home</LinkItem>
 
           {roleUser?.role === "student" && (
@@ -282,7 +282,7 @@ const Navbar = () => {
             <div className="pt-2">
               <button
                 onClick={toggleNotifications}
-                className="w-full flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800"
+                className="w-full flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100   :hover:bg-slate-800"
               >
                 <Bell size={20} />
                 <span>Notifications</span>
@@ -291,13 +291,13 @@ const Navbar = () => {
                 )}
               </button>
               {showNotifications && (
-                <div className="mt-2 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="mt-2 rounded-lg border border-gray-200   :border-gray-700 overflow-hidden">
                   {Array.isArray(notifUser?.notifications) &&
                   notifUser.notifications.length > 0 ? (
                     [...notifUser.notifications].reverse().map((n, i) => (
                       <button
                         key={i}
-                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-slate-800"
+                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100   :hover:bg-slate-800"
                         onClick={() => {
                           if (n.link) window.location.href = n.link;
                           setShowNotifications(false);
